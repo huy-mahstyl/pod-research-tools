@@ -1,0 +1,65 @@
+name: 🔥 Update POD Trends
+
+on:
+  # Chạy tự động mỗi giờ (vào phút thứ 15)
+  schedule:
+    - cron: '15 * * * *'
+  # Cho phép chạy thủ công
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  update-trends:
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+
+    steps:
+      - name: 📥 Checkout repo
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Script 1: Google Trends (nhanh nhất, ~5 giây)
+      - name: 📊 Run Google Trends
+        run: python3 google_trends.py
+        continue-on-error: true
+
+      # Script 2: Trend Alert (Reddit + ESPN, ~2 phút)
+      - name: 🔥 Run Trend Alert
+        run: python3 trend_alert.py
+        continue-on-error: true
+
+      # Script 3: Social Hashtag (Google Suggest, ~30 giây)
+      - name: 🔎 Run Social Hashtag
+        run: python3 social_hashtag.py
+        continue-on-error: true
+
+      # Copy HTML files vào thư mục publish
+      - name: 📁 Prepare Pages output
+        run: |
+          mkdir -p _site
+          cp -f index.html _site/ 2>/dev/null || true
+          cp -f google_trends.html _site/ 2>/dev/null || true
+          cp -f trend_alert.html _site/ 2>/dev/null || true
+          cp -f social_hashtag.html _site/ 2>/dev/null || true
+          cp -f google_trends_data.json _site/ 2>/dev/null || true
+          cp -f trend_alert_data.json _site/ 2>/dev/null || true
+          echo "📁 Files in _site:"
+          ls -la _site/
+
+      # Deploy lên GitHub Pages
+      - name: 🚀 Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          force_orphan: true
+          commit_message: '🔄 Auto-update trends'

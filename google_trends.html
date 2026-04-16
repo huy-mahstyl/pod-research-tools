@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="1800">
+    <title>📊 Google Trends — POD Monitor</title>
+    <meta name="description" content="Real-time Google Trends monitoring for Print-on-Demand keyword research">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --bg-subtle: #0f1420;
+            --card: #141b2d;
+            --card-hover: #1a2338;
+            --border: #1e2a42;
+            --border-light: #2a3a5c;
+            --text: #e2e8f0;
+            --text-muted: #64748b;
+            --text-dim: #475569;
+            --red: #ef4444;
+            --red-glow: rgba(239,68,68,0.15);
+            --green: #22c55e;
+            --green-glow: rgba(34,197,94,0.15);
+            --orange: #f59e0b;
+            --orange-glow: rgba(245,158,11,0.15);
+            --blue: #3b82f6;
+            --blue-glow: rgba(59,130,246,0.15);
+            --purple: #a855f7;
+            --cyan: #06b6d4;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        header {
+            text-align: center;
+            padding: 2rem 1rem 1.5rem;
+            background: linear-gradient(180deg, #0f1628 0%, var(--bg) 100%);
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #22c55e 0%, #3b82f6 50%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 0.4rem;
+            font-weight: 500;
+        }
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.35rem 0.8rem;
+            border-radius: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+        }
+        .stat-fire { color: var(--red); }
+        .stat-pod { color: var(--green); }
+        .stat-time { color: var(--blue); }
+
+        /* ── Refresh Button ── */
+        .refresh-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 1rem;
+            padding: 0.45rem 1.2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--blue);
+            background: rgba(59,130,246,0.1);
+            border: 1px solid rgba(59,130,246,0.3);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .refresh-btn:hover {
+            background: rgba(59,130,246,0.2);
+            border-color: var(--blue);
+            transform: translateY(-1px);
+        }
+
+        /* ── Layout ── */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+            padding: 1.2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; }
+        }
+
+        /* ── Section ── */
+        .section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .section-count {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .count-red { background: var(--red-glow); color: var(--red); }
+        .count-green { background: var(--green-glow); color: var(--green); }
+        .section-body {
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+
+        /* ── Trend Card ── */
+        .trend-card {
+            display: flex;
+            gap: 0.8rem;
+            padding: 0.8rem 1.2rem;
+            border-bottom: 1px solid rgba(30,42,66,0.5);
+            transition: background 0.15s;
+            animation: fadeIn 0.3s ease-out both;
+        }
+        .trend-card:hover {
+            background: var(--card-hover);
+        }
+        .trend-card:last-child {
+            border-bottom: none;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .trend-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+        }
+        .trend-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .trend-top {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.3rem;
+        }
+        .trend-rank {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            min-width: 22px;
+        }
+        .trend-query {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        .trend-query:hover {
+            color: var(--blue);
+        }
+
+        /* ── Badges ── */
+        .badge {
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+        .badge-hot {
+            background: var(--red);
+            color: #fff;
+            box-shadow: 0 0 8px var(--red-glow);
+        }
+        .badge-high {
+            background: var(--orange);
+            color: #fff;
+        }
+        .badge-normal {
+            background: rgba(100,116,139,0.2);
+            color: var(--text-muted);
+        }
+        .badge-pod {
+            background: rgba(34,197,94,0.15);
+            color: var(--green);
+            border: 1px solid rgba(34,197,94,0.3);
+        }
+
+        /* ── News items ── */
+        .news-list {
+            margin-top: 0.3rem;
+        }
+        .news-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.3rem;
+            margin-bottom: 0.2rem;
+        }
+        .news-bullet {
+            color: var(--text-dim);
+            font-size: 0.55rem;
+            margin-top: 0.2rem;
+            flex-shrink: 0;
+        }
+        .news-link {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.15s;
+        }
+        .news-link:hover {
+            color: var(--cyan);
+        }
+        .news-source {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        /* ── Action Links ── */
+        .trend-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.35rem;
+        }
+        .action-link {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-decoration: none;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            transition: all 0.15s;
+        }
+        .action-link:hover {
+            color: var(--blue);
+            border-color: rgba(59,130,246,0.4);
+            background: var(--blue-glow);
+        }
+
+        /* ── Empty state ── */
+        .empty {
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ── Scrollbar ── */
+        .section-body::-webkit-scrollbar { width: 6px; }
+        .section-body::-webkit-scrollbar-track { background: transparent; }
+        .section-body::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+        .section-body::-webkit-scrollbar-thumb:hover {
+            background: var(--border-light);
+        }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            border-top: 1px solid var(--border);
+        }
+        footer a { color: var(--blue); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+    </style>
+    <script>
+    // Mở link Google Search an toàn — tránh bị block khi mở từ file://
+    function openSearch(url, evt) {
+        if (evt) evt.preventDefault();
+        // Tạo cửa sổ mới qua about:blank trước, rồi redirect
+        var w = window.open('about:blank', '_blank');
+        if (w) {
+            w.location.href = url;
+        } else {
+            // Fallback nếu popup bị chặn
+            window.location.href = url;
+        }
+        return false;
+    }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>📊 Google Trends — POD Monitor</h1>
+        <p class="subtitle">Real-time trending keywords in the US — for POD research</p>
+        <div class="stats-bar">
+            <div class="stat stat-fire">🔥 10 xu hướng</div>
+            <div class="stat stat-pod">🎯 8 liên quan Sports/POD</div>
+            <div class="stat stat-time">🕐 10:58:58 — 16/04/2026</div>
+        </div>
+        <a class="refresh-btn" href="javascript:location.reload()">🔄 Refresh</a>
+    </header>
+
+    <div class="container">
+
+        <div class="section" id="pod-section">
+            <div class="section-header">
+                <div class="section-title" style="color: var(--green);">
+                    🏆 Sports & POD Relevant
+                </div>
+                <span class="section-count count-green">8 found</span>
+            </div>
+            <div class="section-body">
+
+            <div class="trend-card" style="animation-delay: 0.00s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcRz_3LzhZe1ByRsz3yfXfVXBOR45j1J6q3NGxPrO3LSmKzaDqYoUffe6k335Xc" alt="kyle tucker" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#1</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=kyle+tucker&amp;tbm=isch" onclick="return openSearch(this.href, event)">kyle tucker</a>
+                        <span class="badge badge-high">1000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.nytimes.com/athletic/7194793/2026/04/13/los-angeles-dodgers-kyle-tucker-slow-start/" target="_blank" rel="noopener noreferrer">Amid slow start, Dodgers’ Kyle Tucker says he’s not trying ‘to do too much’ - The Athletic <span class="news-source">— The New York Times</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.latimes.com/sports/dodgers/newsletter/2026-04-14/shohei-ohtani-freddie-freeman" target="_blank" rel="noopener noreferrer">Dodgers Dugout: An early look at how everyone is doing <span class="news-source">— Los Angeles Times</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=kyle+tucker&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=kyle+tucker&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=kyle+tucker+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.03s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStiU-4ud9045xXVCEMB84xoMEmbtAA3-CFi_JxbCkZEsY4vSkluLCwnFDyI3w" alt="bo bichette" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#2</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=bo+bichette&amp;tbm=isch" onclick="return openSearch(this.href, event)">bo bichette</a>
+                        <span class="badge badge-high">1000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://nypost.com/2026/04/15/sports/bo-bichette-says-mets-hitters-have-to-get-a-little-dirty-offensively/" target="_blank" rel="noopener noreferrer">Bo Bichette says Mets hitters have to get ‘a little dirty’ offensively <span class="news-source">— New York Post</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.aol.com/articles/bo-bichette-says-mets-hitters-065901453.html" target="_blank" rel="noopener noreferrer">Bo Bichette says Mets hitters have to get ‘a little dirty’ offensively <span class="news-source">— AOL.com</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=bo+bichette&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=bo+bichette&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=bo+bichette+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.06s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDqsUj0BRsIVvZGuHRZ8hzsBBc0qfrzTofumzuMmTD3LZ9Tq-NFdxWtpXOLu8" alt="kike hernandez" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#3</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=kike+hernandez&amp;tbm=isch" onclick="return openSearch(this.href, event)">kike hernandez</a>
+                        <span class="badge badge-normal">200+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.nytimes.com/athletic/7191942/2026/04/13/dodgers-mets-edwin-diaz-negotiations/" target="_blank" rel="noopener noreferrer">Inside the Dodgers’ pursuit of Edwin Díaz: How they pounced to poach the Mets’ closer <span class="news-source">— The New York Times</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.forbes.com/sites/peterchawaga/2026/04/13/dodgers-edwin-diaz-disrespected-by-mets-before-exit-teammate-says/" target="_blank" rel="noopener noreferrer">Dodgers’ Edwin Diaz ‘Disrespected’ By Mets Before Exit, Teammate Says <span class="news-source">— Forbes</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=kike+hernandez&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=kike+hernandez&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=kike+hernandez+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.09s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3BU1o9oVJ1fkr79dRd2x11EI_Z5Gm069ituNhOaVWqPm2huWOI8ltkGolSN8" alt="padres score" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#4</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=padres+score&amp;tbm=isch" onclick="return openSearch(this.href, event)">padres score</a>
+                        <span class="badge badge-normal">500+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.espn.com/mlb/game/_/gameId/401814954" target="_blank" rel="noopener noreferrer">Cardinals 5-3 Guardians (Apr 15, 2026) Final Score <span class="news-source">— ESPN</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.mlb.com/gameday/cubs-vs-phillies/2026/04/14/823478/final" target="_blank" rel="noopener noreferrer">MLB Gameday: Cubs 10, Phillies 4 Final Score (04/14/2026) <span class="news-source">— MLB.com</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=padres+score&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=padres+score&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=padres+score+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.12s">
+                <img class="trend-thumb" src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQmowj4ECXWcfBYD99DVdTbUhfEc_tp91fOVoH33W-mpgihNQX_8QjZu24cf0M" alt="francisco lindor" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#5</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=francisco+lindor&amp;tbm=isch" onclick="return openSearch(this.href, event)">francisco lindor</a>
+                        <span class="badge badge-normal">500+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.nytimes.com/athletic/7191382/2026/04/13/mets-mlb-slump-mistakes/" target="_blank" rel="noopener noreferrer">Mets quickly look and sound like the 2025 version <span class="news-source">— The New York Times</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://sny.tv/articles/francisco-lindor-mets-bats-urgency-level-losing-streak" target="_blank" rel="noopener noreferrer">Francisco Lindor sees Mets' bats improving; admits urgency level to snap losing streak is 'really high' <span class="news-source">— SNY</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=francisco+lindor&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=francisco+lindor&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=francisco+lindor+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.15s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSw1IzzscIFKrX-ckgrTQyG_l6mbSXdt1AsgL6848HWbe3iF92KCOST4Bd-S1w" alt="yankees angels" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#6</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=yankees+angels&amp;tbm=isch" onclick="return openSearch(this.href, event)">yankees angels</a>
+                        <span class="badge badge-high">2000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://sports.yahoo.com/mlb/article/where-to-watch-los-angeles-angels-vs-new-york-yankees-live-stream-start-time-tv-channel-odds-for-wednesday-april-15-144922098.html" target="_blank" rel="noopener noreferrer">Where to watch Los Angeles Angels vs. New York Yankees: Live stream, start time, TV channel, odds for Wednesday, April 15 <span class="news-source">— Yahoo Sports</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.masslive.com/betting/2026/04/experts-release-new-yankees-vs-angels-prediction-after-injury-news-for-gerrit-cole-and-carlos-rodon.html" target="_blank" rel="noopener noreferrer">Experts release new Yankees vs. Angels prediction after injury news for Gerrit Cole and Carlos Rodon <span class="news-source">— MassLive</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=yankees+angels&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=yankees+angels&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=yankees+angels+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.18s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSEJ6zm2_8W1hrg2Hp5Uo3QBWvS7W71uctw2s56TN35I1mb0MpzApgxRlBoW4s" alt="luke raley" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#7</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=luke+raley&amp;tbm=isch" onclick="return openSearch(this.href, event)">luke raley</a>
+                        <span class="badge badge-normal">500+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://sports.mynorthwest.com/mlb/seattle-mariners/seattle-mariners-luke-raley-changes-helping/1845807" target="_blank" rel="noopener noreferrer">Changes help Seattle Mariners' Luke Raley return to form <span class="news-source">— Seattle Sports</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://sports.mynorthwest.com/mlb/seattle-mariners/seattle-mariners-josh-naylor-bigger-leg-kick-2-home-runs/1845671" target="_blank" rel="noopener noreferrer">Mariners’ Josh Naylor used bigger leg kick in 2-HR game <span class="news-source">— Seattle Sports</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=luke+raley&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=luke+raley&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=luke+raley+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.21s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZCiMHwfHVBlJrKVaJzER5EzPhHnsFjt96Wt0x-I8LaFd18lKUyq_0aHY6698" alt="bogdan bogdanović" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#8</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=bogdan+bogdanovi%C4%87&amp;tbm=isch" onclick="return openSearch(this.href, event)">bogdan bogdanović</a>
+                        <span class="badge badge-normal">200+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.nba.com/watch/video/bogdan-bogdanovic-gets-the-3-to-fall-2" target="_blank" rel="noopener noreferrer">Bogdan Bogdanović gets the 3 to fall <span class="news-source">— NBA</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.cbssports.com/fantasy/basketball/news/clippers-bogdan-bogdanovic-shoots-way-to-17-points/" target="_blank" rel="noopener noreferrer">Clippers' Bogdan Bogdanovic: Shoots way to 17 points <span class="news-source">— CBS Sports</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=bogdan+bogdanovi%C4%87&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=bogdan+bogdanovi%C4%87&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=bogdan+bogdanovi%C4%87+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="section" id="all-section">
+            <div class="section-header">
+                <div class="section-title" style="color: var(--red);">
+                    🔥 All Trending Today
+                </div>
+                <span class="section-count count-red">10 total</span>
+            </div>
+            <div class="section-body">
+
+            <div class="trend-card" style="animation-delay: 0.00s">
+                <img class="trend-thumb" src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQyfuIJFiZ2749uYfOF16oSXr7LRgoPT2q4Vao6J7z2KD0vM_4XobB2ph9ja_o" alt="tulsi gabbard" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#1</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=tulsi+gabbard&amp;tbm=isch" onclick="return openSearch(this.href, event)">tulsi gabbard</a>
+                        <span class="badge badge-high">1000+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.cnn.com/2026/04/15/politics/tulsi-gabbard-office-criminal-referral-trump-impeachment" target="_blank" rel="noopener noreferrer">DNI Tulsi Gabbard sends criminal referral over Trump’s 2019 impeachment to Justice Department <span class="news-source">— CNN</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.cbsnews.com/news/gabbard-criminal-referrals-doj-whistleblower-watchdog-trump-first-impeachment/" target="_blank" rel="noopener noreferrer">Gabbard sends criminal referrals to DOJ for whistleblower and watchdog who helped launch Trump's first impeachment <span class="news-source">— CBS News</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=tulsi+gabbard&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=tulsi+gabbard&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=tulsi+gabbard+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.03s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcRz_3LzhZe1ByRsz3yfXfVXBOR45j1J6q3NGxPrO3LSmKzaDqYoUffe6k335Xc" alt="kyle tucker" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#2</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=kyle+tucker&amp;tbm=isch" onclick="return openSearch(this.href, event)">kyle tucker</a>
+                        <span class="badge badge-high">1000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.nytimes.com/athletic/7194793/2026/04/13/los-angeles-dodgers-kyle-tucker-slow-start/" target="_blank" rel="noopener noreferrer">Amid slow start, Dodgers’ Kyle Tucker says he’s not trying ‘to do too much’ - The Athletic <span class="news-source">— The New York Times</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.latimes.com/sports/dodgers/newsletter/2026-04-14/shohei-ohtani-freddie-freeman" target="_blank" rel="noopener noreferrer">Dodgers Dugout: An early look at how everyone is doing <span class="news-source">— Los Angeles Times</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=kyle+tucker&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=kyle+tucker&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=kyle+tucker+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.06s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStiU-4ud9045xXVCEMB84xoMEmbtAA3-CFi_JxbCkZEsY4vSkluLCwnFDyI3w" alt="bo bichette" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#3</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=bo+bichette&amp;tbm=isch" onclick="return openSearch(this.href, event)">bo bichette</a>
+                        <span class="badge badge-high">1000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://nypost.com/2026/04/15/sports/bo-bichette-says-mets-hitters-have-to-get-a-little-dirty-offensively/" target="_blank" rel="noopener noreferrer">Bo Bichette says Mets hitters have to get ‘a little dirty’ offensively <span class="news-source">— New York Post</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.aol.com/articles/bo-bichette-says-mets-hitters-065901453.html" target="_blank" rel="noopener noreferrer">Bo Bichette says Mets hitters have to get ‘a little dirty’ offensively <span class="news-source">— AOL.com</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=bo+bichette&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=bo+bichette&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=bo+bichette+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.09s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDqsUj0BRsIVvZGuHRZ8hzsBBc0qfrzTofumzuMmTD3LZ9Tq-NFdxWtpXOLu8" alt="kike hernandez" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#4</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=kike+hernandez&amp;tbm=isch" onclick="return openSearch(this.href, event)">kike hernandez</a>
+                        <span class="badge badge-normal">200+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.nytimes.com/athletic/7191942/2026/04/13/dodgers-mets-edwin-diaz-negotiations/" target="_blank" rel="noopener noreferrer">Inside the Dodgers’ pursuit of Edwin Díaz: How they pounced to poach the Mets’ closer <span class="news-source">— The New York Times</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.forbes.com/sites/peterchawaga/2026/04/13/dodgers-edwin-diaz-disrespected-by-mets-before-exit-teammate-says/" target="_blank" rel="noopener noreferrer">Dodgers’ Edwin Diaz ‘Disrespected’ By Mets Before Exit, Teammate Says <span class="news-source">— Forbes</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=kike+hernandez&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=kike+hernandez&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=kike+hernandez+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.12s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3BU1o9oVJ1fkr79dRd2x11EI_Z5Gm069ituNhOaVWqPm2huWOI8ltkGolSN8" alt="padres score" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#5</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=padres+score&amp;tbm=isch" onclick="return openSearch(this.href, event)">padres score</a>
+                        <span class="badge badge-normal">500+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.espn.com/mlb/game/_/gameId/401814954" target="_blank" rel="noopener noreferrer">Cardinals 5-3 Guardians (Apr 15, 2026) Final Score <span class="news-source">— ESPN</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.mlb.com/gameday/cubs-vs-phillies/2026/04/14/823478/final" target="_blank" rel="noopener noreferrer">MLB Gameday: Cubs 10, Phillies 4 Final Score (04/14/2026) <span class="news-source">— MLB.com</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=padres+score&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=padres+score&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=padres+score+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.15s">
+                <img class="trend-thumb" src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQmowj4ECXWcfBYD99DVdTbUhfEc_tp91fOVoH33W-mpgihNQX_8QjZu24cf0M" alt="francisco lindor" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#6</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=francisco+lindor&amp;tbm=isch" onclick="return openSearch(this.href, event)">francisco lindor</a>
+                        <span class="badge badge-normal">500+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.nytimes.com/athletic/7191382/2026/04/13/mets-mlb-slump-mistakes/" target="_blank" rel="noopener noreferrer">Mets quickly look and sound like the 2025 version <span class="news-source">— The New York Times</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://sny.tv/articles/francisco-lindor-mets-bats-urgency-level-losing-streak" target="_blank" rel="noopener noreferrer">Francisco Lindor sees Mets' bats improving; admits urgency level to snap losing streak is 'really high' <span class="news-source">— SNY</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=francisco+lindor&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=francisco+lindor&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=francisco+lindor+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.18s">
+                <img class="trend-thumb" src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTL3sWgfM559bH3eqkGb6u2fAIE2-Il1On8K-VH5GlXkTYcwA5ytXy51j-vj04" alt="ou softball" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#7</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=ou+softball&amp;tbm=isch" onclick="return openSearch(this.href, event)">ou softball</a>
+                        <span class="badge badge-high">1000+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.oklahoman.com/story/sports/college/softball/2026/04/15/oklahoma-softball-score-updates-college-softball-today-bedlam-ou-sooners-osu-cowgirls/89631388007/" target="_blank" rel="noopener noreferrer">OU softball vs Oklahoma State live score updates from Sooners-Cowgirls Bedlam game <span class="news-source">— The Oklahoman</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://soonerswire.usatoday.com/story/sports/college/sooners/2026/04/15/oklahoma-softball-oklahoma-state-channel-today-time-schedule-streaming/89621119007/" target="_blank" rel="noopener noreferrer">What channel is Oklahoma vs. Oklahoma State on today? Time, schedule <span class="news-source">— Sooners Wire</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=ou+softball&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=ou+softball&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=ou+softball+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.21s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSw1IzzscIFKrX-ckgrTQyG_l6mbSXdt1AsgL6848HWbe3iF92KCOST4Bd-S1w" alt="yankees angels" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#8</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=yankees+angels&amp;tbm=isch" onclick="return openSearch(this.href, event)">yankees angels</a>
+                        <span class="badge badge-high">2000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://sports.yahoo.com/mlb/article/where-to-watch-los-angeles-angels-vs-new-york-yankees-live-stream-start-time-tv-channel-odds-for-wednesday-april-15-144922098.html" target="_blank" rel="noopener noreferrer">Where to watch Los Angeles Angels vs. New York Yankees: Live stream, start time, TV channel, odds for Wednesday, April 15 <span class="news-source">— Yahoo Sports</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.masslive.com/betting/2026/04/experts-release-new-yankees-vs-angels-prediction-after-injury-news-for-gerrit-cole-and-carlos-rodon.html" target="_blank" rel="noopener noreferrer">Experts release new Yankees vs. Angels prediction after injury news for Gerrit Cole and Carlos Rodon <span class="news-source">— MassLive</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=yankees+angels&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=yankees+angels&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=yankees+angels+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.24s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSEJ6zm2_8W1hrg2Hp5Uo3QBWvS7W71uctw2s56TN35I1mb0MpzApgxRlBoW4s" alt="luke raley" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#9</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=luke+raley&amp;tbm=isch" onclick="return openSearch(this.href, event)">luke raley</a>
+                        <span class="badge badge-normal">500+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://sports.mynorthwest.com/mlb/seattle-mariners/seattle-mariners-luke-raley-changes-helping/1845807" target="_blank" rel="noopener noreferrer">Changes help Seattle Mariners' Luke Raley return to form <span class="news-source">— Seattle Sports</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://sports.mynorthwest.com/mlb/seattle-mariners/seattle-mariners-josh-naylor-bigger-leg-kick-2-home-runs/1845671" target="_blank" rel="noopener noreferrer">Mariners’ Josh Naylor used bigger leg kick in 2-HR game <span class="news-source">— Seattle Sports</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=luke+raley&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=luke+raley&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=luke+raley+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.27s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZCiMHwfHVBlJrKVaJzER5EzPhHnsFjt96Wt0x-I8LaFd18lKUyq_0aHY6698" alt="bogdan bogdanović" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#10</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=bogdan+bogdanovi%C4%87&amp;tbm=isch" onclick="return openSearch(this.href, event)">bogdan bogdanović</a>
+                        <span class="badge badge-normal">200+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.nba.com/watch/video/bogdan-bogdanovic-gets-the-3-to-fall-2" target="_blank" rel="noopener noreferrer">Bogdan Bogdanović gets the 3 to fall <span class="news-source">— NBA</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.cbssports.com/fantasy/basketball/news/clippers-bogdan-bogdanovic-shoots-way-to-17-points/" target="_blank" rel="noopener noreferrer">Clippers' Bogdan Bogdanovic: Shoots way to 17 points <span class="news-source">— CBS Sports</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=bogdan+bogdanovi%C4%87&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=bogdan+bogdanovi%C4%87&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=bogdan+bogdanovi%C4%87+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        Dữ liệu từ <a href="https://trends.google.com/trending?geo=US" target="_blank">Google Trends RSS</a>
+        — Không cần API key, không bị CAPTCHA
+        — Auto-refresh mỗi 30 phút
+        — Scan lúc 10:58:58 — 16/04/2026
+    </footer>
+</body>
+</html>

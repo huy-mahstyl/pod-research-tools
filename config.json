@@ -1,0 +1,10 @@
+{
+  "etsy_api_key": "p5pa0vzf0sgxd3c7q734qc96",
+  "_setup_note": "Lấy API key miễn phí tại: https://www.etsy.com/developers/register",
+  "_steps": [
+    "1. Vào https://www.etsy.com/developers/register",
+    "2. Điền tên app (vd: 'POD Research') → Submit",
+    "3. Copy API Key (Keystring) → dán vào 'etsy_api_key' ở trên",
+    "4. Lưu file → Chạy lại Chay_Etsy_Spy.command"
+  ]
+}

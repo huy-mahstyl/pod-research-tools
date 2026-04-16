@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔎 Social Hashtag Research — X & Instagram</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e17; --bg2: #0f1420; --card: #141b2d;
+            --card-hover: #1a2338; --border: #1e2a42;
+            --text: #e2e8f0; --muted: #64748b; --dim: #475569;
+            --red: #ef4444; --green: #22c55e; --orange: #f59e0b;
+            --blue: #3b82f6; --purple: #a855f7; --cyan: #06b6d4;
+            --pink: #ec4899; --x-blue: #1d9bf0; --ig-pink: #E4405F;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        header { text-align: center; padding: 2rem 1rem 1.5rem; background: linear-gradient(180deg, #12182a 0%, var(--bg) 100%); border-bottom: 1px solid var(--border); }
+        h1 { font-size: 2rem; font-weight: 900; background: linear-gradient(135deg, #1d9bf0 0%, #E4405F 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { color: var(--muted); font-size: 0.85rem; margin-top: 0.4rem; }
+        .stats { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .stat { font-size: 0.8rem; font-weight: 600; padding: 0.35rem 0.8rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border); }
+        .tip { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.5rem; margin: 1.2rem auto; max-width: 1000px; font-size: 0.78rem; color: var(--orange); line-height: 1.7; }
+
+        .tabs { display: flex; justify-content: center; gap: 0.5rem; margin: 1rem auto; flex-wrap: wrap; max-width: 900px; }
+        .tab { padding: 0.4rem 1rem; font-size: 0.75rem; font-weight: 700; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.2s; font-family: inherit; }
+        .tab:hover, .tab.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+        .tab[data-league="MLB"].active { background: #c41e3a; border-color: #c41e3a; }
+        .tab[data-league="NFL"].active { background: #013369; border-color: #013369; }
+        .tab[data-league="NBA"].active { background: #c8102e; border-color: #c8102e; }
+        .tab[data-league="NHL"].active { background: #000; border-color: #333; }
+
+        .main { max-width: 1400px; margin: 0 auto; padding: 0 1.2rem 2rem; }
+
+        .league-section { display: none; }
+        .league-section.active { display: block; }
+
+        .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; margin-top: 1rem; }
+
+        .team-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; transition: border-color 0.2s; }
+        .team-card:hover { border-color: var(--blue); }
+        .team-head { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1rem; border-bottom: 1px solid var(--border); }
+        .team-name { font-size: 0.9rem; font-weight: 700; }
+        .team-league { font-size: 0.6rem; font-weight: 600; padding: 2px 7px; border-radius: 10px; }
+
+        .team-body { padding: 0.7rem 1rem; }
+        .hashtag-row { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.5rem; }
+        .hashtag { font-size: 0.65rem; font-weight: 600; padding: 3px 8px; border-radius: 12px; background: rgba(59,130,246,0.1); color: var(--blue); border: 1px solid rgba(59,130,246,0.2); }
+
+        .search-links { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+        .search-btn { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.65rem; font-weight: 600; padding: 5px 10px; border-radius: 8px; text-decoration: none; transition: all 0.2s; border: 1px solid var(--border); }
+        .search-btn:hover { transform: translateY(-1px); }
+        .btn-x { color: var(--x-blue); } .btn-x:hover { background: rgba(29,155,240,0.1); border-color: var(--x-blue); }
+        .btn-ig { color: var(--ig-pink); } .btn-ig:hover { background: rgba(228,64,95,0.1); border-color: var(--ig-pink); }
+        .btn-google { color: var(--green); } .btn-google:hover { background: rgba(34,197,94,0.1); border-color: var(--green); }
+        .btn-shop { color: var(--orange); } .btn-shop:hover { background: rgba(245,158,11,0.1); border-color: var(--orange); }
+
+        /* Keyword Ideas section */
+        .ideas-section { margin-top: 1.5rem; }
+        .idea-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-top: 0.8rem; }
+        .idea-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
+        .idea-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.6rem; color: var(--purple); }
+        .idea-chip { display: inline-block; font-size: 0.68rem; font-weight: 500; padding: 4px 10px; margin: 0.15rem; border-radius: 14px; background: var(--bg2); border: 1px solid var(--border); color: var(--text); text-decoration: none; transition: all 0.15s; cursor: pointer; }
+        .idea-chip:hover { border-color: var(--cyan); color: var(--cyan); }
+
+        /* Existing trends */
+        .trend-bar { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 1rem 1.2rem; border-bottom: 1px solid var(--border); }
+        .trend-tag { font-size: 0.7rem; font-weight: 600; padding: 4px 10px; border-radius: 14px; background: var(--card); border: 1px solid var(--border); color: var(--text); text-decoration: none; transition: 0.15s; }
+        .trend-tag:hover { border-color: var(--green); color: var(--green); }
+        .trend-src { font-size: 0.55rem; color: var(--dim); }
+
+        .section-title { font-size: 1.1rem; font-weight: 800; padding: 1rem 0 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+
+        footer { text-align: center; padding: 1.5rem; color: var(--dim); font-size: 0.7rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--blue); text-decoration: none; }
+    </style>
+    <script>
+    function switchLeague(league) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        document.querySelectorAll('.league-section').forEach(s => {
+            s.classList.toggle('active', s.dataset.league === league || league === 'all');
+        });
+    }
+    function openSearch(url, evt) {
+        if (evt) evt.preventDefault();
+        var w = window.open('about:blank', '_blank');
+        if (w) { w.location.href = url; } else { window.location.href = url; }
+        return false;
+    }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>🔎 Social Hashtag Research</h1>
+        <p class="subtitle">X (Twitter) + Instagram + Google — Hashtag POD Research Tool</p>
+        <div class="stats">
+            <div class="stat" style="color:var(--x-blue)">𝕏 X/Twitter Search</div>
+            <div class="stat" style="color:var(--ig-pink)">📸 Instagram Explore</div>
+            <div class="stat" style="color:var(--green)">🔍 Google Images</div>
+            <div class="stat" style="color:var(--muted)">🕐 12:15 — 16/04/2026</div>
+        </div>
+    </header>
+
+    <div class="tip">
+        💡 <strong>Cách dùng:</strong> Chọn league → Click nút <strong>𝕏 X Search</strong> hoặc <strong>📸 IG</strong> để mở trang search trực tiếp trên nền tảng.
+        Tìm bài có <strong>nhiều like/RT/share</strong>, <strong>meme viral</strong>, <strong>câu nói trending</strong>, hoặc <strong>ảnh fan mặc áo</strong>.
+        Click <strong>🛍 Shop</strong> để xem đối thủ đang bán gì trên Google Shopping!
+    </div>
+<div style="max-width:1400px;margin:0 auto;padding:0 1.2rem"><div class="section-title" style="color:var(--green)">📈 Trending Now (từ Google Trends + Reddit)</div><div class="trend-bar"><a class="trend-tag" href="https://x.com/search?q=kyle+tucker&src=typed_query&f=live" onclick="return openSearch(this.href, event)">kyle tucker <span class="trend-src">1000+ · Google Trends</span></a><a class="trend-tag" href="https://x.com/search?q=bo+bichette&src=typed_query&f=live" onclick="return openSearch(this.href, event)">bo bichette <span class="trend-src">1000+ · Google Trends</span></a><a class="trend-tag" href="https://x.com/search?q=kike+hernandez&src=typed_query&f=live" onclick="return openSearch(this.href, event)">kike hernandez <span class="trend-src">200+ · Google Trends</span></a><a class="trend-tag" href="https://x.com/search?q=padres+score&src=typed_query&f=live" onclick="return openSearch(this.href, event)">padres score <span class="trend-src">500+ · Google Trends</span></a><a class="trend-tag" href="https://x.com/search?q=francisco+lindor&src=typed_query&f=live" onclick="return openSearch(this.href, event)">francisco lindor <span class="trend-src">500+ · Google Trends</span></a><a class="trend-tag" href="https://x.com/search?q=yankees+angels&src=typed_query&f=live" onclick="return openSearch(this.href, event)">yankees angels <span class="trend-src">2000+ · Google Trends</span></a><a class="trend-tag" href="https://x.com/search?q=luke+raley&src=typed_query&f=live" onclick="return openSearch(this.href, event)">luke raley <span class="trend-src">500+ · Google Trends</span></a><a class="trend-tag" href="https://x.com/search?q=bogdan+bogdanovi%C4%87&src=typed_query&f=live" onclick="return openSearch(this.href, event)">bogdan bogdanović <span class="trend-src">200+ · Google Trends</span></a><a class="trend-tag" href="https://x.com/search?q=THE+DENVER+NUGGETS+HAVE+BEEN+ELIMINATED+FROM+CHAMPIONSHIP+CO&src=typed_query&f=live" onclick="return openSearch(this.href, event)">THE DENVER NUGGETS HAVE BEEN ELIMINATED FROM CHAMPIONSHIP CO <span class="trend-src">⬆9984 · Reddit r/nba</span></a><a class="trend-tag" href="https://x.com/search?q=%5BSchefter%5D+Derrick+Henry+and+the+Baltimore+Ravens+reached+ag&src=typed_query&f=live" onclick="return openSearch(this.href, event)">[Schefter] Derrick Henry and the Baltimore Ravens reached ag <span class="trend-src">⬆8021 · Reddit r/nfl</span></a><a class="trend-tag" href="https://x.com/search?q=Brazil%27s+players+asked+for+Caitlin+Clark%27s+autograph+after+t&src=typed_query&f=live" onclick="return openSearch(this.href, event)">Brazil's players asked for Caitlin Clark's autograph after t <span class="trend-src">⬆6230 · Reddit r/sports</span></a><a class="trend-tag" href="https://x.com/search?q=%5BPost+Game+Thread%5D+The+Oklahoma+City+Thunder+roll+over+the+D&src=typed_query&f=live" onclick="return openSearch(this.href, event)">[Post Game Thread] The Oklahoma City Thunder roll over the D <span class="trend-src">⬆2714 · Reddit r/nba</span></a><a class="trend-tag" href="https://x.com/search?q=%5BWPG+vs+DAL%5D+Ice+level+interview+with+Jake+Oettinger.+Acknow&src=typed_query&f=live" onclick="return openSearch(this.href, event)">[WPG vs DAL] Ice level interview with Jake Oettinger. Acknow <span class="trend-src">⬆816 · Reddit r/hockey</span></a><a class="trend-tag" href="https://x.com/search?q=What%27s+your+%22way+too+early+to+tell%22+playoff+predictions%3F&src=typed_query&f=live" onclick="return openSearch(this.href, event)">What's your "way too early to tell" playoff predictions? <span class="trend-src">⬆109 · Reddit r/CFB</span></a><a class="trend-tag" href="https://x.com/search?q=NFL+fines+Falcons%2C+DC+Jeff+Ulbrich+over+Shedeur+Sanders+pran&src=typed_query&f=live" onclick="return openSearch(this.href, event)">NFL fines Falcons, DC Jeff Ulbrich over Shedeur Sanders pran <span class="trend-src">⬆3824 · Reddit r/sports</span></a></div></div>
+    <div class="tabs">
+        <button class="tab active" onclick="switchLeague('all')">🌐 All</button>
+        <button class="tab" data-league="MLB" onclick="switchLeague('MLB')">⚾ MLB</button>
+        <button class="tab" data-league="NFL" onclick="switchLeague('NFL')">🏈 NFL</button>
+        <button class="tab" data-league="NBA" onclick="switchLeague('NBA')">🏀 NBA</button>
+        <button class="tab" data-league="NHL" onclick="switchLeague('NHL')">🏒 NHL</button>
+    </div>
+    <div class="main">
+<div class="league-section active" data-league="MLB">
+<div class="section-title">⚾ MLB Teams</div>
+<div class="team-grid">
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Dodgers</span>
+                        <span class="team-league" style="background:#c41e3a;color:#fff">MLB</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#dodgers</span>
+                            <span class="hashtag">#ladodgers</span>
+                            <span class="hashtag">#losdodgers</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23dodgers+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23dodgers+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/dodgers/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=dodgers+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Dodgers+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Yankees</span>
+                        <span class="team-league" style="background:#c41e3a;color:#fff">MLB</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#yankees</span>
+                            <span class="hashtag">#nyy</span>
+                            <span class="hashtag">#newyorkyankees</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23yankees+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23yankees+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/yankees/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=yankees+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Yankees+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Mets</span>
+                        <span class="team-league" style="background:#c41e3a;color:#fff">MLB</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#mets</span>
+                            <span class="hashtag">#lgm</span>
+                            <span class="hashtag">#letsgomets</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23mets+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23mets+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/mets/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=mets+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Mets+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Astros</span>
+                        <span class="team-league" style="background:#c41e3a;color:#fff">MLB</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#astros</span>
+                            <span class="hashtag">#houstonastros</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23astros+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23astros+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/astros/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=astros+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Astros+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Braves</span>
+                        <span class="team-league" style="background:#c41e3a;color:#fff">MLB</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#braves</span>
+                            <span class="hashtag">#atlantabraves</span>
+                            <span class="hashtag">#chophouse</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23braves+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23braves+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/braves/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=braves+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Braves+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Cubs</span>
+                        <span class="team-league" style="background:#c41e3a;color:#fff">MLB</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#cubs</span>
+                            <span class="hashtag">#chicagocubs</span>
+                            <span class="hashtag">#cubswin</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23cubs+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23cubs+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/cubs/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=cubs+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Cubs+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Red Sox</span>
+                        <span class="team-league" style="background:#c41e3a;color:#fff">MLB</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#redsox</span>
+                            <span class="hashtag">#bostonredsox</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23redsox+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23redsox+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/redsox/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=redsox+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Red+Sox+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Phillies</span>
+                        <span class="team-league" style="background:#c41e3a;color:#fff">MLB</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#phillies</span>
+                            <span class="hashtag">#ringthebell</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23phillies+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23phillies+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/phillies/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=phillies+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Phillies+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Padres</span>
+                        <span class="team-league" style="background:#c41e3a;color:#fff">MLB</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#padres</span>
+                            <span class="hashtag">#sandiegopadres</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23padres+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23padres+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/padres/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=padres+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Padres+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Rangers</span>
+                        <span class="team-league" style="background:#c41e3a;color:#fff">MLB</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#texasrangers</span>
+                            <span class="hashtag">#rangers</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23texasrangers+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23texasrangers+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/texasrangers/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=texasrangers+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Rangers+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Blue Jays</span>
+                        <span class="team-league" style="background:#c41e3a;color:#fff">MLB</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#bluejays</span>
+                            <span class="hashtag">#torontobluejays</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23bluejays+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23bluejays+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/bluejays/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=bluejays+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Blue+Jays+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Orioles</span>
+                        <span class="team-league" style="background:#c41e3a;color:#fff">MLB</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#orioles</span>
+                            <span class="hashtag">#birdland</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23orioles+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23orioles+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/orioles/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=orioles+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Orioles+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Guardians</span>
+                        <span class="team-league" style="background:#c41e3a;color:#fff">MLB</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#guardians</span>
+                            <span class="hashtag">#clevelandguardians</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23guardians+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23guardians+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/guardians/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=guardians+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Guardians+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+</div></div>
+<div class="league-section active" data-league="NFL">
+<div class="section-title">🏈 NFL Teams</div>
+<div class="team-grid">
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Chiefs</span>
+                        <span class="team-league" style="background:#013369;color:#fff">NFL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#chiefs</span>
+                            <span class="hashtag">#chiefskingdom</span>
+                            <span class="hashtag">#kcchiefs</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23chiefs+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23chiefs+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/chiefs/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=chiefs+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Chiefs+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Eagles</span>
+                        <span class="team-league" style="background:#013369;color:#fff">NFL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#eagles</span>
+                            <span class="hashtag">#flyeaglesfly</span>
+                            <span class="hashtag">#philadelphiaeagles</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23eagles+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23eagles+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/eagles/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=eagles+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Eagles+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Cowboys</span>
+                        <span class="team-league" style="background:#013369;color:#fff">NFL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#cowboys</span>
+                            <span class="hashtag">#dallascowboys</span>
+                            <span class="hashtag">#americasteam</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23cowboys+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23cowboys+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/cowboys/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=cowboys+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Cowboys+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">49ers</span>
+                        <span class="team-league" style="background:#013369;color:#fff">NFL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#49ers</span>
+                            <span class="hashtag">#sf49ers</span>
+                            <span class="hashtag">#niners</span>
+                            <span class="hashtag">#faithfulnation</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%2349ers+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%2349ers+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/49ers/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=49ers+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=49ers+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Bills</span>
+                        <span class="team-league" style="background:#013369;color:#fff">NFL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#bills</span>
+                            <span class="hashtag">#buffalobills</span>
+                            <span class="hashtag">#billsmafia</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23bills+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23bills+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/bills/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=bills+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Bills+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Ravens</span>
+                        <span class="team-league" style="background:#013369;color:#fff">NFL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#ravens</span>
+                            <span class="hashtag">#baltimoreravens</span>
+                            <span class="hashtag">#flocknation</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23ravens+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23ravens+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/ravens/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=ravens+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Ravens+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Lions</span>
+                        <span class="team-league" style="background:#013369;color:#fff">NFL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#lions</span>
+                            <span class="hashtag">#detroitlions</span>
+                            <span class="hashtag">#onepride</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23lions+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23lions+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/lions/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=lions+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Lions+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Packers</span>
+                        <span class="team-league" style="background:#013369;color:#fff">NFL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#packers</span>
+                            <span class="hashtag">#greenbaypackers</span>
+                            <span class="hashtag">#gopackgo</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23packers+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23packers+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/packers/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=packers+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Packers+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Bengals</span>
+                        <span class="team-league" style="background:#013369;color:#fff">NFL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#bengals</span>
+                            <span class="hashtag">#cincinnatibengals</span>
+                            <span class="hashtag">#whodey</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23bengals+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23bengals+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/bengals/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=bengals+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Bengals+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Bears</span>
+                        <span class="team-league" style="background:#013369;color:#fff">NFL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#bears</span>
+                            <span class="hashtag">#chicagobears</span>
+                            <span class="hashtag">#dabears</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23bears+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23bears+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/bears/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=bears+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Bears+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Dolphins</span>
+                        <span class="team-league" style="background:#013369;color:#fff">NFL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#dolphins</span>
+                            <span class="hashtag">#miamidolphins</span>
+                            <span class="hashtag">#finsup</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23dolphins+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23dolphins+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/dolphins/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=dolphins+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Dolphins+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Patriots</span>
+                        <span class="team-league" style="background:#013369;color:#fff">NFL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#patriots</span>
+                            <span class="hashtag">#newenglandpatriots</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23patriots+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23patriots+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/patriots/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=patriots+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Patriots+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+</div></div>
+<div class="league-section active" data-league="NBA">
+<div class="section-title">🏀 NBA Teams</div>
+<div class="team-grid">
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Lakers</span>
+                        <span class="team-league" style="background:#c8102e;color:#fff">NBA</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#lakers</span>
+                            <span class="hashtag">#lalakers</span>
+                            <span class="hashtag">#lakernation</span>
+                            <span class="hashtag">#lakeshow</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23lakers+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23lakers+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/lakers/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=lakers+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Lakers+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Celtics</span>
+                        <span class="team-league" style="background:#c8102e;color:#fff">NBA</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#celtics</span>
+                            <span class="hashtag">#bostonceltics</span>
+                            <span class="hashtag">#bleedgreen</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23celtics+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23celtics+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/celtics/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=celtics+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Celtics+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Warriors</span>
+                        <span class="team-league" style="background:#c8102e;color:#fff">NBA</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#warriors</span>
+                            <span class="hashtag">#dubsnation</span>
+                            <span class="hashtag">#gsw</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23warriors+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23warriors+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/warriors/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=warriors+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Warriors+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Knicks</span>
+                        <span class="team-league" style="background:#c8102e;color:#fff">NBA</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#knicks</span>
+                            <span class="hashtag">#nyknicks</span>
+                            <span class="hashtag">#newyorkknicks</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23knicks+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23knicks+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/knicks/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=knicks+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Knicks+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Heat</span>
+                        <span class="team-league" style="background:#c8102e;color:#fff">NBA</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#heat</span>
+                            <span class="hashtag">#miamiheat</span>
+                            <span class="hashtag">#heatnation</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23heat+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23heat+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/heat/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=heat+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Heat+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Nuggets</span>
+                        <span class="team-league" style="background:#c8102e;color:#fff">NBA</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#nuggets</span>
+                            <span class="hashtag">#denvernuggets</span>
+                            <span class="hashtag">#milehighbasketball</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23nuggets+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23nuggets+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/nuggets/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=nuggets+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Nuggets+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Thunder</span>
+                        <span class="team-league" style="background:#c8102e;color:#fff">NBA</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#thunder</span>
+                            <span class="hashtag">#okcthunder</span>
+                            <span class="hashtag">#thunderup</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23thunder+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23thunder+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/thunder/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=thunder+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Thunder+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Bucks</span>
+                        <span class="team-league" style="background:#c8102e;color:#fff">NBA</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#bucks</span>
+                            <span class="hashtag">#milwaukeebucks</span>
+                            <span class="hashtag">#fearthedeer</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23bucks+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23bucks+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/bucks/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=bucks+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Bucks+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Cavaliers</span>
+                        <span class="team-league" style="background:#c8102e;color:#fff">NBA</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#cavs</span>
+                            <span class="hashtag">#cavaliers</span>
+                            <span class="hashtag">#clevelandcavaliers</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23cavs+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23cavs+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/cavs/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=cavs+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Cavaliers+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Clippers</span>
+                        <span class="team-league" style="background:#c8102e;color:#fff">NBA</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#clippers</span>
+                            <span class="hashtag">#laclippers</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23clippers+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23clippers+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/clippers/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=clippers+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Clippers+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Suns</span>
+                        <span class="team-league" style="background:#c8102e;color:#fff">NBA</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#suns</span>
+                            <span class="hashtag">#phoenixsuns</span>
+                            <span class="hashtag">#valleyofthesun</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23suns+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23suns+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/suns/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=suns+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Suns+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">76ers</span>
+                        <span class="team-league" style="background:#c8102e;color:#fff">NBA</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#sixers</span>
+                            <span class="hashtag">#76ers</span>
+                            <span class="hashtag">#trusttheprocess</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23sixers+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23sixers+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/sixers/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=sixers+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=76ers+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+</div></div>
+<div class="league-section active" data-league="NHL">
+<div class="section-title">🏒 NHL Teams</div>
+<div class="team-grid">
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Rangers</span>
+                        <span class="team-league" style="background:#333;color:#fff">NHL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#nyr</span>
+                            <span class="hashtag">#nyrangers</span>
+                            <span class="hashtag">#blueshirts</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23nyr+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23nyr+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/nyr/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=nyr+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Rangers+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Bruins</span>
+                        <span class="team-league" style="background:#333;color:#fff">NHL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#bruins</span>
+                            <span class="hashtag">#bostonbruins</span>
+                            <span class="hashtag">#nhlbruins</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23bruins+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23bruins+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/bruins/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=bruins+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Bruins+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Maple Leafs</span>
+                        <span class="team-league" style="background:#333;color:#fff">NHL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#leafs</span>
+                            <span class="hashtag">#leafsnation</span>
+                            <span class="hashtag">#torontomapleleafs</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23leafs+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23leafs+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/leafs/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=leafs+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Maple+Leafs+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Oilers</span>
+                        <span class="team-league" style="background:#333;color:#fff">NHL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#oilers</span>
+                            <span class="hashtag">#edmontonoilers</span>
+                            <span class="hashtag">#letsgooilers</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23oilers+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23oilers+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/oilers/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=oilers+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Oilers+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Lightning</span>
+                        <span class="team-league" style="background:#333;color:#fff">NHL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#lightning</span>
+                            <span class="hashtag">#gobolts</span>
+                            <span class="hashtag">#tblightning</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23lightning+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23lightning+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/lightning/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=lightning+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Lightning+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Panthers</span>
+                        <span class="team-league" style="background:#333;color:#fff">NHL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#flapanthers</span>
+                            <span class="hashtag">#floridapanthers</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23flapanthers+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23flapanthers+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/flapanthers/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=flapanthers+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Panthers+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Avalanche</span>
+                        <span class="team-league" style="background:#333;color:#fff">NHL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#avs</span>
+                            <span class="hashtag">#goavsgo</span>
+                            <span class="hashtag">#coloradoavalanche</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23avs+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23avs+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/avs/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=avs+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Avalanche+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Blackhawks</span>
+                        <span class="team-league" style="background:#333;color:#fff">NHL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#blackhawks</span>
+                            <span class="hashtag">#chicagoblackhawks</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23blackhawks+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23blackhawks+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/blackhawks/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=blackhawks+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Blackhawks+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Penguins</span>
+                        <span class="team-league" style="background:#333;color:#fff">NHL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#penguins</span>
+                            <span class="hashtag">#letsgopens</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23penguins+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23penguins+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/penguins/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=penguins+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Penguins+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-head">
+                        <span class="team-name">Golden Knights</span>
+                        <span class="team-league" style="background:#333;color:#fff">NHL</span>
+                    </div>
+                    <div class="team-body">
+                        <div class="hashtag-row">
+                            <span class="hashtag">#vegasgoldenknights</span>
+                            <span class="hashtag">#vgk</span>
+                            <span class="hashtag">#goknightsgo</span>
+                        </div>
+                        <div class="search-links">
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23vegasgoldenknights+%23shirt+%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Shirts</a>
+                            <a class="search-btn btn-x" href="https://x.com/search?q=%23vegasgoldenknights+%23meme+viral&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏 Memes</a>
+                            <a class="search-btn btn-ig" href="https://www.instagram.com/explore/tags/vegasgoldenknights/" onclick="return openSearch(this.href, event)">📸 IG</a>
+                            <a class="search-btn btn-google" href="https://www.google.com/search?q=vegasgoldenknights+fan+shirt+2026&tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="search-btn btn-shop" href="https://www.google.com/search?q=Golden+Knights+fan+shirt&tbm=shop" onclick="return openSearch(this.href, event)">🛍 Shop</a>
+                        </div>
+                    </div>
+                </div>
+</div></div>
+<div class="ideas-section">
+<div class="section-title" style="color:var(--purple)">💡 Keyword Ideas (Google Suggest)</div>
+<div class="idea-grid">
+<div class="idea-card"><div class="idea-title">NFL</div><a class="idea-chip" href="https://www.google.com/search?q=nfl+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">nfl fan shirt</a><a class="idea-chip" href="https://www.google.com/search?q=nfl+fan+t+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">nfl fan t shirt</a><a class="idea-chip" href="https://www.google.com/search?q=nfl+football+fan+shirts+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">nfl football fan shirts</a><a class="idea-chip" href="https://www.google.com/search?q=shirtless+nfl+fan+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">shirtless nfl fan</a><a class="idea-chip" href="https://www.google.com/search?q=chiefs+shirt+fanatics+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">chiefs shirt fanatics</a><a class="idea-chip" href="https://www.google.com/search?q=kansas+city+chiefs+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">kansas city chiefs fan shirt</a><a class="idea-chip" href="https://www.google.com/search?q=chiefs+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">chiefs fan shirt</a><a class="idea-chip" href="https://www.google.com/search?q=kaizer+chiefs+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">kaizer chiefs fan shirt</a><a class="idea-chip" href="https://www.google.com/search?q=%231+chiefs+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">#1 chiefs fan shirt</a><a class="idea-chip" href="https://www.google.com/search?q=eagles+shirt+fanatics+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">eagles shirt fanatics</a><a class="idea-chip" href="https://www.google.com/search?q=philadelphia+eagles+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">philadelphia eagles fan shirt</a><a class="idea-chip" href="https://www.google.com/search?q=eagles+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">eagles fan shirt</a></div>
+<div class="idea-card"><div class="idea-title">NBA</div><a class="idea-chip" href="https://www.google.com/search?q=nba+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">nba fan shirt</a><a class="idea-chip" href="https://www.google.com/search?q=nba+fan+t+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">nba fan t shirt</a><a class="idea-chip" href="https://www.google.com/search?q=nba+playoffs+fan+shirts+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">nba playoffs fan shirts</a><a class="idea-chip" href="https://www.google.com/search?q=nba+finals+fan+shirts+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">nba finals fan shirts</a><a class="idea-chip" href="https://www.google.com/search?q=lakers+shirt+fanatics+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">lakers shirt fanatics</a><a class="idea-chip" href="https://www.google.com/search?q=lakers+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">lakers fan shirt</a><a class="idea-chip" href="https://www.google.com/search?q=lakers+t+shirt+fanatics+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">lakers t shirt fanatics</a><a class="idea-chip" href="https://www.google.com/search?q=celtics+shirt+fanatics+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">celtics shirt fanatics</a><a class="idea-chip" href="https://www.google.com/search?q=celtics+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">celtics fan shirt</a><a class="idea-chip" href="https://www.google.com/search?q=celtics+championship+shirt+fanatics+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">celtics championship shirt fanatics</a><a class="idea-chip" href="https://www.google.com/search?q=wicked+big+celtics+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">wicked big celtics fan shirt</a><a class="idea-chip" href="https://www.google.com/search?q=warriors+shirt+fanatics+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">warriors shirt fanatics</a></div>
+<div class="idea-card"><div class="idea-title">MLB</div><a class="idea-chip" href="https://www.google.com/search?q=mlb+fan+shirts+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">mlb fan shirts</a><a class="idea-chip" href="https://www.google.com/search?q=dodgers+shirt+fanatics+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">dodgers shirt fanatics</a><a class="idea-chip" href="https://www.google.com/search?q=dodgers+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">dodgers fan shirt</a><a class="idea-chip" href="https://www.google.com/search?q=dodgers+t+shirt+fanatics+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">dodgers t shirt fanatics</a><a class="idea-chip" href="https://www.google.com/search?q=murakami+dodgers+shirt+fanatics+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">murakami dodgers shirt fanatics</a><a class="idea-chip" href="https://www.google.com/search?q=dodgers+world+series+shirt+fanatics+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">dodgers world series shirt fanatics</a><a class="idea-chip" href="https://www.google.com/search?q=yankees+shirt+fanatics+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">yankees shirt fanatics</a><a class="idea-chip" href="https://www.google.com/search?q=yankees+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">yankees fan shirt</a><a class="idea-chip" href="https://www.google.com/search?q=yankees+t+shirt+fanatics+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">yankees t shirt fanatics</a><a class="idea-chip" href="https://www.google.com/search?q=mets+shirt+fanatics+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">mets shirt fanatics</a><a class="idea-chip" href="https://www.google.com/search?q=mets+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">mets fan shirt</a></div>
+<div class="idea-card"><div class="idea-title">NHL</div><a class="idea-chip" href="https://www.google.com/search?q=hockey+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">hockey fan shirt</a><a class="idea-chip" href="https://www.google.com/search?q=hockey+fan+t+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">hockey fan t shirt</a><a class="idea-chip" href="https://www.google.com/search?q=ice+hockey+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">ice hockey fan shirt</a><a class="idea-chip" href="https://www.google.com/search?q=funny+hockey+fan+shirts+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">funny hockey fan shirts</a><a class="idea-chip" href="https://www.google.com/search?q=shirtless+hockey+fan+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">shirtless hockey fan</a><a class="idea-chip" href="https://www.google.com/search?q=rangers+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">rangers fan shirt</a><a class="idea-chip" href="https://www.google.com/search?q=texas+rangers+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">texas rangers fan shirt</a><a class="idea-chip" href="https://www.google.com/search?q=fanatics+rangers+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">fanatics rangers shirt</a><a class="idea-chip" href="https://www.google.com/search?q=fanatics+bruins+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">fanatics bruins shirt</a><a class="idea-chip" href="https://www.google.com/search?q=toronto+maple+leafs+fan+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">toronto maple leafs fan shirt</a><a class="idea-chip" href="https://www.google.com/search?q=fanatics+maple+leafs+shirt+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">fanatics maple leafs shirt</a></div>
+</div></div>
+
+        <div class="ideas-section">
+            <div class="section-title" style="color:var(--cyan)">🏷️ Core Hashtags — Quick Search</div>
+            <div class="hashtag-row" style="padding:0.5rem 0">
+
+                <div style="display:inline-flex;gap:0.2rem;margin:0.2rem">
+                    <span class="hashtag">#shirt</span>
+                    <a class="search-btn btn-x" style="font-size:0.6rem;padding:2px 6px" href="https://x.com/search?q=%23shirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏</a>
+                    <a class="search-btn btn-ig" style="font-size:0.6rem;padding:2px 6px" href="https://www.instagram.com/explore/tags/shirt/" onclick="return openSearch(this.href, event)">IG</a>
+                </div>
+                <div style="display:inline-flex;gap:0.2rem;margin:0.2rem">
+                    <span class="hashtag">#tshirt</span>
+                    <a class="search-btn btn-x" style="font-size:0.6rem;padding:2px 6px" href="https://x.com/search?q=%23tshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏</a>
+                    <a class="search-btn btn-ig" style="font-size:0.6rem;padding:2px 6px" href="https://www.instagram.com/explore/tags/tshirt/" onclick="return openSearch(this.href, event)">IG</a>
+                </div>
+                <div style="display:inline-flex;gap:0.2rem;margin:0.2rem">
+                    <span class="hashtag">#tee</span>
+                    <a class="search-btn btn-x" style="font-size:0.6rem;padding:2px 6px" href="https://x.com/search?q=%23tee&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏</a>
+                    <a class="search-btn btn-ig" style="font-size:0.6rem;padding:2px 6px" href="https://www.instagram.com/explore/tags/tee/" onclick="return openSearch(this.href, event)">IG</a>
+                </div>
+                <div style="display:inline-flex;gap:0.2rem;margin:0.2rem">
+                    <span class="hashtag">#fanshirt</span>
+                    <a class="search-btn btn-x" style="font-size:0.6rem;padding:2px 6px" href="https://x.com/search?q=%23fanshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏</a>
+                    <a class="search-btn btn-ig" style="font-size:0.6rem;padding:2px 6px" href="https://www.instagram.com/explore/tags/fanshirt/" onclick="return openSearch(this.href, event)">IG</a>
+                </div>
+                <div style="display:inline-flex;gap:0.2rem;margin:0.2rem">
+                    <span class="hashtag">#shirtforfan</span>
+                    <a class="search-btn btn-x" style="font-size:0.6rem;padding:2px 6px" href="https://x.com/search?q=%23shirtforfan&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏</a>
+                    <a class="search-btn btn-ig" style="font-size:0.6rem;padding:2px 6px" href="https://www.instagram.com/explore/tags/shirtforfan/" onclick="return openSearch(this.href, event)">IG</a>
+                </div>
+                <div style="display:inline-flex;gap:0.2rem;margin:0.2rem">
+                    <span class="hashtag">#shirtformom</span>
+                    <a class="search-btn btn-x" style="font-size:0.6rem;padding:2px 6px" href="https://x.com/search?q=%23shirtformom&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏</a>
+                    <a class="search-btn btn-ig" style="font-size:0.6rem;padding:2px 6px" href="https://www.instagram.com/explore/tags/shirtformom/" onclick="return openSearch(this.href, event)">IG</a>
+                </div>
+                <div style="display:inline-flex;gap:0.2rem;margin:0.2rem">
+                    <span class="hashtag">#shirtfordad</span>
+                    <a class="search-btn btn-x" style="font-size:0.6rem;padding:2px 6px" href="https://x.com/search?q=%23shirtfordad&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏</a>
+                    <a class="search-btn btn-ig" style="font-size:0.6rem;padding:2px 6px" href="https://www.instagram.com/explore/tags/shirtfordad/" onclick="return openSearch(this.href, event)">IG</a>
+                </div>
+                <div style="display:inline-flex;gap:0.2rem;margin:0.2rem">
+                    <span class="hashtag">#gameday</span>
+                    <a class="search-btn btn-x" style="font-size:0.6rem;padding:2px 6px" href="https://x.com/search?q=%23gameday&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏</a>
+                    <a class="search-btn btn-ig" style="font-size:0.6rem;padding:2px 6px" href="https://www.instagram.com/explore/tags/gameday/" onclick="return openSearch(this.href, event)">IG</a>
+                </div>
+                <div style="display:inline-flex;gap:0.2rem;margin:0.2rem">
+                    <span class="hashtag">#gamedayshirt</span>
+                    <a class="search-btn btn-x" style="font-size:0.6rem;padding:2px 6px" href="https://x.com/search?q=%23gamedayshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏</a>
+                    <a class="search-btn btn-ig" style="font-size:0.6rem;padding:2px 6px" href="https://www.instagram.com/explore/tags/gamedayshirt/" onclick="return openSearch(this.href, event)">IG</a>
+                </div>
+                <div style="display:inline-flex;gap:0.2rem;margin:0.2rem">
+                    <span class="hashtag">#sportshirt</span>
+                    <a class="search-btn btn-x" style="font-size:0.6rem;padding:2px 6px" href="https://x.com/search?q=%23sportshirt&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏</a>
+                    <a class="search-btn btn-ig" style="font-size:0.6rem;padding:2px 6px" href="https://www.instagram.com/explore/tags/sportshirt/" onclick="return openSearch(this.href, event)">IG</a>
+                </div>
+                <div style="display:inline-flex;gap:0.2rem;margin:0.2rem">
+                    <span class="hashtag">#fanmerch</span>
+                    <a class="search-btn btn-x" style="font-size:0.6rem;padding:2px 6px" href="https://x.com/search?q=%23fanmerch&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏</a>
+                    <a class="search-btn btn-ig" style="font-size:0.6rem;padding:2px 6px" href="https://www.instagram.com/explore/tags/fanmerch/" onclick="return openSearch(this.href, event)">IG</a>
+                </div>
+                <div style="display:inline-flex;gap:0.2rem;margin:0.2rem">
+                    <span class="hashtag">#sportsfan</span>
+                    <a class="search-btn btn-x" style="font-size:0.6rem;padding:2px 6px" href="https://x.com/search?q=%23sportsfan&src=typed_query&f=live" onclick="return openSearch(this.href, event)">𝕏</a>
+                    <a class="search-btn btn-ig" style="font-size:0.6rem;padding:2px 6px" href="https://www.instagram.com/explore/tags/sportsfan/" onclick="return openSearch(this.href, event)">IG</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        Research tool for POD hashtag analysis on X and Instagram — Scan lúc 12:15 — 16/04/2026
+    </footer>
+</body>
+</html>

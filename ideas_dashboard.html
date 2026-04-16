@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💡 POD Idea Generator</title>
+    <style>
+        :root {
+            --bg: #0d1117; --card: #161b22; --card2: #1c2333; --border: #30363d;
+            --text: #c9d1d9; --muted: #8b949e;
+            --red: #ff7b72; --orange: #ffa657; --green: #3fb950;
+            --blue: #58a6ff; --yellow: #d29922; --purple: #bc8cff;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            background: var(--bg); color: var(--text); min-height: 100vh;
+        }
+        /* ── HEADER ── */
+        header {
+            background: linear-gradient(135deg, #010409 0%, #0d1117 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem; text-align: center;
+        }
+        h1 {
+            font-size: 2.2rem; font-weight: 900;
+            background: linear-gradient(90deg, #ffa657, #ff7b72, #bc8cff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { color: var(--muted); font-size: 0.85rem; margin-top: 0.4rem; }
+        /* ── HOW TO USE ── */
+        .howto {
+            background: #1c2333; border: 1px solid var(--border); border-left: 3px solid var(--orange);
+            border-radius: 8px; padding: 1rem 1.5rem;
+            margin: 1.2rem auto; max-width: 1100px;
+            font-size: 0.78rem; color: #ffa657; line-height: 1.7;
+        }
+        .howto strong { color: #fff; }
+        /* ── STATS BAR ── */
+        .stats-bar {
+            display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+            padding: 0.8rem 2rem; background: var(--card);
+            border-bottom: 1px solid var(--border);
+        }
+        .stat-item {
+            font-size: 0.75rem; color: var(--muted);
+        }
+        .stat-item strong { color: #fff; font-size: 0.9rem; }
+        /* ── CONTAINER ── */
+        .container { max-width: 1150px; margin: 0 auto; padding: 1.5rem; }
+        /* ── OPPORTUNITY CARD ── */
+        .opp-card {
+            background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+            margin-bottom: 1.5rem; overflow: hidden;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .opp-card:hover { border-color: #444d56; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .card-header { padding: 1rem 1.2rem 0.8rem; border-bottom: 1px solid var(--border); }
+        .card-title-row {
+            display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;
+            margin-bottom: 0.6rem;
+        }
+        .rank-badge {
+            background: var(--card2); color: var(--muted); font-size: 0.7rem;
+            font-weight: 700; padding: 2px 8px; border-radius: 6px; min-width: 32px; text-align: center;
+        }
+        .opp-name { font-size: 1.1rem; font-weight: 700; color: #fff; flex: 1; }
+        .score-badge {
+            font-size: 0.8rem; font-weight: 800; padding: 3px 12px;
+            border-radius: 20px; white-space: nowrap;
+        }
+        .card-meta-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .meta-chip {
+            font-size: 0.65rem; padding: 2px 8px; border-radius: 10px;
+            background: var(--card2); color: var(--muted);
+        }
+        .source-chip { color: var(--blue); }
+        .reddit-chip { color: var(--orange); }
+        .sport-chip  { color: var(--purple); }
+        /* ── TABS ── */
+        .concept-tabs { padding: 1rem 1.2rem; }
+        .tab-buttons { display: flex; gap: 0.4rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .tab-btn {
+            background: var(--card2); border: 1px solid var(--border); color: var(--muted);
+            font-size: 0.72rem; font-weight: 600; padding: 0.4rem 0.9rem;
+            border-radius: 20px; cursor: pointer; transition: all 0.2s;
+        }
+        .tab-btn:hover { border-color: var(--orange); color: var(--orange); }
+        .tab-btn-active { background: var(--orange) !important; border-color: var(--orange) !important; color: #000 !important; }
+        .tab-panel { display: none; }
+        .tab-panel-active { display: block; }
+        /* ── CONCEPT CONTENT ── */
+        .concept-header {
+            display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem; flex-wrap: wrap;
+        }
+        .concept-style-badge {
+            font-size: 0.7rem; font-weight: 700; padding: 3px 10px;
+            background: #1f6feb; color: #fff; border-radius: 10px;
+        }
+        .concept-color-hint { font-size: 0.7rem; color: var(--muted); }
+        .concept-details {
+            background: var(--card2); border-radius: 8px; padding: 0.8rem 1rem;
+            margin-bottom: 0.8rem;
+        }
+        .detail-row {
+            display: flex; gap: 0.8rem; align-items: baseline;
+            font-size: 0.72rem; padding: 0.25rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label {
+            color: var(--muted); font-size: 0.62rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.05em; min-width: 75px;
+        }
+        .detail-value { color: #fff; flex: 1; line-height: 1.4; }
+        /* ── PROMPT ── */
+        .prompt-section { }
+        .prompt-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;
+        }
+        .prompt-label { font-size: 0.75rem; font-weight: 700; color: var(--yellow); }
+        .prompt-actions { display: flex; gap: 0.5rem; }
+        .copy-btn {
+            background: #238636; color: #fff; border: none; border-radius: 6px;
+            font-size: 0.7rem; font-weight: 700; padding: 0.4rem 0.9rem;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .copy-btn:hover { background: #2ea043; }
+        .copy-btn.copied { background: #1f6feb; }
+        .gemini-btn {
+            background: var(--card2); color: var(--blue); border: 1px solid var(--border);
+            border-radius: 6px; font-size: 0.7rem; font-weight: 700;
+            padding: 0.4rem 0.9rem; text-decoration: none; transition: all 0.2s;
+        }
+        .gemini-btn:hover { border-color: var(--blue); color: #fff; background: #1f2d3d; }
+        .prompt-text {
+            width: 100%; height: 160px; background: #010409;
+            border: 1px solid var(--border); border-radius: 8px;
+            color: #c9d1d9; font-size: 0.7rem; font-family: "SF Mono", "Consolas", monospace;
+            line-height: 1.5; padding: 0.8rem; resize: vertical;
+            transition: border-color 0.2s;
+        }
+        .prompt-text:focus { outline: none; border-color: var(--blue); }
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            text-align: center; padding: 3rem; color: var(--muted);
+        }
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>💡 POD Idea Generator</h1>
+        <p class="subtitle">Opportunities ranked by score · Design briefs ready · Gemini prompts copy-paste — Generated at 15:02:19 — 12/04/2026</p>
+    </header>
+
+    <div class="howto">
+        <strong>🚀 Quy trình 4 bước:</strong><br>
+        1️⃣ Xem bảng xếp hạng bên dưới — chọn opportunity có score cao + Etsy 🟢 LOW<br>
+        2️⃣ Chọn concept phù hợp (Vintage Badge / Bold Statement / Mascot Art)<br>
+        3️⃣ Nhấn <strong>📋 Copy Prompt</strong> → paste vào <strong>Gemini</strong> (hoặc Imagen 3)<br>
+        4️⃣ Tải ảnh về → xóa nền trắng → in lên áo tối màu → <strong>BÁN!</strong>
+    </div>
+
+    <div class="stats-bar">
+        <div class="stat-item">🔥 <strong>10</strong> New Ideas</div>
+        <div class="stat-item">⚡ Top Score: <strong>21/100</strong></div>
+        <div class="stat-item">📅 <strong>15:02:19 — 12/04/2026</strong></div>
+        <div class="stat-item">🎨 <strong>30</strong> Prompts Ready</div>
+        <div class="stat-item">⏭ <strong>0</strong> Skipped (seen recently)</div>
+        <div class="stat-item">🕓 Cooldown: <strong>7 days</strong></div>
+    </div>
+
+    <div class="container">
+        
+        <div class="opp-card" id="card-0">
+            <div class="card-header">
+                <div class="card-title-row">
+                    <span class="rank-badge">#1</span>
+                    <h3 class="opp-name">tems</h3>
+                    <div class="score-badge" style="background:#8b949e22; border:1px solid #8b949e; color:#8b949e;">
+                        💡 21/100
+                    </div>
+                </div>
+                <div class="card-meta-row">
+                    <span class="meta-chip source-chip">Google Trends</span>
+                    <span class="meta-chip" style="color:#8b949e;">📈 Trend: 2000+</span>
+                    <span class="meta-chip reddit-chip">💬 Reddit: +0</span>
+                    <span class="meta-chip" style="color:#8b949e;">❓ Etsy: Unknown</span>
+                    
+                </div>
+            </div>
+            <div class="concept-tabs">
+                <div class="tab-buttons"><button class="tab-btn tab-btn-active" onclick="switchTab(this, 'panel-0-0')">✨ Modern Aesthetic</button><button class="tab-btn " onclick="switchTab(this, 'panel-0-1')">🔥 Streetwear</button><button class="tab-btn " onclick="switchTab(this, 'panel-0-2')">Retro Vibe</button></div>
+                
+            <div id="panel-0-0" class="tab-panel tab-panel-active">
+                <div class="concept-header">
+                    <span class="concept-style-badge">✨ Modern Aesthetic</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"TEMS"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Vibe Check: TEMS"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Abstract geometric symbol or minimal line art</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-0-0', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-0-0" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Clean minimalist line art with elegant serif typography
+MAIN TEXT: "TEMS"
+SUB TEXT: "Vibe Check: TEMS"
+GRAPHIC ELEMENT: Abstract geometric symbol or minimal line art
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-0-1" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">🔥 Streetwear</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"TEMS"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Main Character Energy"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Graffiti-style spray paint elements</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-0-1', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-0-1" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Bold edgy typography with large graphic on back style
+MAIN TEXT: "TEMS"
+SUB TEXT: "Main Character Energy"
+GRAPHIC ELEMENT: Graffiti-style spray paint elements
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-0-2" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">Retro Vibe</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"TEMS"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Emotional Support TEMS"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Sun burst with retro sunset vibes</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-0-2', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-0-2" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: 70s/80s warm color palette with wavy typography
+MAIN TEXT: "TEMS"
+SUB TEXT: "Emotional Support TEMS"
+GRAPHIC ELEMENT: Sun burst with retro sunset vibes
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="opp-card" id="card-1">
+            <div class="card-header">
+                <div class="card-title-row">
+                    <span class="rank-badge">#2</span>
+                    <h3 class="opp-name">hailey baldwin</h3>
+                    <div class="score-badge" style="background:#8b949e22; border:1px solid #8b949e; color:#8b949e;">
+                        💡 21/100
+                    </div>
+                </div>
+                <div class="card-meta-row">
+                    <span class="meta-chip source-chip">Google Trends</span>
+                    <span class="meta-chip" style="color:#8b949e;">📈 Trend: 100+</span>
+                    <span class="meta-chip reddit-chip">💬 Reddit: +0</span>
+                    <span class="meta-chip" style="color:#8b949e;">❓ Etsy: Unknown</span>
+                    
+                </div>
+            </div>
+            <div class="concept-tabs">
+                <div class="tab-buttons"><button class="tab-btn tab-btn-active" onclick="switchTab(this, 'panel-1-0')">✨ Modern Aesthetic</button><button class="tab-btn " onclick="switchTab(this, 'panel-1-1')">🔥 Streetwear</button><button class="tab-btn " onclick="switchTab(this, 'panel-1-2')">Retro Vibe</button></div>
+                
+            <div id="panel-1-0" class="tab-panel tab-panel-active">
+                <div class="concept-header">
+                    <span class="concept-style-badge">✨ Modern Aesthetic</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"HAILEY BALDWIN"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Aesthetic Vibe — HAILEY BALDWIN"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Abstract geometric symbol or minimal line art</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-1-0', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-1-0" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Clean minimalist line art with elegant serif typography
+MAIN TEXT: "HAILEY BALDWIN"
+SUB TEXT: "Aesthetic Vibe — HAILEY BALDWIN"
+GRAPHIC ELEMENT: Abstract geometric symbol or minimal line art
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-1-1" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">🔥 Streetwear</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"HAILEY BALDWIN"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Defined by HAILEY BALDWIN"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Graffiti-style spray paint elements</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-1-1', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-1-1" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Bold edgy typography with large graphic on back style
+MAIN TEXT: "HAILEY BALDWIN"
+SUB TEXT: "Defined by HAILEY BALDWIN"
+GRAPHIC ELEMENT: Graffiti-style spray paint elements
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-1-2" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">Retro Vibe</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"HAILEY BALDWIN"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"If You Know You Know"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Sun burst with retro sunset vibes</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-1-2', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-1-2" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: 70s/80s warm color palette with wavy typography
+MAIN TEXT: "HAILEY BALDWIN"
+SUB TEXT: "If You Know You Know"
+GRAPHIC ELEMENT: Sun burst with retro sunset vibes
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="opp-card" id="card-2">
+            <div class="card-header">
+                <div class="card-title-row">
+                    <span class="rank-badge">#3</span>
+                    <h3 class="opp-name">tokyo</h3>
+                    <div class="score-badge" style="background:#8b949e22; border:1px solid #8b949e; color:#8b949e;">
+                        💡 21/100
+                    </div>
+                </div>
+                <div class="card-meta-row">
+                    <span class="meta-chip source-chip">Google Trends</span>
+                    <span class="meta-chip" style="color:#8b949e;">📈 Trend: 100+</span>
+                    <span class="meta-chip reddit-chip">💬 Reddit: +0</span>
+                    <span class="meta-chip" style="color:#8b949e;">❓ Etsy: Unknown</span>
+                    
+                </div>
+            </div>
+            <div class="concept-tabs">
+                <div class="tab-buttons"><button class="tab-btn tab-btn-active" onclick="switchTab(this, 'panel-2-0')">✨ Modern Aesthetic</button><button class="tab-btn " onclick="switchTab(this, 'panel-2-1')">🔥 Streetwear</button><button class="tab-btn " onclick="switchTab(this, 'panel-2-2')">Retro Vibe</button></div>
+                
+            <div id="panel-2-0" class="tab-panel tab-panel-active">
+                <div class="concept-header">
+                    <span class="concept-style-badge">✨ Modern Aesthetic</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"TOKYO"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Main Character Energy"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Abstract geometric symbol or minimal line art</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-2-0', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-2-0" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Clean minimalist line art with elegant serif typography
+MAIN TEXT: "TOKYO"
+SUB TEXT: "Main Character Energy"
+GRAPHIC ELEMENT: Abstract geometric symbol or minimal line art
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-2-1" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">🔥 Streetwear</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"TOKYO"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Vibe Check: TOKYO"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Graffiti-style spray paint elements</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-2-1', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-2-1" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Bold edgy typography with large graphic on back style
+MAIN TEXT: "TOKYO"
+SUB TEXT: "Vibe Check: TOKYO"
+GRAPHIC ELEMENT: Graffiti-style spray paint elements
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-2-2" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">Retro Vibe</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"TOKYO"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Defined by TOKYO"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Sun burst with retro sunset vibes</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-2-2', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-2-2" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: 70s/80s warm color palette with wavy typography
+MAIN TEXT: "TOKYO"
+SUB TEXT: "Defined by TOKYO"
+GRAPHIC ELEMENT: Sun burst with retro sunset vibes
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="opp-card" id="card-3">
+            <div class="card-header">
+                <div class="card-title-row">
+                    <span class="rank-badge">#4</span>
+                    <h3 class="opp-name">sydney</h3>
+                    <div class="score-badge" style="background:#8b949e22; border:1px solid #8b949e; color:#8b949e;">
+                        💡 21/100
+                    </div>
+                </div>
+                <div class="card-meta-row">
+                    <span class="meta-chip source-chip">Google Trends</span>
+                    <span class="meta-chip" style="color:#8b949e;">📈 Trend: 100+</span>
+                    <span class="meta-chip reddit-chip">💬 Reddit: +0</span>
+                    <span class="meta-chip" style="color:#8b949e;">❓ Etsy: Unknown</span>
+                    
+                </div>
+            </div>
+            <div class="concept-tabs">
+                <div class="tab-buttons"><button class="tab-btn tab-btn-active" onclick="switchTab(this, 'panel-3-0')">✨ Modern Aesthetic</button><button class="tab-btn " onclick="switchTab(this, 'panel-3-1')">🔥 Streetwear</button><button class="tab-btn " onclick="switchTab(this, 'panel-3-2')">Retro Vibe</button></div>
+                
+            <div id="panel-3-0" class="tab-panel tab-panel-active">
+                <div class="concept-header">
+                    <span class="concept-style-badge">✨ Modern Aesthetic</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"SYDNEY"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Defined by SYDNEY"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Abstract geometric symbol or minimal line art</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-3-0', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-3-0" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Clean minimalist line art with elegant serif typography
+MAIN TEXT: "SYDNEY"
+SUB TEXT: "Defined by SYDNEY"
+GRAPHIC ELEMENT: Abstract geometric symbol or minimal line art
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-3-1" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">🔥 Streetwear</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"SYDNEY"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Main Character Energy"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Graffiti-style spray paint elements</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-3-1', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-3-1" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Bold edgy typography with large graphic on back style
+MAIN TEXT: "SYDNEY"
+SUB TEXT: "Main Character Energy"
+GRAPHIC ELEMENT: Graffiti-style spray paint elements
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-3-2" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">Retro Vibe</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"SYDNEY"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"If You Know You Know"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Sun burst with retro sunset vibes</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-3-2', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-3-2" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: 70s/80s warm color palette with wavy typography
+MAIN TEXT: "SYDNEY"
+SUB TEXT: "If You Know You Know"
+GRAPHIC ELEMENT: Sun burst with retro sunset vibes
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="opp-card" id="card-4">
+            <div class="card-header">
+                <div class="card-title-row">
+                    <span class="rank-badge">#5</span>
+                    <h3 class="opp-name">delhi</h3>
+                    <div class="score-badge" style="background:#8b949e22; border:1px solid #8b949e; color:#8b949e;">
+                        💡 21/100
+                    </div>
+                </div>
+                <div class="card-meta-row">
+                    <span class="meta-chip source-chip">Google Trends</span>
+                    <span class="meta-chip" style="color:#8b949e;">📈 Trend: 100+</span>
+                    <span class="meta-chip reddit-chip">💬 Reddit: +0</span>
+                    <span class="meta-chip" style="color:#8b949e;">❓ Etsy: Unknown</span>
+                    
+                </div>
+            </div>
+            <div class="concept-tabs">
+                <div class="tab-buttons"><button class="tab-btn tab-btn-active" onclick="switchTab(this, 'panel-4-0')">✨ Modern Aesthetic</button><button class="tab-btn " onclick="switchTab(this, 'panel-4-1')">🔥 Streetwear</button><button class="tab-btn " onclick="switchTab(this, 'panel-4-2')">Retro Vibe</button></div>
+                
+            <div id="panel-4-0" class="tab-panel tab-panel-active">
+                <div class="concept-header">
+                    <span class="concept-style-badge">✨ Modern Aesthetic</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"DELHI"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Emotional Support DELHI"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Abstract geometric symbol or minimal line art</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-4-0', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-4-0" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Clean minimalist line art with elegant serif typography
+MAIN TEXT: "DELHI"
+SUB TEXT: "Emotional Support DELHI"
+GRAPHIC ELEMENT: Abstract geometric symbol or minimal line art
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-4-1" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">🔥 Streetwear</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"DELHI"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"If You Know You Know"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Graffiti-style spray paint elements</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-4-1', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-4-1" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Bold edgy typography with large graphic on back style
+MAIN TEXT: "DELHI"
+SUB TEXT: "If You Know You Know"
+GRAPHIC ELEMENT: Graffiti-style spray paint elements
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-4-2" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">Retro Vibe</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"DELHI"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Main Character Energy"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Sun burst with retro sunset vibes</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-4-2', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-4-2" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: 70s/80s warm color palette with wavy typography
+MAIN TEXT: "DELHI"
+SUB TEXT: "Main Character Energy"
+GRAPHIC ELEMENT: Sun burst with retro sunset vibes
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="opp-card" id="card-5">
+            <div class="card-header">
+                <div class="card-title-row">
+                    <span class="rank-badge">#6</span>
+                    <h3 class="opp-name">timothee chalamet</h3>
+                    <div class="score-badge" style="background:#8b949e22; border:1px solid #8b949e; color:#8b949e;">
+                        💡 21/100
+                    </div>
+                </div>
+                <div class="card-meta-row">
+                    <span class="meta-chip source-chip">Google Trends</span>
+                    <span class="meta-chip" style="color:#8b949e;">📈 Trend: 200+</span>
+                    <span class="meta-chip reddit-chip">💬 Reddit: +0</span>
+                    <span class="meta-chip" style="color:#8b949e;">❓ Etsy: Unknown</span>
+                    
+                </div>
+            </div>
+            <div class="concept-tabs">
+                <div class="tab-buttons"><button class="tab-btn tab-btn-active" onclick="switchTab(this, 'panel-5-0')">✨ Modern Aesthetic</button><button class="tab-btn " onclick="switchTab(this, 'panel-5-1')">🔥 Streetwear</button><button class="tab-btn " onclick="switchTab(this, 'panel-5-2')">Retro Vibe</button></div>
+                
+            <div id="panel-5-0" class="tab-panel tab-panel-active">
+                <div class="concept-header">
+                    <span class="concept-style-badge">✨ Modern Aesthetic</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"TIMOTHEE CHALAMET"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Aesthetic Vibe — TIMOTHEE CHALAMET"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Abstract geometric symbol or minimal line art</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-5-0', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-5-0" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Clean minimalist line art with elegant serif typography
+MAIN TEXT: "TIMOTHEE CHALAMET"
+SUB TEXT: "Aesthetic Vibe — TIMOTHEE CHALAMET"
+GRAPHIC ELEMENT: Abstract geometric symbol or minimal line art
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-5-1" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">🔥 Streetwear</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"TIMOTHEE CHALAMET"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"If You Know You Know"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Graffiti-style spray paint elements</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-5-1', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-5-1" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Bold edgy typography with large graphic on back style
+MAIN TEXT: "TIMOTHEE CHALAMET"
+SUB TEXT: "If You Know You Know"
+GRAPHIC ELEMENT: Graffiti-style spray paint elements
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-5-2" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">Retro Vibe</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"TIMOTHEE CHALAMET"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Vibe Check: TIMOTHEE CHALAMET"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Sun burst with retro sunset vibes</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-5-2', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-5-2" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: 70s/80s warm color palette with wavy typography
+MAIN TEXT: "TIMOTHEE CHALAMET"
+SUB TEXT: "Vibe Check: TIMOTHEE CHALAMET"
+GRAPHIC ELEMENT: Sun burst with retro sunset vibes
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="opp-card" id="card-6">
+            <div class="card-header">
+                <div class="card-title-row">
+                    <span class="rank-badge">#7</span>
+                    <h3 class="opp-name">london</h3>
+                    <div class="score-badge" style="background:#8b949e22; border:1px solid #8b949e; color:#8b949e;">
+                        💡 21/100
+                    </div>
+                </div>
+                <div class="card-meta-row">
+                    <span class="meta-chip source-chip">Google Trends</span>
+                    <span class="meta-chip" style="color:#8b949e;">📈 Trend: 100+</span>
+                    <span class="meta-chip reddit-chip">💬 Reddit: +0</span>
+                    <span class="meta-chip" style="color:#8b949e;">❓ Etsy: Unknown</span>
+                    
+                </div>
+            </div>
+            <div class="concept-tabs">
+                <div class="tab-buttons"><button class="tab-btn tab-btn-active" onclick="switchTab(this, 'panel-6-0')">✨ Modern Aesthetic</button><button class="tab-btn " onclick="switchTab(this, 'panel-6-1')">🔥 Streetwear</button><button class="tab-btn " onclick="switchTab(this, 'panel-6-2')">Retro Vibe</button></div>
+                
+            <div id="panel-6-0" class="tab-panel tab-panel-active">
+                <div class="concept-header">
+                    <span class="concept-style-badge">✨ Modern Aesthetic</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"LONDON"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Emotional Support LONDON"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Abstract geometric symbol or minimal line art</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-6-0', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-6-0" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Clean minimalist line art with elegant serif typography
+MAIN TEXT: "LONDON"
+SUB TEXT: "Emotional Support LONDON"
+GRAPHIC ELEMENT: Abstract geometric symbol or minimal line art
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-6-1" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">🔥 Streetwear</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"LONDON"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"If You Know You Know"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Graffiti-style spray paint elements</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-6-1', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-6-1" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Bold edgy typography with large graphic on back style
+MAIN TEXT: "LONDON"
+SUB TEXT: "If You Know You Know"
+GRAPHIC ELEMENT: Graffiti-style spray paint elements
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-6-2" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">Retro Vibe</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"LONDON"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Aesthetic Vibe — LONDON"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Sun burst with retro sunset vibes</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-6-2', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-6-2" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: 70s/80s warm color palette with wavy typography
+MAIN TEXT: "LONDON"
+SUB TEXT: "Aesthetic Vibe — LONDON"
+GRAPHIC ELEMENT: Sun burst with retro sunset vibes
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="opp-card" id="card-7">
+            <div class="card-header">
+                <div class="card-title-row">
+                    <span class="rank-badge">#8</span>
+                    <h3 class="opp-name">berlin</h3>
+                    <div class="score-badge" style="background:#8b949e22; border:1px solid #8b949e; color:#8b949e;">
+                        💡 21/100
+                    </div>
+                </div>
+                <div class="card-meta-row">
+                    <span class="meta-chip source-chip">Google Trends</span>
+                    <span class="meta-chip" style="color:#8b949e;">📈 Trend: 100+</span>
+                    <span class="meta-chip reddit-chip">💬 Reddit: +0</span>
+                    <span class="meta-chip" style="color:#8b949e;">❓ Etsy: Unknown</span>
+                    
+                </div>
+            </div>
+            <div class="concept-tabs">
+                <div class="tab-buttons"><button class="tab-btn tab-btn-active" onclick="switchTab(this, 'panel-7-0')">✨ Modern Aesthetic</button><button class="tab-btn " onclick="switchTab(this, 'panel-7-1')">🔥 Streetwear</button><button class="tab-btn " onclick="switchTab(this, 'panel-7-2')">Retro Vibe</button></div>
+                
+            <div id="panel-7-0" class="tab-panel tab-panel-active">
+                <div class="concept-header">
+                    <span class="concept-style-badge">✨ Modern Aesthetic</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"BERLIN"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Main Character Energy"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Abstract geometric symbol or minimal line art</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-7-0', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-7-0" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Clean minimalist line art with elegant serif typography
+MAIN TEXT: "BERLIN"
+SUB TEXT: "Main Character Energy"
+GRAPHIC ELEMENT: Abstract geometric symbol or minimal line art
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-7-1" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">🔥 Streetwear</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"BERLIN"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Aesthetic Vibe — BERLIN"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Graffiti-style spray paint elements</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-7-1', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-7-1" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Bold edgy typography with large graphic on back style
+MAIN TEXT: "BERLIN"
+SUB TEXT: "Aesthetic Vibe — BERLIN"
+GRAPHIC ELEMENT: Graffiti-style spray paint elements
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-7-2" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">Retro Vibe</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"BERLIN"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Vibe Check: BERLIN"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Sun burst with retro sunset vibes</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-7-2', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-7-2" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: 70s/80s warm color palette with wavy typography
+MAIN TEXT: "BERLIN"
+SUB TEXT: "Vibe Check: BERLIN"
+GRAPHIC ELEMENT: Sun burst with retro sunset vibes
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="opp-card" id="card-8">
+            <div class="card-header">
+                <div class="card-title-row">
+                    <span class="rank-badge">#9</span>
+                    <h3 class="opp-name">paris</h3>
+                    <div class="score-badge" style="background:#8b949e22; border:1px solid #8b949e; color:#8b949e;">
+                        💡 21/100
+                    </div>
+                </div>
+                <div class="card-meta-row">
+                    <span class="meta-chip source-chip">Google Trends</span>
+                    <span class="meta-chip" style="color:#8b949e;">📈 Trend: 100+</span>
+                    <span class="meta-chip reddit-chip">💬 Reddit: +0</span>
+                    <span class="meta-chip" style="color:#8b949e;">❓ Etsy: Unknown</span>
+                    
+                </div>
+            </div>
+            <div class="concept-tabs">
+                <div class="tab-buttons"><button class="tab-btn tab-btn-active" onclick="switchTab(this, 'panel-8-0')">✨ Modern Aesthetic</button><button class="tab-btn " onclick="switchTab(this, 'panel-8-1')">🔥 Streetwear</button><button class="tab-btn " onclick="switchTab(this, 'panel-8-2')">Retro Vibe</button></div>
+                
+            <div id="panel-8-0" class="tab-panel tab-panel-active">
+                <div class="concept-header">
+                    <span class="concept-style-badge">✨ Modern Aesthetic</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"PARIS"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"If You Know You Know"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Abstract geometric symbol or minimal line art</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-8-0', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-8-0" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Clean minimalist line art with elegant serif typography
+MAIN TEXT: "PARIS"
+SUB TEXT: "If You Know You Know"
+GRAPHIC ELEMENT: Abstract geometric symbol or minimal line art
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-8-1" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">🔥 Streetwear</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"PARIS"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Defined by PARIS"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Graffiti-style spray paint elements</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-8-1', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-8-1" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Bold edgy typography with large graphic on back style
+MAIN TEXT: "PARIS"
+SUB TEXT: "Defined by PARIS"
+GRAPHIC ELEMENT: Graffiti-style spray paint elements
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-8-2" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">Retro Vibe</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"PARIS"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Vibe Check: PARIS"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Sun burst with retro sunset vibes</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-8-2', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-8-2" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: 70s/80s warm color palette with wavy typography
+MAIN TEXT: "PARIS"
+SUB TEXT: "Vibe Check: PARIS"
+GRAPHIC ELEMENT: Sun burst with retro sunset vibes
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="opp-card" id="card-9">
+            <div class="card-header">
+                <div class="card-title-row">
+                    <span class="rank-badge">#10</span>
+                    <h3 class="opp-name">sykkuno drama</h3>
+                    <div class="score-badge" style="background:#8b949e22; border:1px solid #8b949e; color:#8b949e;">
+                        💡 21/100
+                    </div>
+                </div>
+                <div class="card-meta-row">
+                    <span class="meta-chip source-chip">Google Trends</span>
+                    <span class="meta-chip" style="color:#8b949e;">📈 Trend: 100+</span>
+                    <span class="meta-chip reddit-chip">💬 Reddit: +0</span>
+                    <span class="meta-chip" style="color:#8b949e;">❓ Etsy: Unknown</span>
+                    
+                </div>
+            </div>
+            <div class="concept-tabs">
+                <div class="tab-buttons"><button class="tab-btn tab-btn-active" onclick="switchTab(this, 'panel-9-0')">✨ Modern Aesthetic</button><button class="tab-btn " onclick="switchTab(this, 'panel-9-1')">🔥 Streetwear</button><button class="tab-btn " onclick="switchTab(this, 'panel-9-2')">Retro Vibe</button></div>
+                
+            <div id="panel-9-0" class="tab-panel tab-panel-active">
+                <div class="concept-header">
+                    <span class="concept-style-badge">✨ Modern Aesthetic</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"SYKKUNO DRAMA"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Aesthetic Vibe — SYKKUNO DRAMA"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Abstract geometric symbol or minimal line art</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-9-0', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-9-0" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Clean minimalist line art with elegant serif typography
+MAIN TEXT: "SYKKUNO DRAMA"
+SUB TEXT: "Aesthetic Vibe — SYKKUNO DRAMA"
+GRAPHIC ELEMENT: Abstract geometric symbol or minimal line art
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-9-1" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">🔥 Streetwear</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"SYKKUNO DRAMA"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"Main Character Energy"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Graffiti-style spray paint elements</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-9-1', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-9-1" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: Bold edgy typography with large graphic on back style
+MAIN TEXT: "SYKKUNO DRAMA"
+SUB TEXT: "Main Character Energy"
+GRAPHIC ELEMENT: Graffiti-style spray paint elements
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            <div id="panel-9-2" class="tab-panel ">
+                <div class="concept-header">
+                    <span class="concept-style-badge">Retro Vibe</span>
+                    <span class="concept-color-hint">🎨 #58a6ff and #8b949e</span>
+                </div>
+                <div class="concept-details">
+                    <div class="detail-row"><span class="detail-label">MAIN TEXT</span><span class="detail-value">"SYKKUNO DRAMA"</span></div>
+                    <div class="detail-row"><span class="detail-label">SUB TEXT</span><span class="detail-value">"If You Know You Know"</span></div>
+                    <div class="detail-row"><span class="detail-label">GRAPHIC</span><span class="detail-value">Sun burst with retro sunset vibes</span></div>
+                </div>
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <span class="prompt-label">✨ Gemini Image Prompt</span>
+                        <div class="prompt-actions">
+                            <button class="copy-btn" onclick="copyPrompt('prompt-9-2', this)">📋 Copy Prompt</button>
+                            <a class="gemini-btn" href="https://gemini.google.com" target="_blank">🔮 Open Gemini</a>
+                        </div>
+                    </div>
+                    <textarea id="prompt-9-2" class="prompt-text" readonly>Create a high-end, professional t-shirt design centered in a SQUARE 1:1 format on a PURE WHITE BACKGROUND.
+
+CONCEPT: 70s/80s warm color palette with wavy typography
+MAIN TEXT: "SYKKUNO DRAMA"
+SUB TEXT: "If You Know You Know"
+GRAPHIC ELEMENT: Sun burst with retro sunset vibes
+
+COLOR PALETTE: Primary — navy. Accent — white. Outlines — black. Highlights — white.
+
+TECHNICAL REQUIREMENTS FOR PROFESSIONAL PRINTING:
+• COMPOSITION: Perfectly centered SQUARE 1:1 aspect ratio.
+• BACKGROUND: Absolute PURE WHITE (#FFFFFF) only. No textures, no gradients, no grey wash.
+• OUTLINES: All graphic elements and text MUST have THICK BOLD BLACK OUTLINES (3-5pt stroke). This is critical for easy background removal and visibility on dark fabrics.
+• STYLE: Flat vector art, screen-print ready. Absolutely NO 3D effects, NO shadows, NO gradients, NO glow.
+• TEXT: Bold, heavy typography. Ensure all text is legible and has strong contrast.
+• EDGES: Crisp, clean, sharp edges only.
+
+The result should look like a premium vector sticker/decal ready for high-quality apparel printing. Every element must be contained within the square frame with enough margin from the edges.</textarea>
+                </div>
+            </div>
+            </div>
+        </div>
+        
+    <details style="margin-top:2rem;">
+        <summary style="cursor:pointer;font-size:0.85rem;font-weight:700;color:#8b949e;padding:0.8rem;
+            background:#161b22;border:1px solid #30363d;border-radius:8px;list-style:none;
+            display:flex;align-items:center;gap:0.5rem;">
+            📜 Lịch sử các lần chạy trước (click để xem)
+        </summary>
+        <div style="background:#161b22;border:1px solid #30363d;border-top:none;
+            border-radius:0 0 8px 8px;padding:1rem 1.2rem;">
+            
+            <p style="font-size:0.75rem;color:#fff;font-weight:700;margin-bottom:0.5rem;">📋 Lần chạy gần nhất:</p>
+            
+        <div style="border-bottom:1px solid #30363d;padding:0.5rem 0;font-size:0.68rem;">
+            <span style="color:#58a6ff;min-width:140px;display:inline-block;">2026-04-12 15:02:19 </span>
+            <span style="color:#8b949e;">tems, hailey baldwin, tokyo, sydney, delhi, timothee chalamet, london, berlin (+2 more)</span>
+        </div>
+        <div style="border-bottom:1px solid #30363d;padding:0.5rem 0;font-size:0.68rem;">
+            <span style="color:#58a6ff;min-width:140px;display:inline-block;">2026-04-10 08:46:38 </span>
+            <span style="color:#8b949e;">Denver Nuggets, dink pate, Pittsburgh Steelers, quinn hughes, patrick kane, john kerry, baylor scheierman, josh doan (+5 more)</span>
+        </div>
+        <div style="border-bottom:1px solid #30363d;padding:0.5rem 0;font-size:0.68rem;">
+            <span style="color:#58a6ff;min-width:140px;display:inline-block;">2026-04-09 08:55:26 </span>
+            <span style="color:#8b949e;">oilers vs sharks, aaron gordon, nick kurtz, de&apos;aaron fox, thanasis antetokounmpo, shai gilgeous alexander stats, where to watch memphis grizzlies vs denver nuggets, is wemby playing tonight (+2 more)</span>
+        </div>
+        <div style="border-bottom:1px solid #30363d;padding:0.5rem 0;font-size:0.68rem;">
+            <span style="color:#58a6ff;min-width:140px;display:inline-block;">2026-04-09 08:40:27 </span>
+            <span style="color:#8b949e;">Houston Astros, mavericks vs suns, cj mccollum, jalen suggs, evan mobley, barbara eden, bob woodward, tigres uanl (+5 more)</span>
+        </div>
+        <div style="border-bottom:1px solid #30363d;padding:0.5rem 0;font-size:0.68rem;">
+            <span style="color:#58a6ff;min-width:140px;display:inline-block;">2026-04-08 22:28:45 </span>
+            <span style="color:#8b949e;">goldie hawn, anastasia potapova, blue bloods, social security april 8, air new zealand reduces flights, berke buyuktuncel, retirement, nik khamenia (+4 more)</span>
+        </div>
+        <div style="border-bottom:1px solid #30363d;padding:0.5rem 0;font-size:0.68rem;">
+            <span style="color:#58a6ff;min-width:140px;display:inline-block;">2026-04-08 10:47:06 </span>
+            <span style="color:#8b949e;">deandre ayton, jaylin williams, Los Angeles Lakers, Boston Celtics, Los Angeles Dodgers</span>
+        </div>
+        <div style="border-bottom:1px solid #30363d;padding:0.5rem 0;font-size:0.68rem;">
+            <span style="color:#58a6ff;min-width:140px;display:inline-block;">2026-04-08 10:37:12 </span>
+            <span style="color:#8b949e;">Los Angeles Ucla, NCAA March Madness, angels game, dalton knecht, mark williams, walt weiss, ajay mitchell, jarred vanderbilt (+9 more)</span>
+        </div>
+        <div style="border-bottom:1px solid #30363d;padding:0.5rem 0;font-size:0.68rem;">
+            <span style="color:#58a6ff;min-width:140px;display:inline-block;">2026-04-08 00:10:57 </span>
+            <span style="color:#8b949e;">Boston Celtics, Los Angeles Dodgers, Los Angeles Lakers, New York Knicks, Golden State Warriors, Dallas Cowboys, Philadelphia Eagles, Kansas City Chiefs (+21 more)</span>
+        </div>
+            <p style="font-size:0.65rem;color:#484f58;margin-top:0.8rem;">
+                💡 Muốn reset lịch sử? Chạy: <code style="background:#0d1117;padding:2px 6px;border-radius:4px;">python3 idea_generator.py --reset</code>
+            </p>
+        </div>
+    </details>
+    </div>
+
+    <script>
+        function switchTab(btn, panelId) {
+            // Deactivate all buttons and panels in same card
+            const card = btn.closest('.opp-card');
+            card.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-btn-active'));
+            card.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('tab-panel-active'));
+            // Activate selected
+            btn.classList.add('tab-btn-active');
+            document.getElementById(panelId).classList.add('tab-panel-active');
+        }
+
+        function copyPrompt(textareaId, btn) {
+            const ta = document.getElementById(textareaId);
+            ta.select();
+            navigator.clipboard.writeText(ta.value).then(() => {
+                const orig = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = orig;
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(() => {
+                document.execCommand('copy');
+                btn.textContent = '✅ Copied!';
+                setTimeout(() => btn.textContent = '📋 Copy Prompt', 2000);
+            });
+        }
+    </script>
+</body>
+</html>

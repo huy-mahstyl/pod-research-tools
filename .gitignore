@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Build output (generated on GitHub Actions)
+_site/
+
+# Sensitive configs (if any)
+# config.json
+
+# Etsy (has login cookies)
+etsy_login.py
+etsy_data.json
+Chay_Etsy_Login.command
+Chay_Etsy_Spy.command
