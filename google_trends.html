@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="1800">
+    <title>📊 Google Trends — POD Monitor</title>
+    <meta name="description" content="Real-time Google Trends monitoring for Print-on-Demand keyword research">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --bg-subtle: #0f1420;
+            --card: #141b2d;
+            --card-hover: #1a2338;
+            --border: #1e2a42;
+            --border-light: #2a3a5c;
+            --text: #e2e8f0;
+            --text-muted: #64748b;
+            --text-dim: #475569;
+            --red: #ef4444;
+            --red-glow: rgba(239,68,68,0.15);
+            --green: #22c55e;
+            --green-glow: rgba(34,197,94,0.15);
+            --orange: #f59e0b;
+            --orange-glow: rgba(245,158,11,0.15);
+            --blue: #3b82f6;
+            --blue-glow: rgba(59,130,246,0.15);
+            --purple: #a855f7;
+            --cyan: #06b6d4;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        header {
+            text-align: center;
+            padding: 2rem 1rem 1.5rem;
+            background: linear-gradient(180deg, #0f1628 0%, var(--bg) 100%);
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #22c55e 0%, #3b82f6 50%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 0.4rem;
+            font-weight: 500;
+        }
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.35rem 0.8rem;
+            border-radius: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+        }
+        .stat-fire { color: var(--red); }
+        .stat-pod { color: var(--green); }
+        .stat-time { color: var(--blue); }
+
+        /* ── Refresh Button ── */
+        .refresh-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 1rem;
+            padding: 0.45rem 1.2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--blue);
+            background: rgba(59,130,246,0.1);
+            border: 1px solid rgba(59,130,246,0.3);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .refresh-btn:hover {
+            background: rgba(59,130,246,0.2);
+            border-color: var(--blue);
+            transform: translateY(-1px);
+        }
+
+        /* ── Layout ── */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+            padding: 1.2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; }
+        }
+
+        /* ── Section ── */
+        .section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .section-count {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .count-red { background: var(--red-glow); color: var(--red); }
+        .count-green { background: var(--green-glow); color: var(--green); }
+        .section-body {
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+
+        /* ── Trend Card ── */
+        .trend-card {
+            display: flex;
+            gap: 0.8rem;
+            padding: 0.8rem 1.2rem;
+            border-bottom: 1px solid rgba(30,42,66,0.5);
+            transition: background 0.15s;
+            animation: fadeIn 0.3s ease-out both;
+        }
+        .trend-card:hover {
+            background: var(--card-hover);
+        }
+        .trend-card:last-child {
+            border-bottom: none;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .trend-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+        }
+        .trend-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .trend-top {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.3rem;
+        }
+        .trend-rank {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            min-width: 22px;
+        }
+        .trend-query {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        .trend-query:hover {
+            color: var(--blue);
+        }
+
+        /* ── Badges ── */
+        .badge {
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+        .badge-hot {
+            background: var(--red);
+            color: #fff;
+            box-shadow: 0 0 8px var(--red-glow);
+        }
+        .badge-high {
+            background: var(--orange);
+            color: #fff;
+        }
+        .badge-normal {
+            background: rgba(100,116,139,0.2);
+            color: var(--text-muted);
+        }
+        .badge-pod {
+            background: rgba(34,197,94,0.15);
+            color: var(--green);
+            border: 1px solid rgba(34,197,94,0.3);
+        }
+
+        /* ── News items ── */
+        .news-list {
+            margin-top: 0.3rem;
+        }
+        .news-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.3rem;
+            margin-bottom: 0.2rem;
+        }
+        .news-bullet {
+            color: var(--text-dim);
+            font-size: 0.55rem;
+            margin-top: 0.2rem;
+            flex-shrink: 0;
+        }
+        .news-link {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.15s;
+        }
+        .news-link:hover {
+            color: var(--cyan);
+        }
+        .news-source {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        /* ── Action Links ── */
+        .trend-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.35rem;
+        }
+        .action-link {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-decoration: none;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            transition: all 0.15s;
+        }
+        .action-link:hover {
+            color: var(--blue);
+            border-color: rgba(59,130,246,0.4);
+            background: var(--blue-glow);
+        }
+
+        /* ── Empty state ── */
+        .empty {
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ── Scrollbar ── */
+        .section-body::-webkit-scrollbar { width: 6px; }
+        .section-body::-webkit-scrollbar-track { background: transparent; }
+        .section-body::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+        .section-body::-webkit-scrollbar-thumb:hover {
+            background: var(--border-light);
+        }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            border-top: 1px solid var(--border);
+        }
+        footer a { color: var(--blue); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+    </style>
+    <script>
+    // Mở link Google Search an toàn — tránh bị block khi mở từ file://
+    function openSearch(url, evt) {
+        if (evt) evt.preventDefault();
+        // Tạo cửa sổ mới qua about:blank trước, rồi redirect
+        var w = window.open('about:blank', '_blank');
+        if (w) {
+            w.location.href = url;
+        } else {
+            // Fallback nếu popup bị chặn
+            window.location.href = url;
+        }
+        return false;
+    }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>📊 Google Trends — POD Monitor</h1>
+        <p class="subtitle">Real-time trending keywords in the US — for POD research</p>
+        <div class="stats-bar">
+            <div class="stat stat-fire">🔥 10 xu hướng</div>
+            <div class="stat stat-pod">🎯 2 liên quan Sports/POD</div>
+            <div class="stat stat-time">🕐 15:27:02 — 27/04/2026</div>
+        </div>
+        <a class="refresh-btn" href="javascript:location.reload()">🔄 Refresh</a>
+    </header>
+
+    <div class="container">
+
+        <div class="section" id="pod-section">
+            <div class="section-header">
+                <div class="section-title" style="color: var(--green);">
+                    🏆 Sports & POD Relevant
+                </div>
+                <span class="section-count count-green">2 found</span>
+            </div>
+            <div class="section-body">
+
+            <div class="trend-card" style="animation-delay: 0.00s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoZRfK61syam4thaJ79yn2ORiNGUPpTbQ7U07z9crz_E2HUARCpZDcE4aKClI" alt="debbie harry" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#1</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=debbie+harry&amp;tbm=isch" onclick="return openSearch(this.href, event)">debbie harry</a>
+                        <span class="badge badge-high">2000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://artthreat.net/25718-55336-debbie-harry-s-blondie-drops-high-noon-album-pre-order-new-lp-arrives-april-10/" target="_blank" rel="noopener noreferrer">Debbie Harry’s Blondie drops High Noon album pre-order, new LP arrives April 10 <span class="news-source">— Art Threat</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.theguardian.com/fashion/2026/apr/25/lily-allen-revenge-harry-styles-dorothy-debbie-harry-t-shirt-20-onstage-dresses-ranked" target="_blank" rel="noopener noreferrer">Lily Allen’s ‘revenge’, Harry Styles’ Dorothy and Debbie Harry’s T-shirt – 20 onstage dresses ranked! <span class="news-source">— The Guardian</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=debbie+harry&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=debbie+harry&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=debbie+harry+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.03s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQneGMQ2JuRii8d7G9TLGEGc9ITqNM5iM6gfGpodAM0KEY2tPOhPvq9A6NlM84" alt="coco gauff" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#2</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=coco+gauff&amp;tbm=isch" onclick="return openSearch(this.href, event)">coco gauff</a>
+                        <span class="badge badge-hot">5000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.nytimes.com/athletic/7231781/2026/04/27/tennis-madrid-open-virus-players-sick-pollen/" target="_blank" rel="noopener noreferrer">Stomach virus runs through Madrid Open field as tennis stars try to navigate puking and pollen <span class="news-source">— The New York Times</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.foxnews.com/outkick-sports/coco-gauff-vomits-mid-match-secures-win-madrid-open" target="_blank" rel="noopener noreferrer">Coco Gauff vomits mid-match, still secures win as illness rips through Madrid Open <span class="news-source">— Fox News</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=coco+gauff&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=coco+gauff&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=coco+gauff+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="section" id="all-section">
+            <div class="section-header">
+                <div class="section-title" style="color: var(--red);">
+                    🔥 All Trending Today
+                </div>
+                <span class="section-count count-red">10 total</span>
+            </div>
+            <div class="section-body">
+
+            <div class="trend-card" style="animation-delay: 0.00s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQHJAUSbVklhrNIk_0H_JE4k0ekH2_dJl3OfwOnSFNRU_UEKrRKLvEvTYf9dcM" alt="ufc 6" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#1</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=ufc+6&amp;tbm=isch" onclick="return openSearch(this.href, event)">ufc 6</a>
+                        <span class="badge badge-normal">500+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://insider-gaming.com/ea-sports-ufc-6-planned-for-june-release/" target="_blank" rel="noopener noreferrer">EA Sports UFC 6 Planned For June Release <span class="news-source">— Insider Gaming</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.lowkickmma.com/alex-pereira-appears-close-to-landing-ea-sports-ufc-6-cover-in-new-leak/" target="_blank" rel="noopener noreferrer">Alex Pereira Appears Close To Landing EA Sports UFC 6 Cover In New Leak <span class="news-source">— LowKickMMA.com</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=ufc+6&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=ufc+6&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=ufc+6+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.03s">
+                <img class="trend-thumb" src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcS5KMLjzS7Ce94Far1ZU7Ti_29uNf3xSc3LvGy4L1WtZgeQeNvUYRBn9rpOye4" alt="jimmy kimmel" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#2</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=jimmy+kimmel&amp;tbm=isch" onclick="return openSearch(this.href, event)">jimmy kimmel</a>
+                        <span class="badge badge-hot">5000+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.reuters.com/business/media-telecom/melania-trump-says-abc-should-take-stand-late-night-host-kimmel-2026-04-27/" target="_blank" rel="noopener noreferrer">Melania Trump says ABC should take stand on late-night host Kimmel <span class="news-source">— Reuters</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.nytimes.com/2026/04/24/arts/television/jimmy-kimmel-roasts-trump.html" target="_blank" rel="noopener noreferrer">Jimmy Kimmel Roasts Trump at a Mock White House Correspondents’ Dinner <span class="news-source">— The New York Times</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=jimmy+kimmel&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=jimmy+kimmel&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=jimmy+kimmel+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.06s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSqi6IGnyqRiWxLvAmWlpfZw83aOK_ZcnGMO-OhqNqGqpep1oCgh1flOIUvSeI" alt="wren kitchens showroom closure" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#3</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=wren+kitchens+showroom+closure&amp;tbm=isch" onclick="return openSearch(this.href, event)">wren kitchens showroom closure</a>
+                        <span class="badge badge-high">1000+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.thestreet.com/retail/wren-kitchens-closes-and-files-chapter-7-bankruptcy" target="_blank" rel="noopener noreferrer">Home Depot rival shuts all stores, files Chapter 7 bankruptcy <span class="news-source">— TheStreet</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.nbcconnecticut.com/investigations/nbc-ct-responds/my-head-is-just-spinning-customers-with-thousands-at-stake-react-to-kitchen-company-closure/3729272/" target="_blank" rel="noopener noreferrer">‘My head is just spinning,' customers with thousands at stake react to kitchen company closure <span class="news-source">— NBC Connecticut</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=wren+kitchens+showroom+closure&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=wren+kitchens+showroom+closure&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=wren+kitchens+showroom+closure+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.09s">
+                <img class="trend-thumb" src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcStlAJRKqU-6ILBCueq-Y4EMVsiTlF5eiG8hdhApsSOVUq7TjaDwxShuzppeIY" alt="redistricting" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#4</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=redistricting&amp;tbm=isch" onclick="return openSearch(this.href, event)">redistricting</a>
+                        <span class="badge badge-high">1000+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.foxnews.com/politics/supreme-court-hands-gop-redistricting-win-striking-down-lower-court-block-texas-map" target="_blank" rel="noopener noreferrer">Supreme Court hands GOP a redistricting win by striking down lower court block on Texas map <span class="news-source">— Fox News</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.democracydocket.com/news-alerts/as-expected-supreme-court-officially-greenlights-texas-gerrymandered-congressional-map/" target="_blank" rel="noopener noreferrer">As expected, Supreme Court officially greenlights Texas’ gerrymandered congressional map for midterms <span class="news-source">— Democracy Docket</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=redistricting&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=redistricting&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=redistricting+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.12s">
+                <img class="trend-thumb" src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSWhlboVzFzm0UpMQV2aNevokbDVO1_bUYD61AKCvTjnB3WWe4cDzYf-PeWJHE" alt="iphone ultra" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#5</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=iphone+ultra&amp;tbm=isch" onclick="return openSearch(this.href, event)">iphone ultra</a>
+                        <span class="badge badge-normal">500+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.macworld.com/article/3124481/apples-ultra-roadmap-confirmed-iphone-macbook-and-more-on-the-way.html" target="_blank" rel="noopener noreferrer">Apple’s ‘Ultra’ roadmap confirmed: iPhone, MacBook, and more on the way <span class="news-source">— Macworld</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.macrumors.com/2026/04/27/apple-planning-to-launch-two-new-ultra-products/" target="_blank" rel="noopener noreferrer">Apple Planning to Launch Two New 'Ultra' Products in the Next Year <span class="news-source">— MacRumors</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=iphone+ultra&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=iphone+ultra&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=iphone+ultra+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.15s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcRmAOzx-epm7gYNGvnhQcO7l-sHPqE8El0GD67rBW-MTigVXHUDDQLwkvU0iYE" alt="la 2028 ticket prices" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#6</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=la+2028+ticket+prices&amp;tbm=isch" onclick="return openSearch(this.href, event)">la 2028 ticket prices</a>
+                        <span class="badge badge-normal">500+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.vox.com/culture/486760/2028-los-angeles-olympics-ticket-prices-fail" target="_blank" rel="noopener noreferrer">The great 2028 Olympic ticket crashout, explained <span class="news-source">— Vox</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://la28.org/en/newsroom/la28-sets-new-benchmark-with-more-than-4-million-tickets-sold.html" target="_blank" rel="noopener noreferrer">LA28 SETS NEW BENCHMARK WITH MORE THAN 4 MILLION TICKETS SOLD <span class="news-source">— LA 2028</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=la+2028+ticket+prices&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=la+2028+ticket+prices&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=la+2028+ticket+prices+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.18s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoZRfK61syam4thaJ79yn2ORiNGUPpTbQ7U07z9crz_E2HUARCpZDcE4aKClI" alt="debbie harry" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#7</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=debbie+harry&amp;tbm=isch" onclick="return openSearch(this.href, event)">debbie harry</a>
+                        <span class="badge badge-high">2000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://artthreat.net/25718-55336-debbie-harry-s-blondie-drops-high-noon-album-pre-order-new-lp-arrives-april-10/" target="_blank" rel="noopener noreferrer">Debbie Harry’s Blondie drops High Noon album pre-order, new LP arrives April 10 <span class="news-source">— Art Threat</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.theguardian.com/fashion/2026/apr/25/lily-allen-revenge-harry-styles-dorothy-debbie-harry-t-shirt-20-onstage-dresses-ranked" target="_blank" rel="noopener noreferrer">Lily Allen’s ‘revenge’, Harry Styles’ Dorothy and Debbie Harry’s T-shirt – 20 onstage dresses ranked! <span class="news-source">— The Guardian</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=debbie+harry&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=debbie+harry&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=debbie+harry+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.21s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQneGMQ2JuRii8d7G9TLGEGc9ITqNM5iM6gfGpodAM0KEY2tPOhPvq9A6NlM84" alt="coco gauff" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#8</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=coco+gauff&amp;tbm=isch" onclick="return openSearch(this.href, event)">coco gauff</a>
+                        <span class="badge badge-hot">5000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.nytimes.com/athletic/7231781/2026/04/27/tennis-madrid-open-virus-players-sick-pollen/" target="_blank" rel="noopener noreferrer">Stomach virus runs through Madrid Open field as tennis stars try to navigate puking and pollen <span class="news-source">— The New York Times</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.foxnews.com/outkick-sports/coco-gauff-vomits-mid-match-secures-win-madrid-open" target="_blank" rel="noopener noreferrer">Coco Gauff vomits mid-match, still secures win as illness rips through Madrid Open <span class="news-source">— Fox News</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=coco+gauff&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=coco+gauff&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=coco+gauff+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.24s">
+                <img class="trend-thumb" src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQrL98oQPXJaV5yyDhU59UEz7KccuGsYUK6DwoOAusZO-eaZTjgChSu5SK5PlA" alt="fema" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#9</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=fema&amp;tbm=isch" onclick="return openSearch(this.href, event)">fema</a>
+                        <span class="badge badge-normal">200+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.hawaiinewsnow.com/2026/04/25/fema-approves-46m-hawaii-disaster-preparedness/" target="_blank" rel="noopener noreferrer">FEMA approves $4.6M for Hawaii disaster preparedness <span class="news-source">— Hawaii News Now</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.carsonnow.org/04/25/2026/nevada-secures-more-than-500000-from-fema-for-wildfire-mitigation" target="_blank" rel="noopener noreferrer">Nevada secures more than $500,000 from FEMA for wildfire mitigation <span class="news-source">— Carson Now</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=fema&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=fema&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=fema+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.27s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSU8hyXgeK3nVjo_RAEGVBslzA2PFlNjb2ua4w6n_Zh8xJJU4RsDMGM3Zo60QM" alt="pbs" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#10</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=pbs&amp;tbm=isch" onclick="return openSearch(this.href, event)">pbs</a>
+                        <span class="badge badge-high">1000+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.justjared.com/2026/04/25/pbs-cancels-1-tv-show-announces-3-are-ending-several-are-renewed-for-2026/3/" target="_blank" rel="noopener noreferrer">PBS Cancels 1 TV Show, Announces 3 Are Ending & Several Are Renewed for 2026 <span class="news-source">— Just Jared</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.el-balad.com/16924627" target="_blank" rel="noopener noreferrer">PBS Cancels One Show, Ends Three, Renews Several for 2026 <span class="news-source">— El-Balad.com</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=pbs&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=pbs&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=pbs+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        Dữ liệu từ <a href="https://trends.google.com/trending?geo=US" target="_blank">Google Trends RSS</a>
+        — Không cần API key, không bị CAPTCHA
+        — Auto-refresh mỗi 30 phút
+        — Scan lúc 15:27:02 — 27/04/2026
+    </footer>
+</body>
+</html>

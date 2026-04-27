@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 POD Trend Alert v2.0</title>
+    <meta name="description" content="Multi-source social media trend scanner for Print-on-Demand research">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e17; --bg2: #0f1420; --card: #141b2d;
+            --card-hover: #1a2338; --border: #1e2a42; --border-light: #2a3a5c;
+            --text: #e2e8f0; --muted: #64748b; --dim: #475569;
+            --red: #ef4444; --green: #22c55e; --orange: #f59e0b;
+            --blue: #3b82f6; --purple: #a855f7; --cyan: #06b6d4;
+            --fire-bg: rgba(239,68,68,0.12); --hot-bg: rgba(245,158,11,0.12);
+            --warm-bg: rgba(59,130,246,0.1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        header { text-align: center; padding: 2rem 1rem 1.5rem; background: linear-gradient(180deg, #12182a 0%, var(--bg) 100%); border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+        header::before { content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); width: 700px; height: 700px; background: radial-gradient(circle, rgba(239,68,68,0.06) 0%, transparent 70%); pointer-events: none; }
+        h1 { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.03em; background: linear-gradient(135deg, #ef4444 0%, #f59e0b 50%, #22c55e 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .subtitle { color: var(--muted); font-size: 0.85rem; margin-top: 0.4rem; font-weight: 500; }
+        .stats-bar { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .stat { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 600; padding: 0.35rem 0.8rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border); }
+
+        .filters { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .filter-btn { padding: 0.3rem 0.8rem; font-size: 0.7rem; font-weight: 600; border-radius: 16px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.2s; font-family: inherit; }
+        .filter-btn:hover, .filter-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+        .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; padding: 1.2rem; max-width: 1500px; margin: 0 auto; }
+        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+        .section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .section-head { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.2rem; border-bottom: 1px solid var(--border); }
+        .section-title { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+        .section-badge { font-size: 0.65rem; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+        .section-body { max-height: 78vh; overflow-y: auto; }
+        .section-body::-webkit-scrollbar { width: 5px; }
+        .section-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        /* Post card */
+        .post { display: flex; gap: 0.7rem; padding: 0.8rem 1.2rem; border-bottom: 1px solid rgba(30,42,66,0.5); transition: background 0.15s; animation: fadeIn 0.3s ease-out both; }
+        .post:hover { background: var(--card-hover); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        .post-thumb { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: var(--bg2); border: 1px solid var(--border); }
+        .post-body { flex: 1; min-width: 0; }
+        .post-top { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.25rem; }
+        .post-title { font-size: 0.8rem; font-weight: 600; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .post-title a { color: inherit; text-decoration: none; } .post-title a:hover { color: var(--blue); }
+
+        .metrics { display: flex; gap: 0.6rem; margin-top: 0.3rem; flex-wrap: wrap; align-items: center; }
+        .metric { font-size: 0.65rem; color: var(--muted); font-weight: 500; }
+        .metric-val { font-weight: 700; color: var(--text); }
+
+        .badge { font-size: 0.55rem; font-weight: 700; padding: 2px 7px; border-radius: 6px; white-space: nowrap; }
+        .badge-fire { background: var(--red); color: #fff; box-shadow: 0 0 10px rgba(239,68,68,0.3); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+        .badge-hot { background: var(--orange); color: #fff; }
+        .badge-warm { background: rgba(59,130,246,0.2); color: var(--blue); }
+        .badge-cold { background: rgba(100,116,139,0.15); color: var(--dim); }
+        .badge-source { background: rgba(100,116,139,0.15); color: var(--muted); }
+        .badge-sport { background: rgba(34,197,94,0.12); color: var(--green); }
+        .badge-score { background: rgba(168,85,247,0.15); color: var(--purple); font-weight: 800; }
+
+        .post-actions { display: flex; gap: 0.4rem; margin-top: 0.3rem; }
+        .act { font-size: 0.58rem; font-weight: 600; color: var(--dim); text-decoration: none; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); transition: all 0.15s; }
+        .act:hover { color: var(--blue); border-color: rgba(59,130,246,0.4); background: rgba(59,130,246,0.08); }
+
+        /* ESPN card */
+        .espn { display: flex; gap: 0.7rem; padding: 0.8rem 1.2rem; border-bottom: 1px solid rgba(30,42,66,0.5); }
+        .espn:hover { background: var(--card-hover); }
+        .espn-img { width: 80px; height: 55px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
+        .espn-body { flex: 1; }
+        .espn-title { font-size: 0.8rem; font-weight: 600; color: var(--text); margin-bottom: 0.2rem; }
+        .espn-title a { color: inherit; text-decoration: none; } .espn-title a:hover { color: var(--cyan); }
+        .espn-desc { font-size: 0.68rem; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        /* Google Trends mini */
+        .trend-chip { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.3rem 0.7rem; margin: 0.2rem; border-radius: 16px; background: var(--card); border: 1px solid var(--border); font-size: 0.7rem; font-weight: 600; color: var(--text); text-decoration: none; transition: all 0.15s; }
+        .trend-chip:hover { border-color: var(--cyan); color: var(--cyan); }
+        .trend-traffic { font-size: 0.6rem; color: var(--orange); font-weight: 700; }
+
+        .empty { padding: 2rem; text-align: center; color: var(--muted); font-size: 0.85rem; }
+        footer { text-align: center; padding: 1.5rem; color: var(--dim); font-size: 0.7rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--blue); text-decoration: none; }
+    </style>
+    <script>
+    function openSearch(url, evt) {
+        if (evt) evt.preventDefault();
+        var w = window.open('about:blank', '_blank');
+        if (w) { w.location.href = url; } else { window.location.href = url; }
+        return false;
+    }
+    function filterSport(sport) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        document.querySelectorAll('.post[data-sport]').forEach(p => {
+            p.style.display = (!sport || p.dataset.sport === sport) ? '' : 'none';
+        });
+    }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>🔥 POD Trend Alert v2.0</h1>
+        <p class="subtitle">Multi-source viral sports scanner — Reddit + ESPN + Google Trends</p>
+        <div class="stats-bar">
+            <div class="stat" style="color:var(--red)">📊 244 items scanned</div>
+            <div class="stat" style="color:var(--orange)">🔥 2 FIRE + 18 HOT</div>
+            <div class="stat" style="color:var(--blue)">🕐 15:28 — 27/04/2026</div>
+        </div>
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterSport('')">All</button>
+            <button class="filter-btn" onclick="filterSport('General')">General</button>
+            <button class="filter-btn" onclick="filterSport('MLB')">MLB</button>
+            <button class="filter-btn" onclick="filterSport('NBA')">NBA</button>
+            <button class="filter-btn" onclick="filterSport('NCAA')">NCAA</button>
+            <button class="filter-btn" onclick="filterSport('NFL')">NFL</button>
+            <button class="filter-btn" onclick="filterSport('NHL')">NHL</button>
+            <button class="filter-btn" onclick="filterSport('POD')">POD</button>
+            <button class="filter-btn" onclick="filterSport('Search')">Search</button>
+
+        </div>
+    </header>
+
+    <div class="layout">
+
+        <div class="section">
+            <div class="section-head">
+                <div class="section-title" style="color:var(--red)">🏆 Top POD Opportunities</div>
+                <span class="section-badge" style="background:var(--fire-bg);color:var(--red)">30 found</span>
+            </div>
+            <div class="section-body">
+
+                <div class="post" data-sport="NBA" style="animation-delay:0.00s">
+                    
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-fire">🔥🔥 FIRE</span>
+                            <span class="badge badge-score">POD 21.0</span>
+                            <span class="badge badge-sport">NBA</span>
+                            
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/nba/comments/1kpvq2g/the_denver_nuggets_have_been_eliminated_from/" target="_blank" rel="noopener">THE DENVER NUGGETS HAVE BEEN ELIMINATED FROM CHAMPIONSHIP CONTENTION</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">10.0K</span></span>
+                            <span class="metric">💬 <span class="metric-val">1.8K</span></span>
+                            <span class="metric">📊 <span class="metric-val">95%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/nba</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=THE+DENVER+NUGGETS+HAVE+BEEN+ELIMINATED+FROM+CHAMPIONSHIP+CONTENTION+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=THE+DENVER+NUGGETS+HAVE+BEEN+ELIMINATED+FROM+CHAMPIONSHIP+CONTENTION&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/nba/comments/1kpvq2g/the_denver_nuggets_have_been_eliminated_from/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NFL" style="animation-delay:0.03s">
+                    
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-fire">🔥🔥 FIRE</span>
+                            <span class="badge badge-score">POD 18.0</span>
+                            <span class="badge badge-sport">NFL</span>
+                            
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/nfl/comments/1kmlhjw/schefter_derrick_henry_and_the_baltimore_ravens/" target="_blank" rel="noopener">[Schefter] Derrick Henry and the Baltimore Ravens reached agreement today on a two-year, $30 million extension that includes $25 million fully guaranteed over the next two seasons, per Todd France of Athletes First. It is the largest deal in NFL history for a running back over 30 years old.</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">8.0K</span></span>
+                            <span class="metric">💬 <span class="metric-val">643</span></span>
+                            <span class="metric">📊 <span class="metric-val">99%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/nfl</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=%5BSchefter%5D+Derrick+Henry+and+the+Baltimore+Ravens+reached+agreement+today+on+a+t+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=%5BSchefter%5D+Derrick+Henry+and+the+Baltimore+Ravens+reached+agreement+today+on+a+t&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/nfl/comments/1kmlhjw/schefter_derrick_henry_and_the_baltimore_ravens/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="General" style="animation-delay:0.06s">
+                    <img class="post-thumb" src="https://external-preview.redd.it/N29tbThqcWhjeXllMS9H0Cae8ItFoFYsrvgtzOHIiggyXl9kyjYGJeB9GppV.png?width=140&amp;height=140&amp;crop=140:140,smart&amp;format=jpg&amp;v=enabled&amp;lthumb=true&amp;s=c2fc3f588c8f1db7ccb7b0000ef123f671cdc357" loading="lazy" onerror="this.style.display='none'">
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-hot">🔥 HOT</span>
+                            <span class="badge badge-score">POD 14.6</span>
+                            <span class="badge badge-sport">General</span>
+                            <span class="badge badge-source">[:basketball: Basketball]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/sports/comments/1kf9p3k/brazils_players_asked_for_caitlin_clarks/" target="_blank" rel="noopener">Brazil's players asked for Caitlin Clark's autograph after their game.Crazy stuff happening</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">6.2K</span></span>
+                            <span class="metric">💬 <span class="metric-val">314</span></span>
+                            <span class="metric">📊 <span class="metric-val">93%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/sports</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=Brazil%27s+players+asked+for+Caitlin+Clark%27s+autograph+after+their+game.Crazy+stuf+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=Brazil%27s+players+asked+for+Caitlin+Clark%27s+autograph+after+their+game.Crazy+stuf&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/sports/comments/1kf9p3k/brazils_players_asked_for_caitlin_clarks/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NBA" style="animation-delay:0.09s">
+                    
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-hot">🔥 HOT</span>
+                            <span class="badge badge-score">POD 13.4</span>
+                            <span class="badge badge-sport">NBA</span>
+                            <span class="badge badge-source">[Post Game Thread]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/nba/comments/1kpvpwk/post_game_thread_the_oklahoma_city_thunder_roll/" target="_blank" rel="noopener">[Post Game Thread] The Oklahoma City Thunder roll over the Denver Nuggets in game 7, 125-93 SGA (35/3/4/3) and Jalen Williams (24/5/7) lead OKC to their first Conference Finals in 9 years.</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">2.7K</span></span>
+                            <span class="metric">💬 <span class="metric-val">1.5K</span></span>
+                            <span class="metric">📊 <span class="metric-val">96%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/nba</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=%5BPost+Game+Thread%5D+The+Oklahoma+City+Thunder+roll+over+the+Denver+Nuggets+in+gam+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=%5BPost+Game+Thread%5D+The+Oklahoma+City+Thunder+roll+over+the+Denver+Nuggets+in+gam&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/nba/comments/1kpvpwk/post_game_thread_the_oklahoma_city_thunder_roll/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NHL" style="animation-delay:0.12s">
+                    
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-hot">🔥 HOT</span>
+                            <span class="badge badge-score">POD 13.2</span>
+                            <span class="badge badge-sport">NHL</span>
+                            <span class="badge badge-source">[[Video]]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/hockey/comments/1kpaf8r/wpg_vs_dal_ice_level_interview_with_jake/" target="_blank" rel="noopener">[WPG vs DAL] Ice level interview with Jake Oettinger. Acknowledges the Jets great season, calls Hellybuyck "the best goalie in the world right now", shows some love to Scheifele, and says the team is eager to play the Oilers again in the WCF.</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">816</span></span>
+                            <span class="metric">💬 <span class="metric-val">60</span></span>
+                            <span class="metric">📊 <span class="metric-val">98%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/hockey</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=%5BWPG+vs+DAL%5D+Ice+level+interview+with+Jake+Oettinger.+Acknowledges+the+Jets+grea+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=%5BWPG+vs+DAL%5D+Ice+level+interview+with+Jake+Oettinger.+Acknowledges+the+Jets+grea&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/hockey/comments/1kpaf8r/wpg_vs_dal_ice_level_interview_with_jake/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NCAA" style="animation-delay:0.15s">
+                    
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-hot">🔥 HOT</span>
+                            <span class="badge badge-score">POD 13.1</span>
+                            <span class="badge badge-sport">NCAA</span>
+                            <span class="badge badge-source">[Discussion]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/CFB/comments/1kf2l9l/whats_your_way_too_early_to_tell_playoff/" target="_blank" rel="noopener">What's your "way too early to tell" playoff predictions?</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">109</span></span>
+                            <span class="metric">💬 <span class="metric-val">340</span></span>
+                            <span class="metric">📊 <span class="metric-val">86%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/CFB</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=What%27s+your+%22way+too+early+to+tell%22+playoff+predictions%3F+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=What%27s+your+%22way+too+early+to+tell%22+playoff+predictions%3F&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/CFB/comments/1kf2l9l/whats_your_way_too_early_to_tell_playoff/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="General" style="animation-delay:0.18s">
+                    <img class="post-thumb" src="https://a.thumbs.redditmedia.com/CUCmZP_bSCdOXvXDFNkhNjkIoOAdmLR4gp7Lmh8-7F4.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-hot">🔥 HOT</span>
+                            <span class="badge badge-score">POD 12.6</span>
+                            <span class="badge badge-sport">General</span>
+                            <span class="badge badge-source">[:football: Football]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/sports/comments/1kbissi/nfl_fines_falcons_dc_jeff_ulbrich_over_shedeur/" target="_blank" rel="noopener">NFL fines Falcons, DC Jeff Ulbrich over Shedeur Sanders prank call</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">3.8K</span></span>
+                            <span class="metric">💬 <span class="metric-val">546</span></span>
+                            <span class="metric">📊 <span class="metric-val">94%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/sports</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=NFL+fines+Falcons%2C+DC+Jeff+Ulbrich+over+Shedeur+Sanders+prank+call+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=NFL+fines+Falcons%2C+DC+Jeff+Ulbrich+over+Shedeur+Sanders+prank+call&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/sports/comments/1kbissi/nfl_fines_falcons_dc_jeff_ulbrich_over_shedeur/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NHL" style="animation-delay:0.21s">
+                    <img class="post-thumb" src="https://a.thumbs.redditmedia.com/IA8U9h1UEUf0pXSHP1PwYT1knlgiSC90zX-gO_ONll8.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-hot">🔥 HOT</span>
+                            <span class="badge badge-score">POD 10.6</span>
+                            <span class="badge badge-sport">NHL</span>
+                            <span class="badge badge-source">[Highlight]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/nhl/comments/1kf039w/perfetti_ties_it_with_16_seconds_left_game_7_is/" target="_blank" rel="noopener">Perfetti ties it with 1.6 seconds left. Game 7 is going to Overtime.</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">2.0K</span></span>
+                            <span class="metric">💬 <span class="metric-val">207</span></span>
+                            <span class="metric">📊 <span class="metric-val">96%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/nhl</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=Perfetti+ties+it+with+1.6+seconds+left.+Game+7+is+going+to+Overtime.+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=Perfetti+ties+it+with+1.6+seconds+left.+Game+7+is+going+to+Overtime.&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/nhl/comments/1kf039w/perfetti_ties_it_with_16_seconds_left_game_7_is/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NCAA" style="animation-delay:0.24s">
+                    
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-hot">🔥 HOT</span>
+                            <span class="badge badge-score">POD 10.5</span>
+                            <span class="badge badge-sport">NCAA</span>
+                            <span class="badge badge-source">[News]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/CFB/comments/1kd3bum/ryan_day_pushes_back_on_nil_being_key_factor_for/" target="_blank" rel="noopener">Ryan Day pushes back on NIL being key factor for Ohio State roster building: 'Not what won us a championship'</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">512</span></span>
+                            <span class="metric">💬 <span class="metric-val">685</span></span>
+                            <span class="metric">📊 <span class="metric-val">80%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/CFB</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=Ryan+Day+pushes+back+on+NIL+being+key+factor+for+Ohio+State+roster+building%3A+%27No+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=Ryan+Day+pushes+back+on+NIL+being+key+factor+for+Ohio+State+roster+building%3A+%27No&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/CFB/comments/1kd3bum/ryan_day_pushes_back_on_nil_being_key_factor_for/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NHL" style="animation-delay:0.27s">
+                    <img class="post-thumb" src="https://b.thumbs.redditmedia.com/nGjADA40tDmE7YD4CL8n2yotQPiiueGwQ-805DdAAdY.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-hot">🔥 HOT</span>
+                            <span class="badge badge-score">POD 10.0</span>
+                            <span class="badge badge-sport">NHL</span>
+                            <span class="badge badge-source">[Highlight]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/nhl/comments/1kf1q0k/adam_lowry_wins_the_series_for_the_jets_winnipeg/" target="_blank" rel="noopener">Adam Lowry Wins the Series for the Jets. Winnipeg will Face Dallas in Round 2. The St. Louis Blues have been Eliminated</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">1.2K</span></span>
+                            <span class="metric">💬 <span class="metric-val">304</span></span>
+                            <span class="metric">📊 <span class="metric-val">94%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/nhl</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=Adam+Lowry+Wins+the+Series+for+the+Jets.+Winnipeg+will+Face+Dallas+in+Round+2.+T+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=Adam+Lowry+Wins+the+Series+for+the+Jets.+Winnipeg+will+Face+Dallas+in+Round+2.+T&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/nhl/comments/1kf1q0k/adam_lowry_wins_the_series_for_the_jets_winnipeg/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="General" style="animation-delay:0.30s">
+                    <img class="post-thumb" src="https://external-preview.redd.it/dHB6MWJ4aTJmdnllMVITRcU3XneaiFcoi7yFA_w-NAO_5xkxFNn7Kv08J7Ib.png?width=140&amp;height=78&amp;crop=140:78,smart&amp;format=jpg&amp;v=enabled&amp;lthumb=true&amp;s=6e86de0552307921d04db414f1162a5fe199e1bf" loading="lazy" onerror="this.style.display='none'">
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-hot">🔥 HOT</span>
+                            <span class="badge badge-score">POD 10.0</span>
+                            <span class="badge badge-sport">General</span>
+                            <span class="badge badge-source">[:hockey: Hockey]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/sports/comments/1kf0ily/jets_force_overtime_by_tying_it_up_with_16/" target="_blank" rel="noopener">Jets force overtime by tying it up with 1.6 seconds to play vs Blues</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">3.5K</span></span>
+                            <span class="metric">💬 <span class="metric-val">148</span></span>
+                            <span class="metric">📊 <span class="metric-val">97%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/sports</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=Jets+force+overtime+by+tying+it+up+with+1.6+seconds+to+play+vs+Blues+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=Jets+force+overtime+by+tying+it+up+with+1.6+seconds+to+play+vs+Blues&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/sports/comments/1kf0ily/jets_force_overtime_by_tying_it_up_with_16/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NBA" style="animation-delay:0.33s">
+                    
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-hot">🔥 HOT</span>
+                            <span class="badge badge-score">POD 9.5</span>
+                            <span class="badge badge-sport">NBA</span>
+                            
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/nba/comments/1kpros2/john_hollinger_weve_seen_this_movie_before_gut_it/" target="_blank" rel="noopener">John Hollinger: we've seen this movie before — "gut it out with a non-working hamstring" guy is usually unspeakably bad and pulled within the first five minutes.</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">1.4K</span></span>
+                            <span class="metric">💬 <span class="metric-val">174</span></span>
+                            <span class="metric">📊 <span class="metric-val">96%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/nba</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=John+Hollinger%3A+we%27ve+seen+this+movie+before+%E2%80%94+%22gut+it+out+with+a+non-working+ha+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=John+Hollinger%3A+we%27ve+seen+this+movie+before+%E2%80%94+%22gut+it+out+with+a+non-working+ha&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/nba/comments/1kpros2/john_hollinger_weve_seen_this_movie_before_gut_it/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NCAA" style="animation-delay:0.36s">
+                    <img class="post-thumb" src="https://b.thumbs.redditmedia.com/_-V0U4UpRvo9sadVmTbLBe1fd_oZKn695IURC3T3BxU.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-hot">🔥 HOT</span>
+                            <span class="badge badge-score">POD 9.4</span>
+                            <span class="badge badge-sport">NCAA</span>
+                            <span class="badge badge-source">[Discussion]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/CFB/comments/1kfb9p7/sources_michigans_sherrone_moore_expected_to_get/" target="_blank" rel="noopener">Sources: Michigan's Sherrone Moore expected to get 2-game ban</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">694</span></span>
+                            <span class="metric">💬 <span class="metric-val">553</span></span>
+                            <span class="metric">📊 <span class="metric-val">96%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/CFB</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=Sources%3A+Michigan%27s+Sherrone+Moore+expected+to+get+2-game+ban+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=Sources%3A+Michigan%27s+Sherrone+Moore+expected+to+get+2-game+ban&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/CFB/comments/1kfb9p7/sources_michigans_sherrone_moore_expected_to_get/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="MLB" style="animation-delay:0.39s">
+                    <img class="post-thumb" src="https://external-preview.redd.it/djN1NGRheXFuZ3hlMereRNuqGSE7P4iaxY6uxdoJhS1gdzzD_I-GfhyRT3cT.png?width=140&amp;height=78&amp;crop=140:78,smart&amp;format=jpg&amp;v=enabled&amp;lthumb=true&amp;s=a70bcc84634e7cddaa52b41cd1b13298b5721ed4" loading="lazy" onerror="this.style.display='none'">
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-hot">🔥 HOT</span>
+                            <span class="badge badge-score">POD 9.1</span>
+                            <span class="badge badge-sport">MLB</span>
+                            <span class="badge badge-source">[Highlights]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/mlb/comments/1k9hfrf/heliot_ramoss_walkoff_little_league_home_run/" target="_blank" rel="noopener">Heliot Ramos's walk-off Little League home run</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">2.4K</span></span>
+                            <span class="metric">💬 <span class="metric-val">123</span></span>
+                            <span class="metric">📊 <span class="metric-val">98%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/mlb</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=Heliot+Ramos%27s+walk-off+Little+League+home+run+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=Heliot+Ramos%27s+walk-off+Little+League+home+run&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/mlb/comments/1k9hfrf/heliot_ramoss_walkoff_little_league_home_run/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NBA" style="animation-delay:0.42s">
+                    
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-hot">🔥 HOT</span>
+                            <span class="badge badge-score">POD 9.0</span>
+                            <span class="badge badge-sport">NBA</span>
+                            <span class="badge badge-source">[Discussion]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/Nbamemes/comments/1kf1bm9/draymond_green_is_the_only_player_who_gets_away/" target="_blank" rel="noopener">Draymond green is the only player who gets away with this shit</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">1.8K</span></span>
+                            <span class="metric">💬 <span class="metric-val">241</span></span>
+                            <span class="metric">📊 <span class="metric-val">88%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/nbamemes</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=Draymond+green+is+the+only+player+who+gets+away+with+this+shit+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=Draymond+green+is+the+only+player+who+gets+away+with+this+shit&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/Nbamemes/comments/1kf1bm9/draymond_green_is_the_only_player_who_gets_away/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="General" style="animation-delay:0.45s">
+                    <img class="post-thumb" src="https://a.thumbs.redditmedia.com/dyTfjYnBCPvPNmu3fH2z9si8LEBl9tJ7I80p3a61fq0.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-hot">🔥 HOT</span>
+                            <span class="badge badge-score">POD 8.9</span>
+                            <span class="badge badge-sport">General</span>
+                            <span class="badge badge-source">[:soccer: Soccer]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/sports/comments/1kgmyuj/jd_vance_jokes_about_deporting_tourists_attending/" target="_blank" rel="noopener">JD Vance Jokes About Deporting Tourists Attending 2026 World Cup</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">2.8K</span></span>
+                            <span class="metric">💬 <span class="metric-val">336</span></span>
+                            <span class="metric">📊 <span class="metric-val">90%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/sports</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=JD+Vance+Jokes+About+Deporting+Tourists+Attending+2026+World+Cup+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=JD+Vance+Jokes+About+Deporting+Tourists+Attending+2026+World+Cup&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/sports/comments/1kgmyuj/jd_vance_jokes_about_deporting_tourists_attending/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NFL" style="animation-delay:0.48s">
+                    <img class="post-thumb" src="https://b.thumbs.redditmedia.com/x6tuQ17u7K6cBV6BCF33pjj2EoSA-3t8vDuWUeb3sZM.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-hot">🔥 HOT</span>
+                            <span class="badge badge-score">POD 8.8</span>
+                            <span class="badge badge-sport">NFL</span>
+                            <span class="badge badge-source">[🏈 NFL Meme]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/nflmemes/comments/1k8q8to/why_wont_they_draft_me/" target="_blank" rel="noopener">“Why won’t they draft me?”</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">319</span></span>
+                            <span class="metric">💬 <span class="metric-val">19</span></span>
+                            <span class="metric">📊 <span class="metric-val">99%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/nflmemes</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=%E2%80%9CWhy+won%E2%80%99t+they+draft+me%3F%E2%80%9D+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=%E2%80%9CWhy+won%E2%80%99t+they+draft+me%3F%E2%80%9D&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/nflmemes/comments/1k8q8to/why_wont_they_draft_me/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NBA" style="animation-delay:0.51s">
+                    
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-hot">🔥 HOT</span>
+                            <span class="badge badge-score">POD 8.7</span>
+                            <span class="badge badge-sport">NBA</span>
+                            <span class="badge badge-source">[Game Thread]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/nba/comments/1kpquc5/game_thread_denver_nuggets_33_oklahoma_city/" target="_blank" rel="noopener">GAME THREAD: Denver Nuggets (3-3) @ Oklahoma City Thunder (3-3) - (May 18, 2025)</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">360</span></span>
+                            <span class="metric">💬 <span class="metric-val">25.9K</span></span>
+                            <span class="metric">📊 <span class="metric-val">97%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/nba</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=GAME+THREAD%3A+Denver+Nuggets+%283-3%29+%40+Oklahoma+City+Thunder+%283-3%29+-+%28May+18%2C+2025%29+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=GAME+THREAD%3A+Denver+Nuggets+%283-3%29+%40+Oklahoma+City+Thunder+%283-3%29+-+%28May+18%2C+2025%29&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/nba/comments/1kpquc5/game_thread_denver_nuggets_33_oklahoma_city/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="General" style="animation-delay:0.54s">
+                    <img class="post-thumb" src="https://b.thumbs.redditmedia.com/pc_OMEpezmOSdo7ae5OFPyknFx_Tc9Oh6Yca3gcUbZs.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-hot">🔥 HOT</span>
+                            <span class="badge badge-score">POD 8.6</span>
+                            <span class="badge badge-sport">General</span>
+                            <span class="badge badge-source">[:news: News]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/sports/comments/1kbt78o/bill_belichick_says_girlfriend_wasnt_trying_to/" target="_blank" rel="noopener">Bill Belichick says girlfriend wasn't trying to control TV interview</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">516</span></span>
+                            <span class="metric">💬 <span class="metric-val">155</span></span>
+                            <span class="metric">📊 <span class="metric-val">82%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/sports</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=Bill+Belichick+says+girlfriend+wasn%27t+trying+to+control+TV+interview+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=Bill+Belichick+says+girlfriend+wasn%27t+trying+to+control+TV+interview&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/sports/comments/1kbt78o/bill_belichick_says_girlfriend_wasnt_trying_to/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NCAA" style="animation-delay:0.57s">
+                    
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-hot">🔥 HOT</span>
+                            <span class="badge badge-score">POD 8.0</span>
+                            <span class="badge badge-sport">NCAA</span>
+                            <span class="badge badge-source">[Casual / Offseason]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/CollegeBasketball/comments/1kbiujp/jay_bilas_i_think_nil_spreads_talent_more_than/" target="_blank" rel="noopener">Jay Bilas “I think NIL spreads talent more than concentrate it.”</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">334</span></span>
+                            <span class="metric">💬 <span class="metric-val">232</span></span>
+                            <span class="metric">📊 <span class="metric-val">84%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/CollegeBasketball</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=Jay+Bilas+%E2%80%9CI+think+NIL+spreads+talent+more+than+concentrate+it.%E2%80%9D+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=Jay+Bilas+%E2%80%9CI+think+NIL+spreads+talent+more+than+concentrate+it.%E2%80%9D&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/CollegeBasketball/comments/1kbiujp/jay_bilas_i_think_nil_spreads_talent_more_than/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="Search" style="animation-delay:0.60s">
+                    
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-warm">⚡ WARM</span>
+                            <span class="badge badge-score">POD 7.8</span>
+                            <span class="badge badge-sport">Search</span>
+                            <span class="badge badge-source">[:heart: Official ESC News]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/eurovision/comments/1kf6573/eurovision2025_rehearsals_day_3_live_blog/" target="_blank" rel="noopener">#Eurovision2025: Rehearsals Day 3 - Live Blog!</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">229</span></span>
+                            <span class="metric">💬 <span class="metric-val">436</span></span>
+                            <span class="metric">📊 <span class="metric-val">100%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/eurovision</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=%23Eurovision2025%3A+Rehearsals+Day+3+-+Live+Blog%21+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=%23Eurovision2025%3A+Rehearsals+Day+3+-+Live+Blog%21&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/eurovision/comments/1kf6573/eurovision2025_rehearsals_day_3_live_blog/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="General" style="animation-delay:0.63s">
+                    <img class="post-thumb" src="https://external-preview.redd.it/ejA3c2t3eGU0MHllMa02K-AuPI7GaMQrUENtI2a7Lmu6gZJyQSZLmgi-Zdiw.png?width=140&amp;height=140&amp;crop=140:140,smart&amp;format=jpg&amp;v=enabled&amp;lthumb=true&amp;s=dd9782908c66a2706b2f1499475820fceffa8bac" loading="lazy" onerror="this.style.display='none'">
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-warm">⚡ WARM</span>
+                            <span class="badge badge-score">POD 7.5</span>
+                            <span class="badge badge-sport">General</span>
+                            <span class="badge badge-source">[:surf: Surfing]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/sports/comments/1kbl838/kai_lenny_wiping_out_on_a_60ft_wave_in_nazaré/" target="_blank" rel="noopener">Kai Lenny wiping out on a 60ft wave in Nazaré</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">3.0K</span></span>
+                            <span class="metric">💬 <span class="metric-val">149</span></span>
+                            <span class="metric">📊 <span class="metric-val">95%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/sports</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=Kai+Lenny+wiping+out+on+a+60ft+wave+in+Nazar%C3%A9+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=Kai+Lenny+wiping+out+on+a+60ft+wave+in+Nazar%C3%A9&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/sports/comments/1kbl838/kai_lenny_wiping_out_on_a_60ft_wave_in_nazaré/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="MLB" style="animation-delay:0.66s">
+                    <img class="post-thumb" src="https://b.thumbs.redditmedia.com/RMp4Q5iQkubT7WjUjzxB6SMtfYTI9FkhtaA90cavlAo.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-warm">⚡ WARM</span>
+                            <span class="badge badge-score">POD 7.2</span>
+                            <span class="badge badge-sport">MLB</span>
+                            <span class="badge badge-source">[Discussion]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/mlb/comments/1kcrnf3/who_will_keep_their_pace_for_taters/" target="_blank" rel="noopener">Who will keep their pace for taters?</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">471</span></span>
+                            <span class="metric">💬 <span class="metric-val">321</span></span>
+                            <span class="metric">📊 <span class="metric-val">94%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/mlb</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=Who+will+keep+their+pace+for+taters%3F+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=Who+will+keep+their+pace+for+taters%3F&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/mlb/comments/1kcrnf3/who_will_keep_their_pace_for_taters/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NHL" style="animation-delay:0.69s">
+                    
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-warm">⚡ WARM</span>
+                            <span class="badge badge-score">POD 6.9</span>
+                            <span class="badge badge-sport">NHL</span>
+                            
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/nhl/comments/1kda3wm/sorry_wild_fans/" target="_blank" rel="noopener">Sorry Wild Fans</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">1.8K</span></span>
+                            <span class="metric">💬 <span class="metric-val">192</span></span>
+                            <span class="metric">📊 <span class="metric-val">98%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/nhl</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=Sorry+Wild+Fans+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=Sorry+Wild+Fans&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/nhl/comments/1kda3wm/sorry_wild_fans/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NFL" style="animation-delay:0.72s">
+                    
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-warm">⚡ WARM</span>
+                            <span class="badge badge-score">POD 6.7</span>
+                            <span class="badge badge-sport">NFL</span>
+                            
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/nfl/comments/1ko3uyo/breer_nfl_owners_set_to_vote_on_major_change_to/" target="_blank" rel="noopener">[Breer] NFL Owners Set to Vote on Major Change to Playoff Seeding, Tush Push Ban</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">505</span></span>
+                            <span class="metric">💬 <span class="metric-val">415</span></span>
+                            <span class="metric">📊 <span class="metric-val">94%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/nfl</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=%5BBreer%5D+NFL+Owners+Set+to+Vote+on+Major+Change+to+Playoff+Seeding%2C+Tush+Push+Ban+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=%5BBreer%5D+NFL+Owners+Set+to+Vote+on+Major+Change+to+Playoff+Seeding%2C+Tush+Push+Ban&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/nfl/comments/1ko3uyo/breer_nfl_owners_set_to_vote_on_major_change_to/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NHL" style="animation-delay:0.75s">
+                    <img class="post-thumb" src="https://external-preview.redd.it/yegHMKeAmAHpk_O6qcNkwfvI6lDXh4Gf0OHBKrL8Dbs.jpeg?width=140&amp;height=99&amp;crop=140:99,smart&amp;auto=webp&amp;s=59637c928b46dcdaa6618daa74b7f6b511c7553f" loading="lazy" onerror="this.style.display='none'">
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-warm">⚡ WARM</span>
+                            <span class="badge badge-score">POD 6.6</span>
+                            <span class="badge badge-sport">NHL</span>
+                            <span class="badge badge-source">[News]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/nhl/comments/1kgpgpe/absolutely_crazy_stat_from_the_oilers_after/" target="_blank" rel="noopener">Absolutely crazy stat from the Oilers after tonight’s game.</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">680</span></span>
+                            <span class="metric">💬 <span class="metric-val">72</span></span>
+                            <span class="metric">📊 <span class="metric-val">97%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/nhl</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=Absolutely+crazy+stat+from+the+Oilers+after+tonight%E2%80%99s+game.+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=Absolutely+crazy+stat+from+the+Oilers+after+tonight%E2%80%99s+game.&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/nhl/comments/1kgpgpe/absolutely_crazy_stat_from_the_oilers_after/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NCAA" style="animation-delay:0.78s">
+                    
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-warm">⚡ WARM</span>
+                            <span class="badge badge-score">POD 6.5</span>
+                            <span class="badge badge-sport">NCAA</span>
+                            <span class="badge badge-source">[Discussion]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/CFB/comments/1keyg5q/how_long_would_it_take_to_fire_a_national/" target="_blank" rel="noopener">How long would it take to fire a national championship winner?</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">109</span></span>
+                            <span class="metric">💬 <span class="metric-val">179</span></span>
+                            <span class="metric">📊 <span class="metric-val">80%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/CFB</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=How+long+would+it+take+to+fire+a+national+championship+winner%3F+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=How+long+would+it+take+to+fire+a+national+championship+winner%3F&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/CFB/comments/1keyg5q/how_long_would_it_take_to_fire_a_national/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NBA" style="animation-delay:0.81s">
+                    <img class="post-thumb" src="https://b.thumbs.redditmedia.com/FqyvRELOWINGq0tvlyp99iWKT30xBQHM5--t5WaPo6c.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-warm">⚡ WARM</span>
+                            <span class="badge badge-score">POD 6.3</span>
+                            <span class="badge badge-sport">NBA</span>
+                            <span class="badge badge-source">[Image]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/Nbamemes/comments/1kfthtg/knicks_w/" target="_blank" rel="noopener">Knicks W 🔥</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">2.9K</span></span>
+                            <span class="metric">💬 <span class="metric-val">56</span></span>
+                            <span class="metric">📊 <span class="metric-val">98%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/nbamemes</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=Knicks+W+%F0%9F%94%A5+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=Knicks+W+%F0%9F%94%A5&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/Nbamemes/comments/1kfthtg/knicks_w/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="MLB" style="animation-delay:0.84s">
+                    <img class="post-thumb" src="https://external-preview.redd.it/MWc0NTFmdjhldnllMTz1ua13uAEVfWZewquYkovceQjNW6Tfd2rj88et-5ym.png?width=140&amp;height=78&amp;crop=140:78,smart&amp;format=jpg&amp;v=enabled&amp;lthumb=true&amp;s=3351d53c4d0f80165f4e65c208506db79b99f0f8" loading="lazy" onerror="this.style.display='none'">
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-warm">⚡ WARM</span>
+                            <span class="badge badge-score">POD 6.3</span>
+                            <span class="badge badge-sport">MLB</span>
+                            <span class="badge badge-source">[Highlights]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/mlb/comments/1kf0f8o/highlight_miguel_rojas_robs_a_hit_from_matt_olson/" target="_blank" rel="noopener">[Highlight] MIGUEL ROJAS ROBS A HIT FROM MATT OLSON!!</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">102</span></span>
+                            <span class="metric">💬 <span class="metric-val">8</span></span>
+                            <span class="metric">📊 <span class="metric-val">94%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/mlb</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=%5BHighlight%5D+MIGUEL+ROJAS+ROBS+A+HIT+FROM+MATT+OLSON%21%21+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=%5BHighlight%5D+MIGUEL+ROJAS+ROBS+A+HIT+FROM+MATT+OLSON%21%21&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/mlb/comments/1kf0f8o/highlight_miguel_rojas_robs_a_hit_from_matt_olson/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" data-sport="NBA" style="animation-delay:0.87s">
+                    <img class="post-thumb" src="https://b.thumbs.redditmedia.com/tsoK_UD9tjuAOxFvEN42Uu1oDhmoR7U9rfQAgXyiK6g.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="post-body">
+                        <div class="post-top">
+                            <span class="badge badge-warm">⚡ WARM</span>
+                            <span class="badge badge-score">POD 6.2</span>
+                            <span class="badge badge-sport">NBA</span>
+                            <span class="badge badge-source">[Discussion]</span>
+                        </div>
+                        <div class="post-title"><a href="https://reddit.com/r/Nbamemes/comments/1kf2mcn/hall_of_fame_numbers_here/" target="_blank" rel="noopener">Hall of fame numbers here</a></div>
+                        <div class="metrics">
+                            <span class="metric">⬆ <span class="metric-val">1.2K</span></span>
+                            <span class="metric">💬 <span class="metric-val">82</span></span>
+                            <span class="metric">📊 <span class="metric-val">98%</span></span>
+                            <span class="metric">🏅 <span class="metric-val">0</span></span>
+                            <span class="badge badge-source">r/nbamemes</span>
+                        </div>
+                        <div class="post-actions">
+                            <a class="act" href="https://www.google.com/search?q=Hall+of+fame+numbers+here+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD</a>
+                            <a class="act" href="https://www.google.com/search?q=Hall+of+fame+numbers+here&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                            <a class="act" href="https://reddit.com/r/Nbamemes/comments/1kf2mcn/hall_of_fame_numbers_here/" target="_blank" rel="noopener">📱 Reddit</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-head">
+                <div class="section-title" style="color:var(--cyan)">📺 ESPN + 📈 Google Trends</div>
+                <span class="section-badge" style="background:var(--warm-bg);color:var(--blue)">32 articles</span>
+            </div>
+            <div class="section-body">
+<div style="padding:0.8rem 1.2rem;border-bottom:1px solid var(--border)"><div style="font-size:0.75rem;font-weight:700;color:var(--cyan);margin-bottom:0.5rem">📈 Google Trends — POD Keywords</div><a class="trend-chip" href="https://www.google.com/search?q=debbie+harry+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">debbie harry <span class="trend-traffic">2000+</span></a><a class="trend-chip" href="https://www.google.com/search?q=coco+gauff+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">coco gauff <span class="trend-traffic">5000+</span></a></div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0426/r1649733_608x342_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NFL</span>
+                            <span class="badge badge-warm">⚡ WARM</span>
+                            <span class="badge badge-score">POD 3.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/fantasy/football/story/_/id/48561514/2026-fantasy-football-rankings-rookies-value-dynasty-league-redraft" target="_blank" rel="noopener">Fantasy football: Rating the 2026 rookies in redraft and dynasty leagues</a></div>
+                        <div class="espn-desc">Matt Bowen provides his analysis of this year's rookie class in fantasy, in terms of redraft and dynasty value.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Fantasy+football%3A+Rating+the+2026+rookies+in+redraft+and+dynasty+leagues+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0427/r1649835_576x324_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NFL</span>
+                            <span class="badge badge-warm">⚡ WARM</span>
+                            <span class="badge badge-score">POD 3.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/nfl/story/_/id/48605844/cleveland-browns-offense-position-2026-nfl-draft-quarterback-wide-receiver-offensive-line" target="_blank" rel="noopener">Browns' offense by position after 2026 NFL draft: QB, WR, OL</a></div>
+                        <div class="espn-desc">The offensive-heavy draft marks the final checkpoint for Cleveland and a unit has been focused on improvement.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Browns%27+offense+by+position+after+2026+NFL+draft%3A+QB%2C+WR%2C+OL+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/media/motion/wsc/2026/0427/ad7e784a-141c-4e3c-a5d4-3c7c71ec1617/ad7e784a-141c-4e3c-a5d4-3c7c71ec1617.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NBA</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 1.5</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/video/clip?id=48609097" target="_blank" rel="noopener">Have Spurs proved they can make a deep playoff run? Stephen A. weighs in</a></div>
+                        <div class="espn-desc">Stephen A. Smith offers his thoughts on the Spurs' playoff prospects after defeating the Trail Blazers to go up 3-1 in t</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Have+Spurs+proved+they+can+make+a+deep+playoff+run%3F+Stephen+A.+weighs+in+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0424/r1648669_608x342_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NBA</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 1.5</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/nba/story/_/id/48582233/nba-playoffs-2026-foul-3-san-antonio-spurs-portland-trail-blazers-impact" target="_blank" rel="noopener">Is 'foul up 3' a game-winning strategy or clutch-time saboteur?</a></div>
+                        <div class="espn-desc">ESPN analyst Zach Kram studied years of NBA film and spoke with dozens around the league to determine whether it works a</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Is+%27foul+up+3%27+a+game-winning+strategy+or+clutch-time+saboteur%3F+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0427/r1649850_1296x729_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NBA</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 1.5</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/nba/story/_/id/48605797/2026-nba-playoffs-ranking-first-round-series-biggest-questions-free-agency-stock-watch" target="_blank" rel="noopener">2026 NBA playoffs: Key questions, ranking first-round series</a></div>
+                        <div class="espn-desc">Where does every first-round series in the 2026 NBA playoffs rank so far? Plus, key questions and stock watch for upcomi</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=2026+NBA+playoffs%3A+Key+questions%2C+ranking+first-round+series+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/media/motion/wsc/2026/0427/47f5dc6f-a91b-46f8-8b61-78ff93751b3f/47f5dc6f-a91b-46f8-8b61-78ff93751b3f.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NHL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 1.5</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/video/clip?id=48608237" target="_blank" rel="noopener">The top plays from the NHL playoffs on Sunday</a></div>
+                        <div class="espn-desc">Take a look at the top plays from the NHL playoffs on Sunday.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=The+top+plays+from+the+NHL+playoffs+on+Sunday+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0426/r1649523_1296x729_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NHL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 1.5</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/nhl/story/_/id/48602797/2026-nhl-playoffs-stanley-cup-shocks-surprises-stats-goaltending" target="_blank" rel="noopener">The Stanley Cup playoffs' biggest shocks of the first round</a></div>
+                        <div class="espn-desc">From players overperforming or underperforming to powerless power plays to ... rotisserie chicken on the ice?</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=The+Stanley+Cup+playoffs%27+biggest+shocks+of+the+first+round+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0426/r1649521_1296x729_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NHL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 1.5</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/nhl/story/_/id/48526483/2026-nhl-playoffs-stanley-cup-preview-stats-schedule-top-players-bracket-matchups" target="_blank" rel="noopener">Stanley Cup playoffs daily: Previews, stats, schedule, bracket</a></div>
+                        <div class="espn-desc">Here are previews for both of Monday's games, a best bet, recaps from Sunday and updated stats.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Stanley+Cup+playoffs+daily%3A+Previews%2C+stats%2C+schedule%2C+bracket+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0426/Avs_advance16x9_1296x729.png" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NHL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 1.5</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/nhl/story/_/id/48485622/nhl-playoffs-2026-stanley-cup-bracket-schedule-teams-players-preview" target="_blank" rel="noopener">Stanley Cup playoffs 2026: Bracket, schedule, scores, news</a></div>
+                        <div class="espn-desc">From the first round all the way through the Stanley Cup Final, ESPN has you covered this NHL postseason.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Stanley+Cup+playoffs+2026%3A+Bracket%2C+schedule%2C+scores%2C+news+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/media/motion/2026/0427/450500af1653403693a1e4d0a6f67bcf666/450500af1653403693a1e4d0a6f67bcf666.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NBA</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/video/clip?id=48609416" target="_blank" rel="noopener">Stephen A. defends criticism of Knicks despite Game 4 win</a></div>
+                        <div class="espn-desc">Stephen A. Smith reacts to the Knicks defeating the Hawks in Game 4 to even their playoff series.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Stephen+A.+defends+criticism+of+Knicks+despite+Game+4+win+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2025/1112/r1574751_608x342_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NBA</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/nba/story/_/id/47168192/the-hoop-collective-latest-episodes-brian-windhorst-nba-podcast-archive-best-quotes" target="_blank" rel="noopener">'The Hoop Collective': Episodes of Brian Windhorst's NBA podcast</a></div>
+                        <div class="espn-desc">From breaking news to the latest intel from around the NBA, here are the top highlights from Brian Windhorst's "The Hoop</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=%27The+Hoop+Collective%27%3A+Episodes+of+Brian+Windhorst%27s+NBA+podcast+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/media/motion/2026/0427/19580e3b3b3849bc9ee1686d4cf0dec0623/19580e3b3b3849bc9ee1686d4cf0dec0623.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NBA</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/video/clip?id=48608993" target="_blank" rel="noopener">Stephen A.: LeBron's Game 4 'a complete aberration'</a></div>
+                        <div class="espn-desc">Stephen A. Smith explains why he isn't concerned about LeBron James' performance in the Lakers' loss to the Rockets.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Stephen+A.%3A+LeBron%27s+Game+4+%27a+complete+aberration%27+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/media/motion/2026/0427/b7da58388c5349db97e26fa921029aa8571/b7da58388c5349db97e26fa921029aa8571.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NBA</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/video/clip?id=48608576" target="_blank" rel="noopener">Evan Cohen: I don't think KD plays another game with Rockets</a></div>
+                        <div class="espn-desc">Evan Cohen and Courtney Cronin debate whether Kevin Durant will play another game with the Houston Rockets.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Evan+Cohen%3A+I+don%27t+think+KD+plays+another+game+with+Rockets+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/media/motion/wsc/2026/0427/5f02751c-79e4-4e76-a336-9e399bcfb31c/5f02751c-79e4-4e76-a336-9e399bcfb31c.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NBA</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/video/clip?id=48608475" target="_blank" rel="noopener">Did Joel Embiid's return hurt 76ers more than it helped?</a></div>
+                        <div class="espn-desc">Alan Hahn, Monica McNutt and Iman Shumpert discuss Joel Embiid's return against the Celtics and whether it hurt the 76er</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Did+Joel+Embiid%27s+return+hurt+76ers+more+than+it+helped%3F+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0427/r1649954_1296x729_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NFL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/nfl/story/_/id/48609368/bills-hit-reset-button-keon-coleman-feel-best-yet-come" target="_blank" rel="noopener">Bills hit 'reset button' with Keon Coleman, say best yet to come</a></div>
+                        <div class="espn-desc">The Bills "shut down" a couple of teams that reached out with trade interest in Keon Coleman earlier this offseason, gen</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Bills+hit+%27reset+button%27+with+Keon+Coleman%2C+say+best+yet+to+come+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0427/r1649916_608x342_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NFL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/nfl/story/_/id/48608178/nfl-green-bay-packers-20206-draft-receiver-matthew-golden-jayden-reed" target="_blank" rel="noopener">Why Packers GM Gutekunst didn't take a WR in 2026 NFL draft</a></div>
+                        <div class="espn-desc">In 2025, Matthew Golden was the first Round 1 wideout taken by the Packers since 2002, but they drafted none in 2026.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Why+Packers+GM+Gutekunst+didn%27t+take+a+WR+in+2026+NFL+draft+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/media/motion/2026/0427/9831f50974d94ce2a40f0e2dcae4a587529/9831f50974d94ce2a40f0e2dcae4a587529.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NFL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/video/clip?id=48608405" target="_blank" rel="noopener">Dan Orlovsky: Jets have as bright a future as anyone in NFL</a></div>
+                        <div class="espn-desc">Dan Orlovsky explains why he is optimistic about the Jets' future after the 2026 NFL draft.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Dan+Orlovsky%3A+Jets+have+as+bright+a+future+as+anyone+in+NFL+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0427/r1649790_608x342_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NFL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/nfl/story/_/id/48604913/new-orleans-saints-transform-wideout-room-three-day-2026-nfl-draft-spree" target="_blank" rel="noopener">Saints transform wideout room in three-day NFL draft spree</a></div>
+                        <div class="espn-desc">Led by first-round pick Jordyn Tyson, New Orleans added three WRs who can inject enthusiasm, talent and depth.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Saints+transform+wideout+room+in+three-day+NFL+draft+spree+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0426/nfl-post-draft-16x9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NFL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/nfl/story/_/page/nfldraftpostdraftquestions48602828/nfl-draft-2026-biggest-postdraft-questions-32-teams-offseason-signings" target="_blank" rel="noopener">Biggest 2026 NFL postdraft questions for all 32 teams</a></div>
+                        <div class="espn-desc">The 2026 NFL draft is over, but can the rookies make an impact? We answer lingering questions for all 32 teams.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Biggest+2026+NFL+postdraft+questions+for+all+32+teams+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0425/r1648970_608x342_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NFL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/nfl/story/_/id/48590115/nfl-dallas-cowboys-2026-draft-caleb-downs-darren-woodson" target="_blank" rel="noopener">Cowboys' great Darren Woodson on Caleb Downs: 'Yes sirrr!'</a></div>
+                        <div class="espn-desc">Dallas hopes Downs, the No. 11 draft pick, will use his versatility and leadership to quarterback the defense.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Cowboys%27+great+Darren+Woodson+on+Caleb+Downs%3A+%27Yes+sirrr%21%27+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0427/r1649967_576x324_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN MLB</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/fantasy/baseball/story/_/id/48297021/espn-fantasy-baseball-buzz-injuries-promotions-demotions-trades-prospects-lineup-changes-mlb-news-analysis-2026" target="_blank" rel="noopener">Fantasy baseball news: Stanton's status still uncertain and other Monday news</a></div>
+                        <div class="espn-desc">All of the important fantasy spin and actionable takeaways resulting from the latest baseball news.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Fantasy+baseball+news%3A+Stanton%27s+status+still+uncertain+and+other+Monday+news+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0424/r1648520_576x324_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN MLB</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/fantasy/baseball/story/_/id/48580994/fantasy-baseball-forecaster-espn-2026-mlb-starting-pitcher-hitter-ranks-week-5-april-27-3" target="_blank" rel="noopener">Fantasy Baseball Forecaster for Week 5: April 27-May 3</a></div>
+                        <div class="espn-desc">Set your lineups for the week ahead in fantasy baseball with our preview featuring pitcher rankings, hitter ratings and </div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Fantasy+Baseball+Forecaster+for+Week+5%3A+April+27-May+3+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0426/r1649645_608x342_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN MLB</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/fantasy/baseball/story/_/id/48561423/fantasy-baseball-pitcher-rankings-lineup-advice-tips-mlb-daily-notes-april-27-games" target="_blank" rel="noopener">Fantasy baseball lineup advice for Monday: Don't sleep on Randy Vasquez</a></div>
+                        <div class="espn-desc">Everything you need to know to set your fantasy baseball lineups for Monday's MLB action.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Fantasy+baseball+lineup+advice+for+Monday%3A+Don%27t+sleep+on+Randy+Vasquez+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2022/0406/r996173_576x324_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN MLB</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/fantasy/baseball/story/_/id/31165089/fantasy-baseball-forecaster-team-hitting-stolen-base-ratings-platoon-matchups-daily-weekly-leagues" target="_blank" rel="noopener">Fantasy baseball forecaster: Team hitting ratings</a></div>
+                        <div class="espn-desc">Stay ahead of the game and optimize your fantasy baseball hitters with our forecaster, which provides a rolling 10-day o</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Fantasy+baseball+forecaster%3A+Team+hitting+ratings+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2025/0425/r1483869_576x324_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN MLB</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/fantasy/baseball/story/_/id/31165100/fantasy-baseball-forecaster-probable-starting-pitcher-projections-matchups-daily-weekly-leagues" target="_blank" rel="noopener">Fantasy baseball forecaster: Pitcher projections for the next 10 days</a></div>
+                        <div class="espn-desc">Keep up to date on who is pitching -- and how well they're expected to do -- with our forecaster, which provides a rolli</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Fantasy+baseball+forecaster%3A+Pitcher+projections+for+the+next+10+days+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0326/r1634067_576x324_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN MLB</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/fantasy/baseball/flb/story?page=REcloserorgchart" target="_blank" rel="noopener">Fantasy Baseball Reliever Depth Chart</a></div>
+                        <div class="espn-desc">Our updated reliever depth chart displays the closer hierarchy for each team, as well as the fatigue factor in each MLB </div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Fantasy+Baseball+Reliever+Depth+Chart+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0427/r1649899_576x324_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN MLB</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/espn/betting/story/_/id/48607830/espn-mlb-betting-tips-odds-lines-2026-monday-april-27" target="_blank" rel="noopener">MLB betting tips for Monday: Will Ranger Suarez keep Jays bats in check?</a></div>
+                        <div class="espn-desc">All of the odds, recommended prop bets and trends in baseball for Monday, April 27.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=MLB+betting+tips+for+Monday%3A+Will+Ranger+Suarez+keep+Jays+bats+in+check%3F+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0426/r1649595_608x342_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN MLB</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/mlb/story/_/id/48601884/mlb-2026-dodgers-season-predictions-wins-ohtani-cy-young-tucker-pages" target="_blank" rel="noopener">Predicting rest of Dodgers' 2026 season from first-month pace</a></div>
+                        <div class="espn-desc">110 wins? How much WAR for Shohei Ohtani? We use L.A.'s hot start to play over/under for the rest of 2026.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Predicting+rest+of+Dodgers%27+2026+season+from+first-month+pace+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0426/r1649721_1296x729_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NHL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/nhl/story/_/id/48603626/2026-nhl-playoffs-stanley-cup-porter-martone-philadelphia-flyers-pittsburgh-penguins" target="_blank" rel="noopener">The secrets to Porter Martone's instant success with the Flyers</a></div>
+                        <div class="espn-desc">The rookie joined the team this spring after his college season concluded -- and has been lighting it up in the playoffs</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=The+secrets+to+Porter+Martone%27s+instant+success+with+the+Flyers+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://s.espncdn.com/stitcher/sports/hockey/nhl/events/401869801.png?templateId=espn.applewatch.awayhome.1" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NHL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="http://www.espn.com/nhl/preview?gameId=401869801" target="_blank" rel="noopener">Flyers look to clinch first round series over the Penguins in game 5</a></div>
+                        <div class="espn-desc">Philadelphia Flyers (43-27-12, in the Metropolitan Division) vs. Pittsburgh Penguins (41-25-16, in the Metropolitan Divi</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Flyers+look+to+clinch+first+round+series+over+the+Penguins+in+game+5+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://s.espncdn.com/stitcher/sports/hockey/nhl/events/401869774.png?templateId=espn.applewatch.awayhome.1" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NHL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="http://www.espn.com/nhl/preview?gameId=401869774" target="_blank" rel="noopener">Anaheim looks to clinch first round series over Edmonton in game 5</a></div>
+                        <div class="espn-desc">Anaheim Ducks (43-33-6, in the Pacific Division) vs. Edmonton Oilers (41-30-11, in the Pacific Division)</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Anaheim+looks+to+clinch+first+round+series+over+Edmonton+in+game+5+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://s.espncdn.com/stitcher/sports/hockey/nhl/events/401869764.png?templateId=espn.applewatch.awayhome.1" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NHL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="http://www.espn.com/nhl/preview?gameId=401869764" target="_blank" rel="noopener">Buffalo hosts Boston with 3-1 series lead</a></div>
+                        <div class="espn-desc">Boston Bruins (45-27-10, in the Atlantic Division) vs. Buffalo Sabres (50-23-9, in the Atlantic Division)</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Buffalo+hosts+Boston+with+3-1+series+lead+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Data: <a href="https://reddit.com" target="_blank">Reddit</a> via Pullpush API +
+        <a href="https://espn.com" target="_blank">ESPN</a> +
+        <a href="https://trends.google.com" target="_blank">Google Trends</a>
+        — Scan lúc 15:28 — 27/04/2026
+    </footer>
+</body>
+</html>
