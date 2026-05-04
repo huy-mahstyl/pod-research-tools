@@ -1,0 +1,287 @@
+{
+  "generated_at": "2026-05-04T19:56:53.583282",
+  "total_trends": 10,
+  "pod_relevant_count": 2,
+  "trends": [
+    {
+      "query": "city",
+      "traffic": "500+",
+      "traffic_num": 500,
+      "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSHPdvoth_hZlzOyTZseTFZApifns_UlntX7vH0K3feqpB0Uq9Ny03gOrUqUHQ",
+      "pubdate": "Mon, 4 May 2026 12:40:00 -0700",
+      "news_items": [
+        {
+          "title": "City of Pierre to initiate Comprehensive Plan update",
+          "url": "https://www.capjournal.com/news/local/city-of-pierre-to-initiate-comprehensive-plan-update",
+          "source": "Pierre Capital Journal",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSHPdvoth_hZlzOyTZseTFZApifns_UlntX7vH0K3feqpB0Uq9Ny03gOrUqUHQ"
+        },
+        {
+          "title": "Pierre City Commission Approves Requesting Bids For Update Of Comprehensive Plan",
+          "url": "https://www.kccrradio.com/2026/04/28/pierre-city-commission-approves-requesting-bids-for-update-of-comprehensive-plan/",
+          "source": "KCCR-AM",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTohrDAlxvpLUCk3UudCTkeW59odfcKdch37y8ildlJeJZJgCARkMzwoZww7U8"
+        },
+        {
+          "title": "City of Pierre to Initiate Comprehensive Plan Update",
+          "url": "https://drgnews.com/2026/04/29/city-of-pierre-to-initiate-comprehensive-plan-update/",
+          "source": "DRGNews",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROJKTIY9Vqnt744Aym64Wm9DNHUMBWk8ke5DyAeuOWEmoIqtFKCm0bqW3Eaoc"
+        }
+      ],
+      "is_pod": false
+    },
+    {
+      "query": "kevin durant trade rumors rockets",
+      "traffic": "500+",
+      "traffic_num": 500,
+      "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQU8EiuTOLsH7AvctU6HrXzFLSr4U-Crys2UolYoXmgaP2sslDnlDjYnCrWMjA",
+      "pubdate": "Mon, 4 May 2026 12:30:00 -0700",
+      "news_items": [
+        {
+          "title": "Kendrick Perkins: Its time for the Nuggets to part ways with Jamal Murray",
+          "url": "https://www.espn.co.uk/video/clip/_/id/48648937",
+          "source": "ESPN",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQU8EiuTOLsH7AvctU6HrXzFLSr4U-Crys2UolYoXmgaP2sslDnlDjYnCrWMjA"
+        },
+        {
+          "title": "Rockets predicted to cut ties with Kevin Durant, acquire $125 million Nuggets NBA champion guard",
+          "url": "https://sports.yahoo.com/articles/rockets-predicted-cut-ties-kevin-171442756.html",
+          "source": "Yahoo Sports",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQaBeEBFk4W5e_p-WiAJ-06Mgl_asy88fidhLsMf7bmyWin7S5TI0rlEkIKngI"
+        },
+        {
+          "title": "Nuggets two main trade targets revealed for Nikola Jokic, per NBA insider",
+          "url": "https://basketnews.com/news-246609-nuggets-two-main-trade-targets-revealed-for-nikola-jokic-per-nba-insider.html",
+          "source": "BasketNews.com",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRGdyg02-DymlelQd3VKbWLnepjdLMK4SUunQJUJi4i8grcgkk36PBVklGG7dk"
+        }
+      ],
+      "is_pod": true
+    },
+    {
+      "query": "a'ja wilson physical play backlash",
+      "traffic": "5000+",
+      "traffic_num": 5000,
+      "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRjUeyEKDApYaM9c-dERtvpiMGkLLI7lHWH-TiM7h5B_GbgktmP26q9_r1I0L4",
+      "pubdate": "Mon, 4 May 2026 12:30:00 -0700",
+      "news_items": [
+        {
+          "title": "Five thoughts from Wings vs. Aces: Azzi Fudd gets more comfortable in Dallas' offense",
+          "url": "https://www.dallasnews.com/sports/wings/article/five-thoughts-wings-aces-azzi-fudd-22237204.php",
+          "source": "Dallas News",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRjUeyEKDApYaM9c-dERtvpiMGkLLI7lHWH-TiM7h5B_GbgktmP26q9_r1I0L4"
+        },
+        {
+          "title": "“Dirty Play By MVP”: A’ja Wilson Faces Backlash After Physical Play Leaves Dallas Star Bloodied in Preseason",
+          "url": "https://sports.yahoo.com/articles/dirty-play-mvp-ja-wilson-110014029.html",
+          "source": "Yahoo Sports",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnM9yVMAPO2Kj8-rdX8GRGE5lNZS5A5H2fnlQYGlSnZdsXWkwZH2fAuCgLS8k"
+        },
+        {
+          "title": "1st WNBA game in Austin sells out Moody Center, Wings thump defending champs Aces",
+          "url": "https://www.kxan.com/sports/1st-wnba-game-in-austin-sells-out-moody-center-wings-thump-defending-champs-aces/",
+          "source": "KXAN Austin",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRprdMm7qaD7TKkVf9AZ4_3EfuoCDv0KmYvTLj8Ni8_pRD-wiA9cAa48_YVuYE"
+        }
+      ],
+      "is_pod": true
+    },
+    {
+      "query": "jack grealish",
+      "traffic": "500+",
+      "traffic_num": 500,
+      "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSE-fThHTvEVC47KrqZ2XTiS-fLIuTsvMcvcGoCCtfw3eNi1JaXPQ4ZLnIzHjI",
+      "pubdate": "Mon, 4 May 2026 12:30:00 -0700",
+      "news_items": [
+        {
+          "title": "Pep Guardiola delivers Jack Grealish future update as Man City loanee nears end of Everton spell",
+          "url": "https://www.goal.com/en/lists/pep-guardiola-delivers-jack-grealish-future-update-as-man-city-loanee-nears-end-of-everton-spell/blt523c158063f476de",
+          "source": "Goal.com",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSE-fThHTvEVC47KrqZ2XTiS-fLIuTsvMcvcGoCCtfw3eNi1JaXPQ4ZLnIzHjI"
+        },
+        {
+          "title": "Everton: Jack Grealish injury boost before summer transfer window",
+          "url": "https://www.bbc.com/sport/football/articles/c3w26nvqne6o",
+          "source": "BBC",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQG9nJKP6EatYje7pCS_HAfTWF4rFQHBF_dTMetzMA7MfPIgcNqrHOKCwX13Bo"
+        },
+        {
+          "title": "Thursday’s Everton News: Grealish progress, Bajraktarević and Ake links",
+          "url": "https://royalbluemersey.sbnation.com/everton-news/79737/grealish-injury-progress-bajraktarevic-delap-and-ake-links",
+          "source": "Royal Blue Mersey",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTvuVByWQKtuPruwya-cc4miaB0GEQJlkLxfdcnMFhHZHeqiBFr1dI12XTEPDk"
+        }
+      ],
+      "is_pod": false
+    },
+    {
+      "query": "sevilla",
+      "traffic": "500+",
+      "traffic_num": 500,
+      "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcT3p1PSqsUxg9t2ilm36gZooqHC6iXdl9nL2_f7ZLgG2ZtviyDrx05o3V3C4IM",
+      "pubdate": "Mon, 4 May 2026 12:30:00 -0700",
+      "news_items": [
+        {
+          "title": "Sevilla - Real Sociedad, hoy en directo: última hora de LaLiga EA Sports en vivo",
+          "url": "https://as.com/futbol/primera/sevilla-real-sociedad-hoy-en-directo-ultima-hora-de-laliga-ea-sports-en-vivo-f202605-d/",
+          "source": "Diario AS",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcT3p1PSqsUxg9t2ilm36gZooqHC6iXdl9nL2_f7ZLgG2ZtviyDrx05o3V3C4IM"
+        },
+        {
+          "title": "Nervión cumple y apela a su magia: «No estáis solos en esta batalla»",
+          "url": "https://www.abc.es/deportes/orgullodenervion/noticias-sevilla-fc/tifo-gol-norte-sevilla-real-sociedad-20260504191118-nts.html",
+          "source": "ABC",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlrdWgkrukbJI_HivTTfAjnOrh4SVJBb1XIgUCFbcOKFBaJBct0LL2zisE9sk"
+        },
+        {
+          "title": "Sevilla - Real Sociedad en directo | LALIGA EA Sports hoy en vivo",
+          "url": "https://www.marca.com/futbol/laliga-ea-sports/sevilla-real-sociedad/2026/05/04/01_0101_20260504_179_188-directo.html",
+          "source": "MARCA",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiiE1dXvXYR_txhXdyfCRQcEaygWDHBDJYpxwgKHMyXUbEgv3UOl0GbdOeUw8"
+        }
+      ],
+      "is_pod": false
+    },
+    {
+      "query": "sevilla vs real sociedad",
+      "traffic": "1000+",
+      "traffic_num": 1000,
+      "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRRwOvZeQ1RCOectFBbNzb90RO0iFo7744EKusCTrxY7EliGaxoFxKykWOMiEA",
+      "pubdate": "Mon, 4 May 2026 12:20:00 -0700",
+      "news_items": [
+        {
+          "title": "Sevilla vs Real Sociedad: Spanish La Liga stats & head-to-head",
+          "url": "https://www.bbc.com/sport/football/live/c6265xvyg6dt",
+          "source": "BBC",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRRwOvZeQ1RCOectFBbNzb90RO0iFo7744EKusCTrxY7EliGaxoFxKykWOMiEA"
+        },
+        {
+          "title": "Sevilla vs. Real Sociedad prediction, where to watch, time for La Liga match",
+          "url": "https://www.usatoday.com/story/sports/soccer/2026/05/04/where-to-watch-sevilla-real-sociedad-prediction-odds-stream/89924693007/",
+          "source": "USA Today",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcT_AsVtjCZWOmhS78lVee1YsAeZIyvtXBlctSfIn12bLATrWLkU7pQkTMqpiLQ"
+        },
+        {
+          "title": "Results go Sevilla's way ahead of Real Sociedad clash",
+          "url": "https://www.besoccer.com/new/results-go-sevillas-way-ahead-of-real-sociedad-clash-1407633",
+          "source": "BeSoccer Livescore",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQzet8cBYLlcCAZL_9rhgvTOnbCamVWhnNqfmF8aJMmnBeWzMgCV_l8uC7OImo"
+        }
+      ],
+      "is_pod": false
+    },
+    {
+      "query": "shades mountain baptist church",
+      "traffic": "500+",
+      "traffic_num": 500,
+      "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcS_AnmJYzCMnntpizvAMCsI2lRDsgb8Lqipmdf1esM3BmZDEw23S-Iz1uonCPo",
+      "pubdate": "Mon, 4 May 2026 12:20:00 -0700",
+      "news_items": [
+        {
+          "title": "Baptist pastor leaving Alabama megachurch hints at reason in last sermon",
+          "url": "https://www.al.com/news/2026/05/baptist-pastor-leaving-alabama-megachurch-hints-at-reason-in-last-sermon.html",
+          "source": "AL.com",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcS_AnmJYzCMnntpizvAMCsI2lRDsgb8Lqipmdf1esM3BmZDEw23S-Iz1uonCPo"
+        },
+        {
+          "title": "Shades Mountain Baptist Church pastor George Wright resigns unexpectedly",
+          "url": "https://thealabamabaptist.org/shades-mountain-baptist-church-pastor-george-wright-resigns-unexpectedly/",
+          "source": "The Alabama Baptist",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTq9PVSRvfo_tEqTOlXA19kA-j7Y0mO0f8UsxA1j9Nvm50Hx46EnlVuwl_bAZs"
+        },
+        {
+          "title": "Alabama megachurch pastor resigns abruptly, calls decision 'heartbreaking'",
+          "url": "https://www.christianpost.com/news/alabama-megachurch-pastor-resigns-abruptly.html",
+          "source": "Christian Post",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTRyXRWHlD3ax1QLMToDfe0W0xyoQYyJeLkax2bWsbzmhY06C92XPb0G1WVMog"
+        }
+      ],
+      "is_pod": false
+    },
+    {
+      "query": "cancer",
+      "traffic": "1000+",
+      "traffic_num": 1000,
+      "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQ5my7sTaf_ZXfwTC174X1twtbk13VLPidlnusa8XkNZ4QXe1hzSO2SUGgfrXA",
+      "pubdate": "Mon, 4 May 2026 12:10:00 -0700",
+      "news_items": [
+        {
+          "title": "Triad dermatologist speaks on melanoma danger",
+          "url": "https://myfox8.com/spotlight/house-calls/triad-dermatologist-speaks-on-melanoma-danger/",
+          "source": "FOX8 WGHP",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQ5my7sTaf_ZXfwTC174X1twtbk13VLPidlnusa8XkNZ4QXe1hzSO2SUGgfrXA"
+        },
+        {
+          "title": "Mind your moles: How to check for skin cancer",
+          "url": "https://www.uclahealth.org/news/article/mind-your-moles-how-check-skin-cancer",
+          "source": "UCLA Health",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcS1RGn9A7-Z6QCu6MEbCxKkSdXQKB3GhE7r9lJCZtLvw7fMw280VKlZaT1FKAg"
+        },
+        {
+          "title": "Watch for these melanoma warning signs",
+          "url": "https://www.wral.com/video/watch-for-these-melanoma-warning-signs/22354727/",
+          "source": "WRAL",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0Ny5Z_ZOgSvI2un3gkff61rmijR9c7DuqiVxu1wF4E4yY-77pWgNTc2SGtCY"
+        }
+      ],
+      "is_pod": false
+    },
+    {
+      "query": "roma",
+      "traffic": "500+",
+      "traffic_num": 500,
+      "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSJj5M_J713oaLuMtMNPfKzg3SNvhtYNYIqrqwkUsSiE3WplvwfcrIuHSfPCKQ",
+      "pubdate": "Mon, 4 May 2026 12:10:00 -0700",
+      "news_items": [
+        {
+          "title": "La Nueva Ola, torna su MYmovies ONE lo spazio dedicato al cinema iberoamericano",
+          "url": "https://www.repubblica.it/spettacoli/mymovies-one/2026/05/04/news/la_nueva_ola_spazio_dedicato_al_cinema_iberoamericano-425322750/",
+          "source": "la Repubblica",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSJj5M_J713oaLuMtMNPfKzg3SNvhtYNYIqrqwkUsSiE3WplvwfcrIuHSfPCKQ"
+        },
+        {
+          "title": "La Nueva Ola a Roma il meglio del cinema spagnolo e latinoamericano",
+          "url": "https://www.taxidrivers.it/530921/latest-news/la-nueva-ola.html",
+          "source": "Taxidrivers.it",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSPXBZcI8II5ffPPjB2zBlO29Fx5b2Ft2L7MkjEwwQrrI7V-5sLX0wlB9Ulb6A"
+        },
+        {
+          "title": "La Nueva Ola, al via la 19° edizione",
+          "url": "https://www.sentieriselvaggi.it/la-nueva-ola-al-via-la-19-edizione/",
+          "source": "Sentieri selvaggi",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTXcQll-J3W2dO0MDqb37QU2iX-TKkbA0LLRG3hh3vGQw3xjgFcju_5SCgoRV8"
+        }
+      ],
+      "is_pod": false
+    },
+    {
+      "query": "norfolk southern railway",
+      "traffic": "500+",
+      "traffic_num": 500,
+      "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTlYQ3jPUNYTF3ldvKZjpnNq38o-_QbTLNEQsLjIV8j4-lJbNxl6s1tj9GuMuU",
+      "pubdate": "Mon, 4 May 2026 12:10:00 -0700",
+      "news_items": [
+        {
+          "title": "Union Pacific would exit Norfolk Southern merger if STB orders widespread line sales or trackage rights",
+          "url": "https://www.freightwaves.com/news/union-pacific-would-exit-norfolk-southern-merger-if-stb-orders-widespread-line-sales-or-trackage-rights",
+          "source": "FreightWaves",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTlYQ3jPUNYTF3ldvKZjpnNq38o-_QbTLNEQsLjIV8j4-lJbNxl6s1tj9GuMuU"
+        },
+        {
+          "title": "Union Pacific refiles application for merger with Norfolk Southern in move they say would remove “2.1 million trucks from US highways”",
+          "url": "https://cdllife.com/2026/union-pacific-refiles-application-for-merger-with-norfolk-southern-in-move-they-say-would-remove-2-1-million-trucks-from-us-highways/",
+          "source": "CDLLife",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSA_kkiVkd2TKjavKMAIPPBeSoSdHTLZDFkg4SEUcINotr97tq_ZtAyh-hrPDA"
+        },
+        {
+          "title": "USA National Unity: The Bold $85 Billion Dream to Connect America by Rail",
+          "url": "https://www.travelandtourworld.com/news/article/usa-national-unity-the-bold-85-billion-dream-to-connect-america-by-rail/",
+          "source": "Travel And Tour World",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTuK-aFlVM9-PTBLT-KdSJ-4gMHHOiVhdMXFyR25ljvVKYsuh4bouAL5JjS8GA"
+        }
+      ],
+      "is_pod": false
+    }
+  ]
+}
