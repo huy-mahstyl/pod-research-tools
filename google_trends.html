@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="1800">
+    <title>📊 Google Trends — POD Monitor</title>
+    <meta name="description" content="Real-time Google Trends monitoring for Print-on-Demand keyword research">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --bg-subtle: #0f1420;
+            --card: #141b2d;
+            --card-hover: #1a2338;
+            --border: #1e2a42;
+            --border-light: #2a3a5c;
+            --text: #e2e8f0;
+            --text-muted: #64748b;
+            --text-dim: #475569;
+            --red: #ef4444;
+            --red-glow: rgba(239,68,68,0.15);
+            --green: #22c55e;
+            --green-glow: rgba(34,197,94,0.15);
+            --orange: #f59e0b;
+            --orange-glow: rgba(245,158,11,0.15);
+            --blue: #3b82f6;
+            --blue-glow: rgba(59,130,246,0.15);
+            --purple: #a855f7;
+            --cyan: #06b6d4;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        header {
+            text-align: center;
+            padding: 2rem 1rem 1.5rem;
+            background: linear-gradient(180deg, #0f1628 0%, var(--bg) 100%);
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #22c55e 0%, #3b82f6 50%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 0.4rem;
+            font-weight: 500;
+        }
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.35rem 0.8rem;
+            border-radius: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+        }
+        .stat-fire { color: var(--red); }
+        .stat-pod { color: var(--green); }
+        .stat-time { color: var(--blue); }
+
+        /* ── Refresh Button ── */
+        .refresh-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 1rem;
+            padding: 0.45rem 1.2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--blue);
+            background: rgba(59,130,246,0.1);
+            border: 1px solid rgba(59,130,246,0.3);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .refresh-btn:hover {
+            background: rgba(59,130,246,0.2);
+            border-color: var(--blue);
+            transform: translateY(-1px);
+        }
+
+        /* ── Layout ── */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+            padding: 1.2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; }
+        }
+
+        /* ── Section ── */
+        .section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .section-count {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .count-red { background: var(--red-glow); color: var(--red); }
+        .count-green { background: var(--green-glow); color: var(--green); }
+        .section-body {
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+
+        /* ── Trend Card ── */
+        .trend-card {
+            display: flex;
+            gap: 0.8rem;
+            padding: 0.8rem 1.2rem;
+            border-bottom: 1px solid rgba(30,42,66,0.5);
+            transition: background 0.15s;
+            animation: fadeIn 0.3s ease-out both;
+        }
+        .trend-card:hover {
+            background: var(--card-hover);
+        }
+        .trend-card:last-child {
+            border-bottom: none;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .trend-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+        }
+        .trend-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .trend-top {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.3rem;
+        }
+        .trend-rank {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            min-width: 22px;
+        }
+        .trend-query {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        .trend-query:hover {
+            color: var(--blue);
+        }
+
+        /* ── Badges ── */
+        .badge {
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+        .badge-hot {
+            background: var(--red);
+            color: #fff;
+            box-shadow: 0 0 8px var(--red-glow);
+        }
+        .badge-high {
+            background: var(--orange);
+            color: #fff;
+        }
+        .badge-normal {
+            background: rgba(100,116,139,0.2);
+            color: var(--text-muted);
+        }
+        .badge-pod {
+            background: rgba(34,197,94,0.15);
+            color: var(--green);
+            border: 1px solid rgba(34,197,94,0.3);
+        }
+
+        /* ── News items ── */
+        .news-list {
+            margin-top: 0.3rem;
+        }
+        .news-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.3rem;
+            margin-bottom: 0.2rem;
+        }
+        .news-bullet {
+            color: var(--text-dim);
+            font-size: 0.55rem;
+            margin-top: 0.2rem;
+            flex-shrink: 0;
+        }
+        .news-link {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.15s;
+        }
+        .news-link:hover {
+            color: var(--cyan);
+        }
+        .news-source {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        /* ── Action Links ── */
+        .trend-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.35rem;
+        }
+        .action-link {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-decoration: none;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            transition: all 0.15s;
+        }
+        .action-link:hover {
+            color: var(--blue);
+            border-color: rgba(59,130,246,0.4);
+            background: var(--blue-glow);
+        }
+
+        /* ── Empty state ── */
+        .empty {
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ── Scrollbar ── */
+        .section-body::-webkit-scrollbar { width: 6px; }
+        .section-body::-webkit-scrollbar-track { background: transparent; }
+        .section-body::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+        .section-body::-webkit-scrollbar-thumb:hover {
+            background: var(--border-light);
+        }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            border-top: 1px solid var(--border);
+        }
+        footer a { color: var(--blue); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+    </style>
+    <script>
+    // Mở link Google Search an toàn — tránh bị block khi mở từ file://
+    function openSearch(url, evt) {
+        if (evt) evt.preventDefault();
+        // Tạo cửa sổ mới qua about:blank trước, rồi redirect
+        var w = window.open('about:blank', '_blank');
+        if (w) {
+            w.location.href = url;
+        } else {
+            // Fallback nếu popup bị chặn
+            window.location.href = url;
+        }
+        return false;
+    }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>📊 Google Trends — POD Monitor</h1>
+        <p class="subtitle">Real-time trending keywords in the US — for POD research</p>
+        <div class="stats-bar">
+            <div class="stat stat-fire">🔥 10 xu hướng</div>
+            <div class="stat stat-pod">🎯 3 liên quan Sports/POD</div>
+            <div class="stat stat-time">🕐 21:28:43 — 15/09/2026</div>
+        </div>
+        <a class="refresh-btn" href="javascript:location.reload()">🔄 Refresh</a>
+    </header>
+
+    <div class="container">
+
+        <div class="section" id="pod-section">
+            <div class="section-header">
+                <div class="section-title" style="color: var(--green);">
+                    🏆 Sports & POD Relevant
+                </div>
+                <span class="section-count count-green">3 found</span>
+            </div>
+            <div class="section-body">
+
+            <div class="trend-card" style="animation-delay: 0.00s">
+                <img class="trend-thumb" src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTq7x0bTdpjdEmokqdScktrWxxIoex8NCLyqLi3XnsexYQQfZwAmGPR5MbJvdc" alt="simone biles indianapolis move" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#1</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=simone+biles+indianapolis+move&amp;tbm=isch" onclick="return openSearch(this.href, event)">simone biles indianapolis move</a>
+                        <span class="badge badge-normal">500+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://people.com/simone-biles-finds-husband-jonathan-owens-for-pregame-kiss-first-game-with-colts-12120480" target="_blank" rel="noopener noreferrer">Simone Biles Finds Husband Jonathan Owens for Sideline Kiss Before His First Game with Colts <span class="news-source">— People.com</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.indystar.com/picture-gallery/sports/nfl/colts/2026/09/13/simone-biles-returns-to-lucas-oil-stadium-see-her-game-day-outfit/91745683007/" target="_blank" rel="noopener noreferrer">Simone Biles returns to Lucas Oil Stadium. See her game-day outfit <span class="news-source">— IndyStar</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=simone+biles+indianapolis+move&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=simone+biles+indianapolis+move&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=simone+biles+indianapolis+move+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.03s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQdgZqhTcmL7K-vh4jE4SwYkLSfWaNhe56_uplIyMRtXjpDHE7z5g1aq1VjFVE" alt="jimmy horn jr" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#2</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=jimmy+horn+jr&amp;tbm=isch" onclick="return openSearch(this.href, event)">jimmy horn jr</a>
+                        <span class="badge badge-high">2000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.espn.com/nfl/story/_/id/49952014/panthers-waive-wr-horn-sign-lb-dodson-practice-squad" target="_blank" rel="noopener noreferrer">Panthers waive WR Horn, sign LB Dodson from practice squad <span class="news-source">— ESPN</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.panthers.com/news/panthers-add-a-linebacker-waive-wide-receiver-jimmy-horn-jr" target="_blank" rel="noopener noreferrer">Panthers add a linebacker, waive wide receiver Jimmy Horn Jr. <span class="news-source">— Carolina Panthers</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=jimmy+horn+jr&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=jimmy+horn+jr&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=jimmy+horn+jr+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.06s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTzToGArfCGZdTDZvf4bDpd8g-JZvaQxsj2Khq8Q085ps48KnMFMT65o5s-8o" alt="lukas graham" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#3</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=lukas+graham&amp;tbm=isch" onclick="return openSearch(this.href, event)">lukas graham</a>
+                        <span class="badge badge-hot">10000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.10tv.com/article/news/nation-world/supporting-acts-quit-ed-sheeran-tour-macklemore-dropped-palestine-comments/507-15d2794d-87fb-4f45-90a0-51076305a9a1" target="_blank" rel="noopener noreferrer">4 supporting acts quit Ed Sheeran's tour after Macklemore is dropped over pro-Palestinian comments <span class="news-source">— 10TV</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.espn.com/nfl/story/_/id/49943754/patriots-kraft-says-macklemore-performance-cross-line" target="_blank" rel="noopener noreferrer">Patriots' Kraft says Macklemore performance would cross line <span class="news-source">— ESPN</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=lukas+graham&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=lukas+graham&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=lukas+graham+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="section" id="all-section">
+            <div class="section-header">
+                <div class="section-title" style="color: var(--red);">
+                    🔥 All Trending Today
+                </div>
+                <span class="section-count count-red">10 total</span>
+            </div>
+            <div class="section-body">
+
+            <div class="trend-card" style="animation-delay: 0.00s">
+                <img class="trend-thumb" src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSLLq-NWd-quYUp9uUSZfa7GjinaSywF8pWbOZOSMAH92QMxrUpvmMyzg5lWJ4" alt="kauai" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#1</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=kauai&amp;tbm=isch" onclick="return openSearch(this.href, event)">kauai</a>
+                        <span class="badge badge-normal">100+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.sfgate.com/hawaii/article/kauai-survival-hurricane-lowell-22431581.php" target="_blank" rel="noopener noreferrer">Kauai man fought for his life during hours-long ordeal as river swept away home <span class="news-source">— SFGATE</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.hawaiinewsnow.com/2026/09/15/travelers-heed-calls-avoid-kauai-amid-hurricane-lowell-recovery/" target="_blank" rel="noopener noreferrer">Travelers heed calls to avoid Kauai amid Hurricane Lowell recovery <span class="news-source">— Hawaii News Now</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=kauai&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=kauai&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=kauai+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.03s">
+                <img class="trend-thumb" src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRRwOvZeQ1RCOectFBbNzb90RO0iFo7744EKusCTrxY7EliGaxoFxKykWOMiEA" alt="fiorentina vs pisa" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#2</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=fiorentina+vs+pisa&amp;tbm=isch" onclick="return openSearch(this.href, event)">fiorentina vs pisa</a>
+                        <span class="badge badge-normal">500+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.bbc.com/sport/football/live/cmqlwz94q53wt" target="_blank" rel="noopener noreferrer">Fiorentina vs Pisa: Coppa Italia stats & head-to-head <span class="news-source">— BBC</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.violanation.com/fiorentina-match-coverage/22925/fiorentina-vs-pisa-preview-coppa-italia-score-prediction" target="_blank" rel="noopener noreferrer">Fiorentina vs Pisa: Preview <span class="news-source">— Viola Nation</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=fiorentina+vs+pisa&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=fiorentina+vs+pisa&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=fiorentina+vs+pisa+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.06s">
+                <img class="trend-thumb" src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTq7x0bTdpjdEmokqdScktrWxxIoex8NCLyqLi3XnsexYQQfZwAmGPR5MbJvdc" alt="simone biles indianapolis move" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#3</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=simone+biles+indianapolis+move&amp;tbm=isch" onclick="return openSearch(this.href, event)">simone biles indianapolis move</a>
+                        <span class="badge badge-normal">500+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://people.com/simone-biles-finds-husband-jonathan-owens-for-pregame-kiss-first-game-with-colts-12120480" target="_blank" rel="noopener noreferrer">Simone Biles Finds Husband Jonathan Owens for Sideline Kiss Before His First Game with Colts <span class="news-source">— People.com</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.indystar.com/picture-gallery/sports/nfl/colts/2026/09/13/simone-biles-returns-to-lucas-oil-stadium-see-her-game-day-outfit/91745683007/" target="_blank" rel="noopener noreferrer">Simone Biles returns to Lucas Oil Stadium. See her game-day outfit <span class="news-source">— IndyStar</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=simone+biles+indianapolis+move&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=simone+biles+indianapolis+move&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=simone+biles+indianapolis+move+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.09s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNnaCsN5e3kUSA1HcmpPftoKiA9aRuJFY0r2-0rmoh-VPbPgR-0IUmDI9TxzY" alt="prince harry meghan markle uk move" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#4</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=prince+harry+meghan+markle+uk+move&amp;tbm=isch" onclick="return openSearch(this.href, event)">prince harry meghan markle uk move</a>
+                        <span class="badge badge-high">2000+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://people.com/meghan-markle-prince-harry-offer-first-look-at-return-to-life-in-the-uk-video-12118826" target="_blank" rel="noopener noreferrer">Meghan Markle Shares First Video Since Returning to the U.K. with Prince Harry, and Archie Has an Accent! <span class="news-source">— People.com</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.eonline.com/news/1436101/why-prince-harry-meghan-markle-were-ready-to-move-back-to-u-k" target="_blank" rel="noopener noreferrer">Why Prince Harry Was Ready to Move Back to the U.K. With Meghan Markle and Their Kids <span class="news-source">— E! News</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=prince+harry+meghan+markle+uk+move&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=prince+harry+meghan+markle+uk+move&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=prince+harry+meghan+markle+uk+move+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.12s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTMi2JWfJfaEXjuUktncwUQuGSpeMGhOHFdTdZJvwDJSDr0HwScWyd2H2Sv_74" alt="yan diomandé" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#5</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=yan+diomand%C3%A9&amp;tbm=isch" onclick="return openSearch(this.href, event)">yan diomandé</a>
+                        <span class="badge badge-normal">500+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.lequipe.fr/Football/match-direct/championnat-d-espagne/2026-2027/elche-real-madrid-live/693132" target="_blank" rel="noopener noreferrer">DIRECT. Elche - Real Madrid, La Liga : Le Real mène de 2 buts à la pause <span class="news-source">— L'Équipe</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.eurosport.fr/football/la-liga/2026-2027/live-elche-cf-real-madrid_mtc21891393/live-commentary.shtml" target="_blank" rel="noopener noreferrer">Sixième journée de Liga 2026 : suivez Elche-Real Madrid EN DIRECT (0-2) <span class="news-source">— Eurosport</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=yan+diomand%C3%A9&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=yan+diomand%C3%A9&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=yan+diomand%C3%A9+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.15s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQdgZqhTcmL7K-vh4jE4SwYkLSfWaNhe56_uplIyMRtXjpDHE7z5g1aq1VjFVE" alt="jimmy horn jr" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#6</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=jimmy+horn+jr&amp;tbm=isch" onclick="return openSearch(this.href, event)">jimmy horn jr</a>
+                        <span class="badge badge-high">2000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.espn.com/nfl/story/_/id/49952014/panthers-waive-wr-horn-sign-lb-dodson-practice-squad" target="_blank" rel="noopener noreferrer">Panthers waive WR Horn, sign LB Dodson from practice squad <span class="news-source">— ESPN</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.panthers.com/news/panthers-add-a-linebacker-waive-wide-receiver-jimmy-horn-jr" target="_blank" rel="noopener noreferrer">Panthers add a linebacker, waive wide receiver Jimmy Horn Jr. <span class="news-source">— Carolina Panthers</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=jimmy+horn+jr&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=jimmy+horn+jr&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=jimmy+horn+jr+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.18s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTgyl6hKG2q1KFSeGRFEPFaJJgdXW3L7Oh4R48mT4KbPw2XjVdHV5QHJZRTyMY" alt="uju anya" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#7</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=uju+anya&amp;tbm=isch" onclick="return openSearch(this.href, event)">uju anya</a>
+                        <span class="badge badge-high">1000+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.usatoday.com/story/news/state/pennsylvania/pittsburgh/2026/09/15/carnegie-mellon-condemn-professor-viral-social-media-posts-charlie-kirk/91773117007/" target="_blank" rel="noopener noreferrer">Carnegie Mellon faculty doxxed as professor's X post draws backlash <span class="news-source">— USA Today</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://triblive.com/news/education-classroom/carnegie-mellon-professors-social-media-posts-draw-scrutiny-calls-for-university-action/" target="_blank" rel="noopener noreferrer">Carnegie Mellon professor’s social media posts draw scrutiny, calls for university action <span class="news-source">— TribLIVE.com</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=uju+anya&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=uju+anya&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=uju+anya+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.21s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoivJRmqz0XaWKYsiEBqV9e43nBlzmo4zPcIhenk_jfVaZYobrVdL76ZDsVes" alt="arda güler" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#8</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=arda+g%C3%BCler&amp;tbm=isch" onclick="return openSearch(this.href, event)">arda güler</a>
+                        <span class="badge badge-normal">500+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.fanatik.com.tr/real-madrid/live-elche-real-madrid-arda-guler-ilk-11de-la-liga-6-hafta-maci-2637837" target="_blank" rel="noopener noreferrer">CANLI | Elche - Real Madrid | Arda Güler ilk 11'de (La Liga 6. hafta maçı) <span class="news-source">— Fanatik</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://halktv.com.tr/spor/arda-guler-karari-saatler-kala-aciklandi-mourinho-sonunda-vazgecti-1055278h" target="_blank" rel="noopener noreferrer">Arda Güler kararı saatler kala açıklandı: Mourinho sonunda vazgeçti <span class="news-source">— Halk TV</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=arda+g%C3%BCler&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=arda+g%C3%BCler&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=arda+g%C3%BCler+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.24s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTzToGArfCGZdTDZvf4bDpd8g-JZvaQxsj2Khq8Q085ps48KnMFMT65o5s-8o" alt="lukas graham" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#9</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=lukas+graham&amp;tbm=isch" onclick="return openSearch(this.href, event)">lukas graham</a>
+                        <span class="badge badge-hot">10000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.10tv.com/article/news/nation-world/supporting-acts-quit-ed-sheeran-tour-macklemore-dropped-palestine-comments/507-15d2794d-87fb-4f45-90a0-51076305a9a1" target="_blank" rel="noopener noreferrer">4 supporting acts quit Ed Sheeran's tour after Macklemore is dropped over pro-Palestinian comments <span class="news-source">— 10TV</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.espn.com/nfl/story/_/id/49943754/patriots-kraft-says-macklemore-performance-cross-line" target="_blank" rel="noopener noreferrer">Patriots' Kraft says Macklemore performance would cross line <span class="news-source">— ESPN</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=lukas+graham&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=lukas+graham&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=lukas+graham+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.27s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOltyvq0c92kk3quoxl6MB1LrSWL4DkV-yRThrcVEXx3OwqKXF8TW7lca_pmo" alt="2025 georgia hyundai plant immigration raid" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#10</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=2025+georgia+hyundai+plant+immigration+raid&amp;tbm=isch" onclick="return openSearch(this.href, event)">2025 georgia hyundai plant immigration raid</a>
+                        <span class="badge badge-high">1000+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.cnn.com/2026/09/15/us/hyundai-plant-ice-raid-workers-file-claim-hnk-dst" target="_blank" rel="noopener noreferrer">Exclusive: More than 300 South Korean workers are challenging the Trump administration over its Georgia immigration raid <span class="news-source">— CNN</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.reuters.com/legal/litigation/south-korean-workers-challenging-trump-administration-over-georgia-raid-cnn-2026-09-15/" target="_blank" rel="noopener noreferrer">South Korean workers challenging Trump administration over Georgia raid, CNN reports <span class="news-source">— Reuters</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=2025+georgia+hyundai+plant+immigration+raid&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=2025+georgia+hyundai+plant+immigration+raid&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=2025+georgia+hyundai+plant+immigration+raid+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        Dữ liệu từ <a href="https://trends.google.com/trending?geo=US" target="_blank">Google Trends RSS</a>
+        — Không cần API key, không bị CAPTCHA
+        — Auto-refresh mỗi 30 phút
+        — Scan lúc 21:28:43 — 15/09/2026
+    </footer>
+</body>
+</html>
