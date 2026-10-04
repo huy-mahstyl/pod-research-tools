@@ -1,0 +1,287 @@
+{
+  "generated_at": "2026-10-04T00:40:39.565735",
+  "total_trends": 10,
+  "pod_relevant_count": 6,
+  "trends": [
+    {
+      "query": "brewers",
+      "traffic": "10000+",
+      "traffic_num": 10000,
+      "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwUwpy9P3kwYPOa0BHNZDJXpkNTO2WqCpNsWRoyA0RBcIoB_AIykYk1kqsyIw",
+      "pubdate": "Sat, 3 Oct 2026 17:20:00 -0700",
+      "news_items": [
+        {
+          "title": "Brewers lineup features four lefties, including Yelich, in Game 1",
+          "url": "https://www.jsonline.com/story/sports/mlb/brewers/2026/10/03/brewers-lineup-unveiled-for-game-1-of-nlds-vs-padres/92062985007/",
+          "source": "Milwaukee Journal Sentinel",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwUwpy9P3kwYPOa0BHNZDJXpkNTO2WqCpNsWRoyA0RBcIoB_AIykYk1kqsyIw"
+        },
+        {
+          "title": "Ortiz makes NLDS roster; Crew goes with 13-man pitching staff",
+          "url": "https://www.mlb.com/news/brewers-2026-nl-division-series-roster",
+          "source": "MLB.com",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTqVwxfhC4veGoH0-QZElonbj7WOjO7P7PeZPrqlPJEh6njv99HtejhHez06Rg"
+        },
+        {
+          "title": "How Brewers starters Jacob Misiorowski and Logan Henderson fared against the Padres this year",
+          "url": "https://reviewingthebrew.com/how-brewers-starters-jacob-misiorowski-and-logan-henderson-fared-against-the-padres-this-year-01m3wkyjkv0n",
+          "source": "Reviewing the Brew",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTjIoianH1DxFnswA2C-_rqmlB8Y2yOXbFwYupd5RsxuSr-QgzFpwWbWyqxivE"
+        }
+      ],
+      "is_pod": true
+    },
+    {
+      "query": "ryan weathers",
+      "traffic": "500+",
+      "traffic_num": 500,
+      "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSMAyqN8Xy-RTHMm5CCHoPEt4M4c-az-yIhybxVSqdSrGZglrg6JPseJ6zoImA",
+      "pubdate": "Sat, 3 Oct 2026 17:20:00 -0700",
+      "news_items": [
+        {
+          "title": "Stanton, Weathers on Yankees' ALDS roster; Rosario off",
+          "url": "https://www.mlb.com/news/yankees-2026-al-division-series-roster",
+          "source": "MLB.com",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSMAyqN8Xy-RTHMm5CCHoPEt4M4c-az-yIhybxVSqdSrGZglrg6JPseJ6zoImA"
+        },
+        {
+          "title": "The Dan Graca Show - Hour 1: What will the Yankees ALDS Roster look like?",
+          "url": "http://www.espn.com/espnradio/play?id=50090366",
+          "source": "ESPN",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSa1yJf7IsJlpUY7q884_4OF9r76xEI6L6bE_BO3Bw207a3MvKyEJEVaoletyU"
+        },
+        {
+          "title": "Yankees took a postseason risk with Ryan Weathers",
+          "url": "https://sports.yahoo.com/articles/yankees-took-postseason-risk-ryan-195136181.html",
+          "source": "Yahoo Sports",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjKgBrPmx6RUpUkwHzaLpMJboblVdZMLctDRZcmYfMCWz2yFRB24kctfNaPpc"
+        }
+      ],
+      "is_pod": true
+    },
+    {
+      "query": "fs1",
+      "traffic": "500+",
+      "traffic_num": 500,
+      "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAnqrDArnj5G-3uRoLOzl7BV47fpAjMfw-_ScxMpUf4uXmaIbYhdp8F4nNzro",
+      "pubdate": "Sat, 3 Oct 2026 17:20:00 -0700",
+      "news_items": [
+        {
+          "title": "‘Something I never shared…’ Shannon Sharpe and Skip Bayless claim Undisputed ending was Fox’s call",
+          "url": "https://sports.yahoo.com/articles/something-never-shared-shannon-sharpe-073909732.html",
+          "source": "Yahoo Sports",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAnqrDArnj5G-3uRoLOzl7BV47fpAjMfw-_ScxMpUf4uXmaIbYhdp8F4nNzro"
+        },
+        {
+          "title": "Cam Newton rips Skip Bayless over end of 'Undisputed' after Bayless blames FS1 for breakup with Shannon Sharpe",
+          "url": "https://awfulannouncing.com/fox/cam-newton-rips-skip-bayless-end-undisputed-breakup-shannon-sharpe.html",
+          "source": "Awful Announcing",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQF1_ixLPQyU4MeNZnujCoUCYmqzIAT81TID0At36rRuFWb_6s7WMnwrcms0UU"
+        },
+        {
+          "title": "Shannon Sharpe & Skip Bayless Finally Reunite After Their Infamous Falling Out",
+          "url": "https://www.hotnewhiphop.com/1011417-shannon-sharpe-skip-bayless-reunion",
+          "source": "HotNewHipHop",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRBgT7eQx8IVUMEwuK-ZJQIvHv62mNe9IEunYwfxnSS1TDEKYK6kPXoBoZo0Zo"
+        }
+      ],
+      "is_pod": true
+    },
+    {
+      "query": "evil dead",
+      "traffic": "500+",
+      "traffic_num": 500,
+      "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSH-pIXEHFiu0IEHuiHj4Jt_eP-r43Q8DBp09u68LRG_6FcbgN50drUA-m2778",
+      "pubdate": "Sat, 3 Oct 2026 17:20:00 -0700",
+      "news_items": [
+        {
+          "title": "17 Best New Movies Streaming in October: ’The Invite,’ ‘Disclosure Day,’ ‘Evil Dead Burn’ and More",
+          "url": "https://variety.com/lists/best-movies-streaming-october-2026/",
+          "source": "Variety",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSH-pIXEHFiu0IEHuiHj4Jt_eP-r43Q8DBp09u68LRG_6FcbgN50drUA-m2778"
+        },
+        {
+          "title": "13 Films to See in October",
+          "url": "https://thefilmstage.com/13-films-to-see-in-october-2026/",
+          "source": "The Film Stage",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQTiZBPA6qE3HkvzL51ySnzjbfWctmY2shZfvvjnb9MXY16c0Bl9SlVCEvW3rs"
+        },
+        {
+          "title": "5 best films in October on Netflix, Prime Video & more including Gillian Anderson's crime thriller",
+          "url": "https://www.digitalspy.com/movies/a73993968/best-movies-october-2026-netflix-prime-video/",
+          "source": "Digital Spy",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQQfkbpg0kdC4LLevjlsoSxriPulYtG7dF-rXklEGZJKaVJVoEZVySyenufwrc"
+        }
+      ],
+      "is_pod": false
+    },
+    {
+      "query": "shane beamer",
+      "traffic": "2000+",
+      "traffic_num": 2000,
+      "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRUnuJHKZqA_jEV6yr4yvWD9dFiQSjCz6BK8ufZ0cFDtm8DYipIokRx0oTCBc",
+      "pubdate": "Sat, 3 Oct 2026 17:10:00 -0700",
+      "news_items": [
+        {
+          "title": "Why is Dylan Stewart suspended? When South Carolina star will return",
+          "url": "https://www.usatoday.com/story/sports/ncaaf/sec/2026/10/03/dylan-stewart-suspension-return-south-carolina-football-shane-beamer/92013403007/",
+          "source": "USA Today",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRUnuJHKZqA_jEV6yr4yvWD9dFiQSjCz6BK8ufZ0cFDtm8DYipIokRx0oTCBc"
+        },
+        {
+          "title": "South Carolina, SEC jointly suspend Dylan Stewart for 1 game",
+          "url": "https://www.espn.com/college-football/story/_/id/50055151/south-carolina-sec-jointly-suspend-dylan-stewart-1-game",
+          "source": "ESPN",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSBGjr3rqOk9H2CNLV9tmvlGDpHvJd2XfMS8OofV3v95x1BUbeozClhgSSAsfo"
+        },
+        {
+          "title": "What does suspension of South Carolina’s Dylan Stewart mean for his NFL Draft projection?",
+          "url": "https://www.nytimes.com/athletic/7640038/2026/09/29/dylan-stewart-nfl-draft-2027-suspension-south-carolina/",
+          "source": "The New York Times",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSIYNOhISUb2XdMBavtoORLJ-3WU5Ebxz4_Ri-nVfy21WrAK_VPxW1WRzzP4A"
+        }
+      ],
+      "is_pod": true
+    },
+    {
+      "query": "blues vs avalanche",
+      "traffic": "2000+",
+      "traffic_num": 2000,
+      "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ_Q-02_q85ltOdmT13HunVBp7D-U7X-DsOJehkES7rJE20HwCxcWL-be_hz4",
+      "pubdate": "Sat, 3 Oct 2026 17:10:00 -0700",
+      "news_items": [
+        {
+          "title": "Preview: Blues at Avalanche | St. Louis Blues",
+          "url": "https://www.nhl.com/blues/news/preview-blues-at-avalanche-100326",
+          "source": "NHL.com",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ_Q-02_q85ltOdmT13HunVBp7D-U7X-DsOJehkES7rJE20HwCxcWL-be_hz4"
+        },
+        {
+          "title": "Preview: The Avs Host “Arch”-Rival St. Louis Tonight",
+          "url": "https://www.milehighhockey.com/colorado-avalanche-game-coverage/66696/preview-the-avs-host-arch-rival-st-louis-tonight",
+          "source": "Mile High Hockey",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQOImChyy6C-549_5rKCIhD9lxIVnM4W_XvXHHdrbjKgGLCk6ceo9eiJggFqGw"
+        },
+        {
+          "title": "(10-3-26) Blues-Avalanche Gameday Lineup",
+          "url": "https://sports.yahoo.com/articles/10-3-26-blues-avalanche-172259366.html",
+          "source": "Yahoo Sports",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_i1N4FWunZMXisYJpYoXihqXAJLqjRJVfGTxg_Wms3OIF4dRwF6tXbCtWNcI"
+        }
+      ],
+      "is_pod": true
+    },
+    {
+      "query": "argentine – burkina faso",
+      "traffic": "1000+",
+      "traffic_num": 1000,
+      "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcRi1mryHa0l3bJCDhuoeSzDb5WqdEf1cl9mVHfg7HiJwNH9xr1q-HudJMaLiO0",
+      "pubdate": "Sat, 3 Oct 2026 17:10:00 -0700",
+      "news_items": [
+        {
+          "title": "Vols annulés, départ des cadres... Chaos avant le match amical entre le Burkina Faso et l'Argentine",
+          "url": "https://www.rfi.fr/fr/afrique-foot/20261003-chaos-avant-le-match-amical-argentine-burkina-faso",
+          "source": "RFI",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcRi1mryHa0l3bJCDhuoeSzDb5WqdEf1cl9mVHfg7HiJwNH9xr1q-HudJMaLiO0"
+        },
+        {
+          "title": "Le déplacement complètement invraisemblable du Burkina Faso en Argentine",
+          "url": "https://www.footmercato.net/a5562057663275859829-le-deplacement-completement-invraisemblable-du-burkina-faso-en-argentine",
+          "source": "Foot Mercato",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTFjV4tnFl4llznVjW59m8QFC2s6ael3rYqTdHY-zY4akAe0guYetxRptMzLI4"
+        },
+        {
+          "title": "Burkina : les U23 envoyés en Argentine",
+          "url": "https://m.maxifoot.fr/burkina/les-u23-envoyes-en-argentine-foot-465036.htm",
+          "source": "Maxifoot - football",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSGQM9fUgullKPIP0cvW8XzQMiW_7ZHtMGkBjQ5DV00znbS9yY1TQ6fbMeOlPA"
+        }
+      ],
+      "is_pod": true
+    },
+    {
+      "query": "julie gonzalo",
+      "traffic": "1000+",
+      "traffic_num": 1000,
+      "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQThF7z2AAgQ7_Qzm9Ey4LjBJDDl5KiSpS2uyE7khV6N_SWngOaHCvGZ89aIkU",
+      "pubdate": "Sat, 3 Oct 2026 17:10:00 -0700",
+      "news_items": [
+        {
+          "title": "Preview - A Knight to Remember",
+          "url": "https://www.hallmarkchannel.com/a-knight-to-remember/videos/preview-a-knight-to-remember",
+          "source": "Hallmark Channel",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQThF7z2AAgQ7_Qzm9Ey4LjBJDDl5KiSpS2uyE7khV6N_SWngOaHCvGZ89aIkU"
+        },
+        {
+          "title": "Meet James Trevena: Hallmark's New Star in 'A Knight to Remember' and His Inspiring Journey",
+          "url": "https://www.yahoo.com/entertainment/celebrity/articles/meet-james-trevena-hallmarks-star-151628064.html",
+          "source": "Yahoo",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTews2eLX1diABmsJodpByJ8zF5y-97-x04amDujIn2E-ouLQL4dT9T-ZjPbKA"
+        },
+        {
+          "title": "All About Hallmark Hunk James Trevena’s Girlfriend & Their Love Story",
+          "url": "https://www.imdb.com/es/news/ni66044951/?ref_=tt_nwr_1",
+          "source": "IMDb",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRburoOLTIgqQ6SamYllx1K2n_64i_YnKzWppP2kvDicuO6ctBAn1ZfMDjQM8E"
+        }
+      ],
+      "is_pod": false
+    },
+    {
+      "query": "klay thompson",
+      "traffic": "500+",
+      "traffic_num": 500,
+      "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTL28h384-I4Xy4Yo4plBiIVMLN43JbPaoenPmUfHy_tEBkBVfEaeKOHxu_XE",
+      "pubdate": "Sat, 3 Oct 2026 17:10:00 -0700",
+      "news_items": [
+        {
+          "title": "Megan Thee Stallion ‘Wasn’t Getting Any Oxygen to My Brain’ When She Was Hospitalized During MOULIN ROUGE!",
+          "url": "https://www.broadwayworld.com/article/Megan-Thee-Stallion-Wasnt-Getting-Any-Oxygen-to-My-Brain-When-She-Was-Hospitalized-During-MOULIN-ROUGE-20260930",
+          "source": "BroadwayWorld",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTL28h384-I4Xy4Yo4plBiIVMLN43JbPaoenPmUfHy_tEBkBVfEaeKOHxu_XE"
+        },
+        {
+          "title": "Megan Thee Stallion reveals new details on 'abrupt' Klay Thompson split",
+          "url": "https://www.yahoo.com/entertainment/celebrity/articles/megan-thee-stallion-reveals-details-165923485.html",
+          "source": "Yahoo",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlIB-OeHEabdvcrnNWwcHukGk5y1QKdCkpB37Q8Ypkt1cbHyL3Oj9XO05CJYA"
+        },
+        {
+          "title": "Megan Thee Stallion Thought She Was ‘Having a Stroke’ amid ‘Moulin Rouge!’ Show Hospitalization",
+          "url": "https://people.com/megan-thee-stallion-thought-was-having-stroke-moulin-rouge-hospitalization-12146999",
+          "source": "People.com",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTtlN4_TAggxhkyTt0PO-lW4d_UhsKpUnSDVfqqc2_gBfJVlUJVLvwS0wl7nuo"
+        }
+      ],
+      "is_pod": false
+    },
+    {
+      "query": "ncis new york",
+      "traffic": "500+",
+      "traffic_num": 500,
+      "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRrFGAmEUS5T6lNQKEqhqQ0Y0HnqdUrHFxA8ZV2oZ4xlwsBhjLPxMaxeUWP8qg",
+      "pubdate": "Sat, 3 Oct 2026 17:10:00 -0700",
+      "news_items": [
+        {
+          "title": "‘NCIS: New York’ Review: LL Cool J and Scott Caan Level Up in Latest Spinoff",
+          "url": "https://www.imdb.com/it/news/ni66043259/?ref_=nm_nwr_1",
+          "source": "IMDb",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRrFGAmEUS5T6lNQKEqhqQ0Y0HnqdUrHFxA8ZV2oZ4xlwsBhjLPxMaxeUWP8qg"
+        },
+        {
+          "title": "LL Cool J Says Returning to New York for ‘NCIS’ Spinoff Was ‘a Full Circle Moment’ for Him (Exclusive)",
+          "url": "https://people.com/ll-cool-j-says-returning-to-new-york-for-ncis-spinoff-was-a-full-circle-moment-for-him-exclusive-12154728",
+          "source": "People.com",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQcsJlfF2X9Ff2bXl7EcpOMouSzlFkqkoEUDW0_mZLdX2MbWJ7JL_8g_wLE-_M"
+        },
+        {
+          "title": "Will Brian Dietzen Return to 'NCIS: New York' After Premiere? LL COOL J Weighs In (Exclusive)",
+          "url": "https://www.tvinsider.com/1294690/ncis-new-york-brian-dietzen-premiere-palmer-return/",
+          "source": "TV Insider",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsP2YZHcrGGpJIApOg38PAoJuUakuvCND7SmaeZuVHGTERhDtYSe_xmRYiFTo"
+        }
+      ],
+      "is_pod": false
+    }
+  ]
+}
