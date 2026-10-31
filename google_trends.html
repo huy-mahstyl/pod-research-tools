@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="1800">
+    <title>📊 Google Trends — POD Monitor</title>
+    <meta name="description" content="Real-time Google Trends monitoring for Print-on-Demand keyword research">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --bg-subtle: #0f1420;
+            --card: #141b2d;
+            --card-hover: #1a2338;
+            --border: #1e2a42;
+            --border-light: #2a3a5c;
+            --text: #e2e8f0;
+            --text-muted: #64748b;
+            --text-dim: #475569;
+            --red: #ef4444;
+            --red-glow: rgba(239,68,68,0.15);
+            --green: #22c55e;
+            --green-glow: rgba(34,197,94,0.15);
+            --orange: #f59e0b;
+            --orange-glow: rgba(245,158,11,0.15);
+            --blue: #3b82f6;
+            --blue-glow: rgba(59,130,246,0.15);
+            --purple: #a855f7;
+            --cyan: #06b6d4;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        header {
+            text-align: center;
+            padding: 2rem 1rem 1.5rem;
+            background: linear-gradient(180deg, #0f1628 0%, var(--bg) 100%);
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #22c55e 0%, #3b82f6 50%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 0.4rem;
+            font-weight: 500;
+        }
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.35rem 0.8rem;
+            border-radius: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+        }
+        .stat-fire { color: var(--red); }
+        .stat-pod { color: var(--green); }
+        .stat-time { color: var(--blue); }
+
+        /* ── Refresh Button ── */
+        .refresh-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 1rem;
+            padding: 0.45rem 1.2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--blue);
+            background: rgba(59,130,246,0.1);
+            border: 1px solid rgba(59,130,246,0.3);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .refresh-btn:hover {
+            background: rgba(59,130,246,0.2);
+            border-color: var(--blue);
+            transform: translateY(-1px);
+        }
+
+        /* ── Layout ── */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+            padding: 1.2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; }
+        }
+
+        /* ── Section ── */
+        .section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .section-count {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .count-red { background: var(--red-glow); color: var(--red); }
+        .count-green { background: var(--green-glow); color: var(--green); }
+        .section-body {
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+
+        /* ── Trend Card ── */
+        .trend-card {
+            display: flex;
+            gap: 0.8rem;
+            padding: 0.8rem 1.2rem;
+            border-bottom: 1px solid rgba(30,42,66,0.5);
+            transition: background 0.15s;
+            animation: fadeIn 0.3s ease-out both;
+        }
+        .trend-card:hover {
+            background: var(--card-hover);
+        }
+        .trend-card:last-child {
+            border-bottom: none;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .trend-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+        }
+        .trend-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .trend-top {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.3rem;
+        }
+        .trend-rank {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            min-width: 22px;
+        }
+        .trend-query {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        .trend-query:hover {
+            color: var(--blue);
+        }
+
+        /* ── Badges ── */
+        .badge {
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+        .badge-hot {
+            background: var(--red);
+            color: #fff;
+            box-shadow: 0 0 8px var(--red-glow);
+        }
+        .badge-high {
+            background: var(--orange);
+            color: #fff;
+        }
+        .badge-normal {
+            background: rgba(100,116,139,0.2);
+            color: var(--text-muted);
+        }
+        .badge-pod {
+            background: rgba(34,197,94,0.15);
+            color: var(--green);
+            border: 1px solid rgba(34,197,94,0.3);
+        }
+
+        /* ── News items ── */
+        .news-list {
+            margin-top: 0.3rem;
+        }
+        .news-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.3rem;
+            margin-bottom: 0.2rem;
+        }
+        .news-bullet {
+            color: var(--text-dim);
+            font-size: 0.55rem;
+            margin-top: 0.2rem;
+            flex-shrink: 0;
+        }
+        .news-link {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.15s;
+        }
+        .news-link:hover {
+            color: var(--cyan);
+        }
+        .news-source {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        /* ── Action Links ── */
+        .trend-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.35rem;
+        }
+        .action-link {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-decoration: none;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            transition: all 0.15s;
+        }
+        .action-link:hover {
+            color: var(--blue);
+            border-color: rgba(59,130,246,0.4);
+            background: var(--blue-glow);
+        }
+
+        /* ── Empty state ── */
+        .empty {
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ── Scrollbar ── */
+        .section-body::-webkit-scrollbar { width: 6px; }
+        .section-body::-webkit-scrollbar-track { background: transparent; }
+        .section-body::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+        .section-body::-webkit-scrollbar-thumb:hover {
+            background: var(--border-light);
+        }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            border-top: 1px solid var(--border);
+        }
+        footer a { color: var(--blue); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+    </style>
+    <script>
+    // Mở link Google Search an toàn — tránh bị block khi mở từ file://
+    function openSearch(url, evt) {
+        if (evt) evt.preventDefault();
+        // Tạo cửa sổ mới qua about:blank trước, rồi redirect
+        var w = window.open('about:blank', '_blank');
+        if (w) {
+            w.location.href = url;
+        } else {
+            // Fallback nếu popup bị chặn
+            window.location.href = url;
+        }
+        return false;
+    }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>📊 Google Trends — POD Monitor</h1>
+        <p class="subtitle">Real-time trending keywords in the US — for POD research</p>
+        <div class="stats-bar">
+            <div class="stat stat-fire">🔥 10 xu hướng</div>
+            <div class="stat stat-pod">🎯 6 liên quan Sports/POD</div>
+            <div class="stat stat-time">🕐 13:40:12 — 31/10/2026</div>
+        </div>
+        <a class="refresh-btn" href="javascript:location.reload()">🔄 Refresh</a>
+    </header>
+
+    <div class="container">
+
+        <div class="section" id="pod-section">
+            <div class="section-header">
+                <div class="section-title" style="color: var(--green);">
+                    🏆 Sports & POD Relevant
+                </div>
+                <span class="section-count count-green">6 found</span>
+            </div>
+            <div class="section-body">
+
+            <div class="trend-card" style="animation-delay: 0.00s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTQz8n2DVh938jOIEmI4mfHs1bQNXN6mpS7_n0Ns7Sshb-a4pH50tiWbzZbDGU" alt="villanova basketball" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#1</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=villanova+basketball&amp;tbm=isch" onclick="return openSearch(this.href, event)">villanova basketball</a>
+                        <span class="badge badge-normal">200+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.vaticannews.va/en/pope/news/2026-10/pope-villanova-notre-dame-university-basketball-game-saints.html" target="_blank" rel="noopener noreferrer">Pope: In an age marked by distance, sports bring people together <span class="news-source">— Vatican News</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://thehill.com/homenews/ap/ap-international/ap-pope-leo-tells-villanova-and-notre-dame-basketball-teams-he-is-neutral-prevost-has-other-ideas/" target="_blank" rel="noopener noreferrer">Pope Leo tells Villanova and Notre Dame basketball teams he is neutral. Prevost has other ideas <span class="news-source">— The Hill</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=villanova+basketball&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=villanova+basketball&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=villanova+basketball+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.03s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXREzUtdP_tMiyx8COLNogQx4ROoFN3n3sCl6ZmTqk7ZSrf61tHjhZYhwLaac" alt="ahmad hardy" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#2</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=ahmad+hardy&amp;tbm=isch" onclick="return openSearch(this.href, event)">ahmad hardy</a>
+                        <span class="badge badge-normal">200+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.espn.com/college-football/story/_/id/50321651/sources-missouri-rb-hardy-make-season-debut-vs-arkansas" target="_blank" rel="noopener noreferrer">Sources -- Missouri RB Hardy to make season debut vs. Arkansas <span class="news-source">— ESPN</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.columbiamissourian.com/sports/mizzou_football/mizzou-running-back-ahmad-hardy-to-play-saturday-at-arkansas-per-reports/article_425e884b-a56d-483d-bf05-1976973c4e45.html" target="_blank" rel="noopener noreferrer">Mizzou running back Ahmad Hardy to play Saturday at Arkansas, per reports <span class="news-source">— Columbia Missourian</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=ahmad+hardy&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=ahmad+hardy&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=ahmad+hardy+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.06s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmO9fyNGrzNMDRPWIzTUC1QfjH6FOKGaFCyR-B-tT_xdzzM8CPlIiN6obIEdo" alt="iowa vs wisconsin prediction" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#3</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=iowa+vs+wisconsin+prediction&amp;tbm=isch" onclick="return openSearch(this.href, event)">iowa vs wisconsin prediction</a>
+                        <span class="badge badge-normal">500+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.buckys5thquarter.com/wisconsin-badgers-football/91477/wisconsin-badgers-football-news-how-to-watch-betting-odds-kickoff-time-iowa-hawkeyes-week-9" target="_blank" rel="noopener noreferrer">No. 25 Wisconsin vs. Iowa: How to watch + betting odds <span class="news-source">— Bucky's 5th Quarter</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.cbssports.com/betting/news/iowa-vs-wisconsin-odds-picks-predictions-line-spread-saturday-college-football-betting-preview/" target="_blank" rel="noopener noreferrer">Iowa vs. Wisconsin odds, picks, predictions, line, spread: Saturday college football betting preview <span class="news-source">— CBS Sports</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=iowa+vs+wisconsin+prediction&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=iowa+vs+wisconsin+prediction&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=iowa+vs+wisconsin+prediction+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.09s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcS0sOD4nXOkF8TcV31VVF9V5Zb5-smhvbV7y7IswABEl7REFUrCggwyDaWLL1I" alt="ohio state vs usc" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#4</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=ohio+state+vs+usc&amp;tbm=isch" onclick="return openSearch(this.href, event)">ohio state vs usc</a>
+                        <span class="badge badge-high">1000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.espn.com/espn/betting/story/_/id/50300744/college-football-betting-odds-week-9-ohio-state-usc-upset" target="_blank" rel="noopener noreferrer">Betting on Ohio State-USC: How the Trojans can pull off the upset <span class="news-source">— ESPN</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://sports.yahoo.com/articles/ohio-state-reveals-negative-injury-120110670.html" target="_blank" rel="noopener noreferrer">Ohio State Reveals Negative Injury News on Star Defender <span class="news-source">— Yahoo Sports</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=ohio+state+vs+usc&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=ohio+state+vs+usc&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=ohio+state+vs+usc+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.12s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5sJQzZFo28IwCWThVXVDsfe4551jDSJZpIzzDmdLqIPQXld2cg9FolP4CSps" alt="nick saban" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#5</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=nick+saban&amp;tbm=isch" onclick="return openSearch(this.href, event)">nick saban</a>
+                        <span class="badge badge-high">2000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.al.com/alabamafootball/2026/10/on-nick-sabans-75th-birthday-here-are-15-dominant-wins-that-proved-hes-the-goat.html" target="_blank" rel="noopener noreferrer">On Nick Saban’s 75th birthday, here are 15 dominant wins that proved he’s the GOAT <span class="news-source">— AL.com</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://sports.yahoo.com/articles/nick-saban-family-forced-change-103000014.html" target="_blank" rel="noopener noreferrer">Nick Saban’s Family Forced to Change Personal Plan Owing to His ESPN Gameday Commitment <span class="news-source">— Yahoo Sports</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=nick+saban&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=nick+saban&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=nick+saban+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.15s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTPTbMpkKdxQW8hvdRxXgv0YREv4_hEeoTKrkn1jPDMlJLDYiL7h_6NYJzfdSc" alt="norwich city vs watford" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#6</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=norwich+city+vs+watford&amp;tbm=isch" onclick="return openSearch(this.href, event)">norwich city vs watford</a>
+                        <span class="badge badge-normal">200+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.bbc.com/sport/football/live/cq8rz45z668yt" target="_blank" rel="noopener noreferrer">Watch: Canary Call after Norwich City v Watford <span class="news-source">— BBC</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.espn.com/soccer/story/_/id/50277814/iraola-era-liverpool-lift-thanks-big-money-forwards" target="_blank" rel="noopener noreferrer">Iraola era at Liverpool finally has liftoff thanks to big-money forwards <span class="news-source">— ESPN</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=norwich+city+vs+watford&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=norwich+city+vs+watford&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=norwich+city+vs+watford+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="section" id="all-section">
+            <div class="section-header">
+                <div class="section-title" style="color: var(--red);">
+                    🔥 All Trending Today
+                </div>
+                <span class="section-count count-red">10 total</span>
+            </div>
+            <div class="section-body">
+
+            <div class="trend-card" style="animation-delay: 0.00s">
+                <img class="trend-thumb" src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRKe-gW7JUhDhhpeZq6APufT2TJZn8o0WkrfmsR5BqUSPSRpDPee_CZNmN-gjM" alt="el niño" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#1</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=el+ni%C3%B1o&amp;tbm=isch" onclick="return openSearch(this.href, event)">el niño</a>
+                        <span class="badge badge-normal">200+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://abc7news.com/post/climate-experts-map-potential-bay-area-flood-risks-el-nio/19987179/" target="_blank" rel="noopener noreferrer">Climate experts map potential Bay Area flood risks from El Niño <span class="news-source">— ABC7 Bay Area</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.usatoday.com/story/news/weather/2026/10/31/el-nino-arkstorm-california-atmospheric-river/92458956007/" target="_blank" rel="noopener noreferrer">Could El Niño trigger an 'ARkStorm?' California's flood risk explained <span class="news-source">— USA Today</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=el+ni%C3%B1o&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=el+ni%C3%B1o&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=el+ni%C3%B1o+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.03s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTQz8n2DVh938jOIEmI4mfHs1bQNXN6mpS7_n0Ns7Sshb-a4pH50tiWbzZbDGU" alt="villanova basketball" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#2</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=villanova+basketball&amp;tbm=isch" onclick="return openSearch(this.href, event)">villanova basketball</a>
+                        <span class="badge badge-normal">200+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.vaticannews.va/en/pope/news/2026-10/pope-villanova-notre-dame-university-basketball-game-saints.html" target="_blank" rel="noopener noreferrer">Pope: In an age marked by distance, sports bring people together <span class="news-source">— Vatican News</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://thehill.com/homenews/ap/ap-international/ap-pope-leo-tells-villanova-and-notre-dame-basketball-teams-he-is-neutral-prevost-has-other-ideas/" target="_blank" rel="noopener noreferrer">Pope Leo tells Villanova and Notre Dame basketball teams he is neutral. Prevost has other ideas <span class="news-source">— The Hill</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=villanova+basketball&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=villanova+basketball&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=villanova+basketball+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.06s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXREzUtdP_tMiyx8COLNogQx4ROoFN3n3sCl6ZmTqk7ZSrf61tHjhZYhwLaac" alt="ahmad hardy" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#3</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=ahmad+hardy&amp;tbm=isch" onclick="return openSearch(this.href, event)">ahmad hardy</a>
+                        <span class="badge badge-normal">200+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.espn.com/college-football/story/_/id/50321651/sources-missouri-rb-hardy-make-season-debut-vs-arkansas" target="_blank" rel="noopener noreferrer">Sources -- Missouri RB Hardy to make season debut vs. Arkansas <span class="news-source">— ESPN</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.columbiamissourian.com/sports/mizzou_football/mizzou-running-back-ahmad-hardy-to-play-saturday-at-arkansas-per-reports/article_425e884b-a56d-483d-bf05-1976973c4e45.html" target="_blank" rel="noopener noreferrer">Mizzou running back Ahmad Hardy to play Saturday at Arkansas, per reports <span class="news-source">— Columbia Missourian</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=ahmad+hardy&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=ahmad+hardy&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=ahmad+hardy+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.09s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmO9fyNGrzNMDRPWIzTUC1QfjH6FOKGaFCyR-B-tT_xdzzM8CPlIiN6obIEdo" alt="iowa vs wisconsin prediction" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#4</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=iowa+vs+wisconsin+prediction&amp;tbm=isch" onclick="return openSearch(this.href, event)">iowa vs wisconsin prediction</a>
+                        <span class="badge badge-normal">500+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.buckys5thquarter.com/wisconsin-badgers-football/91477/wisconsin-badgers-football-news-how-to-watch-betting-odds-kickoff-time-iowa-hawkeyes-week-9" target="_blank" rel="noopener noreferrer">No. 25 Wisconsin vs. Iowa: How to watch + betting odds <span class="news-source">— Bucky's 5th Quarter</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.cbssports.com/betting/news/iowa-vs-wisconsin-odds-picks-predictions-line-spread-saturday-college-football-betting-preview/" target="_blank" rel="noopener noreferrer">Iowa vs. Wisconsin odds, picks, predictions, line, spread: Saturday college football betting preview <span class="news-source">— CBS Sports</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=iowa+vs+wisconsin+prediction&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=iowa+vs+wisconsin+prediction&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=iowa+vs+wisconsin+prediction+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.12s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHNYBfpQ1u2uNr6PakaLPcZ2HSNpblGgpTXM4Lymn-5uLM15uVZc-P4-2LU4Y" alt="can i vote today" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#5</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=can+i+vote+today&amp;tbm=isch" onclick="return openSearch(this.href, event)">can i vote today</a>
+                        <span class="badge badge-normal">200+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.kcentv.com/article/news/politics/elections/early-voting-ends-everything-you-need-election-day-vote-ballot-guide/500-e4e32adf-5a26-4e3f-ae31-51f2bc1f05b4" target="_blank" rel="noopener noreferrer">Early Voting Ends Today | Here's everything you need to know before Election Day <span class="news-source">— kcentv.com</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.khou.com/article/news/politics/elections/when-is-the-last-day-to-vote-early-texas/285-0a7f3f28-b64e-439a-a182-51216c219033" target="_blank" rel="noopener noreferrer">Today is the last day to vote early in Texas as Harris County nears major milestone <span class="news-source">— KHOU</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=can+i+vote+today&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=can+i+vote+today&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=can+i+vote+today+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.15s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcS0sOD4nXOkF8TcV31VVF9V5Zb5-smhvbV7y7IswABEl7REFUrCggwyDaWLL1I" alt="ohio state vs usc" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#6</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=ohio+state+vs+usc&amp;tbm=isch" onclick="return openSearch(this.href, event)">ohio state vs usc</a>
+                        <span class="badge badge-high">1000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.espn.com/espn/betting/story/_/id/50300744/college-football-betting-odds-week-9-ohio-state-usc-upset" target="_blank" rel="noopener noreferrer">Betting on Ohio State-USC: How the Trojans can pull off the upset <span class="news-source">— ESPN</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://sports.yahoo.com/articles/ohio-state-reveals-negative-injury-120110670.html" target="_blank" rel="noopener noreferrer">Ohio State Reveals Negative Injury News on Star Defender <span class="news-source">— Yahoo Sports</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=ohio+state+vs+usc&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=ohio+state+vs+usc&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=ohio+state+vs+usc+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.18s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5sJQzZFo28IwCWThVXVDsfe4551jDSJZpIzzDmdLqIPQXld2cg9FolP4CSps" alt="nick saban" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#7</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=nick+saban&amp;tbm=isch" onclick="return openSearch(this.href, event)">nick saban</a>
+                        <span class="badge badge-high">2000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.al.com/alabamafootball/2026/10/on-nick-sabans-75th-birthday-here-are-15-dominant-wins-that-proved-hes-the-goat.html" target="_blank" rel="noopener noreferrer">On Nick Saban’s 75th birthday, here are 15 dominant wins that proved he’s the GOAT <span class="news-source">— AL.com</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://sports.yahoo.com/articles/nick-saban-family-forced-change-103000014.html" target="_blank" rel="noopener noreferrer">Nick Saban’s Family Forced to Change Personal Plan Owing to His ESPN Gameday Commitment <span class="news-source">— Yahoo Sports</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=nick+saban&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=nick+saban&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=nick+saban+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.21s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTmFCesdBALP2xWlytrI6ftlaVKjxUK2Js7Crz-Hd3eNP1z0I5GQvFJ5ccNsMQ" alt="when is the next saturday halloween" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#8</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=when+is+the+next+saturday+halloween&amp;tbm=isch" onclick="return openSearch(this.href, event)">when is the next saturday halloween</a>
+                        <span class="badge badge-high">1000+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.rgj.com/story/life/2026/10/29/halloween-nevada-day-parade-saturday/92479738007/" target="_blank" rel="noopener noreferrer">Halloween, Nevada Day fall on Saturday. That won't happen again until 2037 <span class="news-source">— Reno Gazette Journal</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.2news.com/townnews/food/trick-or-treating-at-the-governors-mansion/article_2f794193-4185-432d-8380-efa6c72b398d.html" target="_blank" rel="noopener noreferrer">Trick-or-treating at the Governor's Mansion | Food | 2news.com <span class="news-source">— KTVN</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=when+is+the+next+saturday+halloween&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=when+is+the+next+saturday+halloween&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=when+is+the+next+saturday+halloween+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.24s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTPTbMpkKdxQW8hvdRxXgv0YREv4_hEeoTKrkn1jPDMlJLDYiL7h_6NYJzfdSc" alt="norwich city vs watford" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#9</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=norwich+city+vs+watford&amp;tbm=isch" onclick="return openSearch(this.href, event)">norwich city vs watford</a>
+                        <span class="badge badge-normal">200+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.bbc.com/sport/football/live/cq8rz45z668yt" target="_blank" rel="noopener noreferrer">Watch: Canary Call after Norwich City v Watford <span class="news-source">— BBC</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.espn.com/soccer/story/_/id/50277814/iraola-era-liverpool-lift-thanks-big-money-forwards" target="_blank" rel="noopener noreferrer">Iraola era at Liverpool finally has liftoff thanks to big-money forwards <span class="news-source">— ESPN</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=norwich+city+vs+watford&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=norwich+city+vs+watford&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=norwich+city+vs+watford+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.27s">
+                <img class="trend-thumb" src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRTHIzPAZpZzlqs2O4D8zQlfP7eMEIpsuLHAtKkMWrUIvx_e7fXHBuSDh82kdc" alt="telemundo" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#10</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=telemundo&amp;tbm=isch" onclick="return openSearch(this.href, event)">telemundo</a>
+                        <span class="badge badge-normal">200+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.elnuevodia.com/noticias/el-tiempo/notas/planes-para-halloween-conoce-como-va-a-estar-el-tiempo-este-fin-de-semana/" target="_blank" rel="noopener noreferrer">¿Planes para Halloween? Conoce cómo va a estar el tiempo este fin de semana <span class="news-source">— El Nuevo Día</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.elvocero.com/el-tiempo/anticipan-aguaceros-y-tronadas-para-este-halloween/article_81c4f71b-56a0-42f9-b2d8-f7b2cf90a570.html" target="_blank" rel="noopener noreferrer">Anticipan aguaceros y tronadas para este Halloween <span class="news-source">— El Vocero de Puerto Rico</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=telemundo&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=telemundo&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=telemundo+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        Dữ liệu từ <a href="https://trends.google.com/trending?geo=US" target="_blank">Google Trends RSS</a>
+        — Không cần API key, không bị CAPTCHA
+        — Auto-refresh mỗi 30 phút
+        — Scan lúc 13:40:12 — 31/10/2026
+    </footer>
+</body>
+</html>

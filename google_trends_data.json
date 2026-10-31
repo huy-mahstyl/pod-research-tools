@@ -1,0 +1,287 @@
+{
+  "generated_at": "2026-10-31T13:40:12.178731",
+  "total_trends": 10,
+  "pod_relevant_count": 6,
+  "trends": [
+    {
+      "query": "el niño",
+      "traffic": "200+",
+      "traffic_num": 200,
+      "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRKe-gW7JUhDhhpeZq6APufT2TJZn8o0WkrfmsR5BqUSPSRpDPee_CZNmN-gjM",
+      "pubdate": "Sat, 31 Oct 2026 06:20:00 -0700",
+      "news_items": [
+        {
+          "title": "Climate experts map potential Bay Area flood risks from El Niño",
+          "url": "https://abc7news.com/post/climate-experts-map-potential-bay-area-flood-risks-el-nio/19987179/",
+          "source": "ABC7 Bay Area",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRKe-gW7JUhDhhpeZq6APufT2TJZn8o0WkrfmsR5BqUSPSRpDPee_CZNmN-gjM"
+        },
+        {
+          "title": "Could El Niño trigger an 'ARkStorm?' California's flood risk explained",
+          "url": "https://www.usatoday.com/story/news/weather/2026/10/31/el-nino-arkstorm-california-atmospheric-river/92458956007/",
+          "source": "USA Today",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcR_eri0kZu6Uc5UppWhnURL9PkvS5zabbKc2UhxX-mAZr6EqkHma-aaaFZOFbc"
+        },
+        {
+          "title": "Ocean Beach flooding might hit S.F.’s Great Highway this winter amid El Niño",
+          "url": "https://www.sfchronicle.com/sf/article/el-nino-sf-flooding-great-highway-ocean-beach-22499464.php",
+          "source": "San Francisco Chronicle",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHItE9CuxTXqNDtGSCcpYFFGe2541iKrCJeJudO5_wJRAFD2rrkTeHtLL-CJ0"
+        }
+      ],
+      "is_pod": false
+    },
+    {
+      "query": "villanova basketball",
+      "traffic": "200+",
+      "traffic_num": 200,
+      "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTQz8n2DVh938jOIEmI4mfHs1bQNXN6mpS7_n0Ns7Sshb-a4pH50tiWbzZbDGU",
+      "pubdate": "Sat, 31 Oct 2026 06:20:00 -0700",
+      "news_items": [
+        {
+          "title": "Pope: In an age marked by distance, sports bring people together",
+          "url": "https://www.vaticannews.va/en/pope/news/2026-10/pope-villanova-notre-dame-university-basketball-game-saints.html",
+          "source": "Vatican News",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTQz8n2DVh938jOIEmI4mfHs1bQNXN6mpS7_n0Ns7Sshb-a4pH50tiWbzZbDGU"
+        },
+        {
+          "title": "Pope Leo tells Villanova and Notre Dame basketball teams he is neutral. Prevost has other ideas",
+          "url": "https://thehill.com/homenews/ap/ap-international/ap-pope-leo-tells-villanova-and-notre-dame-basketball-teams-he-is-neutral-prevost-has-other-ideas/",
+          "source": "The Hill",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjhZkflv85QK-E4OR8iuiUYb5RuMr-WzM659iIVIv7YHX9KSiAG2pTKu04dqE"
+        },
+        {
+          "title": "Bill Raftery hopes to avoid confessional booth after calling game in pope's honor",
+          "url": "https://www.espn.com/mens-college-basketball/story/_/id/50316165/bill-raftery-avoid-famous-catchphrases-rome-opener",
+          "source": "ESPN",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQvXzmFam4Kjd1IcdtPLgvu7nb0Kz2b42RoOVUNBXAL5zOWU0BnfRPqU6erxgA"
+        }
+      ],
+      "is_pod": true
+    },
+    {
+      "query": "ahmad hardy",
+      "traffic": "200+",
+      "traffic_num": 200,
+      "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXREzUtdP_tMiyx8COLNogQx4ROoFN3n3sCl6ZmTqk7ZSrf61tHjhZYhwLaac",
+      "pubdate": "Sat, 31 Oct 2026 06:20:00 -0700",
+      "news_items": [
+        {
+          "title": "Sources -- Missouri RB Hardy to make season debut vs. Arkansas",
+          "url": "https://www.espn.com/college-football/story/_/id/50321651/sources-missouri-rb-hardy-make-season-debut-vs-arkansas",
+          "source": "ESPN",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXREzUtdP_tMiyx8COLNogQx4ROoFN3n3sCl6ZmTqk7ZSrf61tHjhZYhwLaac"
+        },
+        {
+          "title": "Mizzou running back Ahmad Hardy to play Saturday at Arkansas, per reports",
+          "url": "https://www.columbiamissourian.com/sports/mizzou_football/mizzou-running-back-ahmad-hardy-to-play-saturday-at-arkansas-per-reports/article_425e884b-a56d-483d-bf05-1976973c4e45.html",
+          "source": "Columbia Missourian",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSm6TGs-mJKvD8DyqELrLFB6CKhTqClu2NrQcp278oy43N-iWtAO2Dg0QPiTto"
+        },
+        {
+          "title": "Ahmad Hardy returning for Missouri: Star RB set for season debut after recovering from gunshot wound",
+          "url": "https://www.cbssports.com/college-football/news/ahmad-hardy-missouri-debut-2026-injury-gunshot-wound-arkansas/",
+          "source": "CBS Sports",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSRa7g67gLQNKsEqfufCvtZWj7RifEuFC1sOyMVsiKS4BZDy8Xg8GluoswSAKQ"
+        }
+      ],
+      "is_pod": true
+    },
+    {
+      "query": "iowa vs wisconsin prediction",
+      "traffic": "500+",
+      "traffic_num": 500,
+      "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmO9fyNGrzNMDRPWIzTUC1QfjH6FOKGaFCyR-B-tT_xdzzM8CPlIiN6obIEdo",
+      "pubdate": "Sat, 31 Oct 2026 06:10:00 -0700",
+      "news_items": [
+        {
+          "title": "No. 25 Wisconsin vs. Iowa: How to watch + betting odds",
+          "url": "https://www.buckys5thquarter.com/wisconsin-badgers-football/91477/wisconsin-badgers-football-news-how-to-watch-betting-odds-kickoff-time-iowa-hawkeyes-week-9",
+          "source": "Bucky's 5th Quarter",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmO9fyNGrzNMDRPWIzTUC1QfjH6FOKGaFCyR-B-tT_xdzzM8CPlIiN6obIEdo"
+        },
+        {
+          "title": "Iowa vs. Wisconsin odds, picks, predictions, line, spread: Saturday college football betting preview",
+          "url": "https://www.cbssports.com/betting/news/iowa-vs-wisconsin-odds-picks-predictions-line-spread-saturday-college-football-betting-preview/",
+          "source": "CBS Sports",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRUxrXjeD4yJyDuZFhoZDTUr1j-hB80MYB33-DgQLeILw81QyZGN7MauPyyefk"
+        },
+        {
+          "title": "No. 25 Badgers travel to Kinnick Stadium on Saturday",
+          "url": "https://uwbadgers.com/news/2026/10/29/football-no-25-badgers-travel-to-kinnick-stadium-on-saturday",
+          "source": "Wisconsin Badgers",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcT7xnMN0beDsdQUjFOHYNXez5oIScgHGhMSnDQuycpU7uccnERsps0C8wScr6c"
+        }
+      ],
+      "is_pod": true
+    },
+    {
+      "query": "can i vote today",
+      "traffic": "200+",
+      "traffic_num": 200,
+      "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHNYBfpQ1u2uNr6PakaLPcZ2HSNpblGgpTXM4Lymn-5uLM15uVZc-P4-2LU4Y",
+      "pubdate": "Sat, 31 Oct 2026 06:10:00 -0700",
+      "news_items": [
+        {
+          "title": "Early Voting Ends Today | Here's everything you need to know before Election Day",
+          "url": "https://www.kcentv.com/article/news/politics/elections/early-voting-ends-everything-you-need-election-day-vote-ballot-guide/500-e4e32adf-5a26-4e3f-ae31-51f2bc1f05b4",
+          "source": "kcentv.com",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHNYBfpQ1u2uNr6PakaLPcZ2HSNpblGgpTXM4Lymn-5uLM15uVZc-P4-2LU4Y"
+        },
+        {
+          "title": "Today is the last day to vote early in Texas as Harris County nears major milestone",
+          "url": "https://www.khou.com/article/news/politics/elections/when-is-the-last-day-to-vote-early-texas/285-0a7f3f28-b64e-439a-a182-51216c219033",
+          "source": "KHOU",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRbwgtYm86V-TCHSIRw_DJIRhEXQEaW-P3ag8NDXuyN6uTyIJrVzYXM_paQPd0"
+        },
+        {
+          "title": "Harris County breaks early voting records for a midterm election",
+          "url": "https://www.houstonchronicle.com/politics/texas-take/article/harris-county-voter-turnout-22501181.php",
+          "source": "Houston Chronicle",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThx_QHNukOQyABc5aI_J5TotG9qsA2NgSWD8QdEJcfhdzsfhMMwFFPI8sGNF0"
+        }
+      ],
+      "is_pod": false
+    },
+    {
+      "query": "ohio state vs usc",
+      "traffic": "1000+",
+      "traffic_num": 1000,
+      "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcS0sOD4nXOkF8TcV31VVF9V5Zb5-smhvbV7y7IswABEl7REFUrCggwyDaWLL1I",
+      "pubdate": "Sat, 31 Oct 2026 06:10:00 -0700",
+      "news_items": [
+        {
+          "title": "Betting on Ohio State-USC: How the Trojans can pull off the upset",
+          "url": "https://www.espn.com/espn/betting/story/_/id/50300744/college-football-betting-odds-week-9-ohio-state-usc-upset",
+          "source": "ESPN",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcS0sOD4nXOkF8TcV31VVF9V5Zb5-smhvbV7y7IswABEl7REFUrCggwyDaWLL1I"
+        },
+        {
+          "title": "Ohio State Reveals Negative Injury News on Star Defender",
+          "url": "https://sports.yahoo.com/articles/ohio-state-reveals-negative-injury-120110670.html",
+          "source": "Yahoo Sports",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQONgpBJwA5qbQpPTOi45iVmKdMch_HC0I7uH1X3SPWx8ZQ1837I0ZrMGuqurk"
+        },
+        {
+          "title": "Ohio State football vs. USC: Game-Time Decisions for the Buckeyes against the Trojans",
+          "url": "https://www.cleveland.com/osu/2026/10/ohio-state-football-vs-usc-game-time-decisions-for-the-buckeyes-against-the-trojans.html",
+          "source": "Cleveland.com",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcT_3T2UsA3aDrMuETeqHXxKaVxruJINAbooBOxOeETsi1EEgakqM87y77ldmoU"
+        }
+      ],
+      "is_pod": true
+    },
+    {
+      "query": "nick saban",
+      "traffic": "2000+",
+      "traffic_num": 2000,
+      "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5sJQzZFo28IwCWThVXVDsfe4551jDSJZpIzzDmdLqIPQXld2cg9FolP4CSps",
+      "pubdate": "Sat, 31 Oct 2026 06:00:00 -0700",
+      "news_items": [
+        {
+          "title": "On Nick Saban’s 75th birthday, here are 15 dominant wins that proved he’s the GOAT",
+          "url": "https://www.al.com/alabamafootball/2026/10/on-nick-sabans-75th-birthday-here-are-15-dominant-wins-that-proved-hes-the-goat.html",
+          "source": "AL.com",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5sJQzZFo28IwCWThVXVDsfe4551jDSJZpIzzDmdLqIPQXld2cg9FolP4CSps"
+        },
+        {
+          "title": "Nick Saban’s Family Forced to Change Personal Plan Owing to His ESPN Gameday Commitment",
+          "url": "https://sports.yahoo.com/articles/nick-saban-family-forced-change-103000014.html",
+          "source": "Yahoo Sports",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQjNNaYgNCNrcS1-pAcngKl7X10YMFkosSX0wrMe0QGaUNkDnnlw3OVVL1je7w"
+        },
+        {
+          "title": "GameDay serenades Saban, while McAfee apologizes for being ‘offensive’ to former coach",
+          "url": "https://www.lehighvalleylive.com/sports/2026/10/gameday-serenades-saban-while-mcafee-apologizes-for-being-offensive-to-former-coach.html",
+          "source": "lehighvalleylive",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0yjPZPRVaQey3xPk2Fyqi6rZjLM1rlB1n2N13CBMrzRU1_f0_Cw2qd3NhRJ0"
+        }
+      ],
+      "is_pod": true
+    },
+    {
+      "query": "when is the next saturday halloween",
+      "traffic": "1000+",
+      "traffic_num": 1000,
+      "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTmFCesdBALP2xWlytrI6ftlaVKjxUK2Js7Crz-Hd3eNP1z0I5GQvFJ5ccNsMQ",
+      "pubdate": "Sat, 31 Oct 2026 06:00:00 -0700",
+      "news_items": [
+        {
+          "title": "Halloween, Nevada Day fall on Saturday. That won't happen again until 2037",
+          "url": "https://www.rgj.com/story/life/2026/10/29/halloween-nevada-day-parade-saturday/92479738007/",
+          "source": "Reno Gazette Journal",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTmFCesdBALP2xWlytrI6ftlaVKjxUK2Js7Crz-Hd3eNP1z0I5GQvFJ5ccNsMQ"
+        },
+        {
+          "title": "Trick-or-treating at the Governor's Mansion | Food | 2news.com",
+          "url": "https://www.2news.com/townnews/food/trick-or-treating-at-the-governors-mansion/article_2f794193-4185-432d-8380-efa6c72b398d.html",
+          "source": "KTVN",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRtCcubmcIqhZjGADeo3ScKcG1pOgoX43oFF_Vd7CEMN37wtrjAqwLhHH5MJM0"
+        },
+        {
+          "title": "When is trick-or-treating?",
+          "url": "https://www.recordcourier.com/news/2026/oct/25/when-is-trick-or-treating-in-carson-city-record-co/",
+          "source": "The Record Courier",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQzJIY7F3Es5BcDQnwzke_tlpQFIPucjAtNPFztsaZlOWa-crMi_ZvNkMf1b6c"
+        }
+      ],
+      "is_pod": false
+    },
+    {
+      "query": "norwich city vs watford",
+      "traffic": "200+",
+      "traffic_num": 200,
+      "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTPTbMpkKdxQW8hvdRxXgv0YREv4_hEeoTKrkn1jPDMlJLDYiL7h_6NYJzfdSc",
+      "pubdate": "Sat, 31 Oct 2026 06:00:00 -0700",
+      "news_items": [
+        {
+          "title": "Watch: Canary Call after Norwich City v Watford",
+          "url": "https://www.bbc.com/sport/football/live/cq8rz45z668yt",
+          "source": "BBC",
+          "picture": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTPTbMpkKdxQW8hvdRxXgv0YREv4_hEeoTKrkn1jPDMlJLDYiL7h_6NYJzfdSc"
+        },
+        {
+          "title": "Iraola era at Liverpool finally has liftoff thanks to big-money forwards",
+          "url": "https://www.espn.com/soccer/story/_/id/50277814/iraola-era-liverpool-lift-thanks-big-money-forwards",
+          "source": "ESPN",
+          "picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmLb5lRplYoyhXdAdxEbrJt-IdkVbr8a_oqYJSClqNQzHBvKz4IjJvFzQR_3k"
+        },
+        {
+          "title": "Brighton ‘missed opportunity’ with defeat at Liverpool, says Fabian Hurzeler",
+          "url": "https://www.nytimes.com/athletic/7723633/2026/10/25/brighton-liverpool-result-fabian-hurzeler/",
+          "source": "The New York Times",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcS5m2zVkvDcGjIbs0RMRQAUUR9ehC9C7QqMniH7s18sTu3FEnfCAmIU-czg71A"
+        }
+      ],
+      "is_pod": true
+    },
+    {
+      "query": "telemundo",
+      "traffic": "200+",
+      "traffic_num": 200,
+      "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRTHIzPAZpZzlqs2O4D8zQlfP7eMEIpsuLHAtKkMWrUIvx_e7fXHBuSDh82kdc",
+      "pubdate": "Sat, 31 Oct 2026 05:50:00 -0700",
+      "news_items": [
+        {
+          "title": "¿Planes para Halloween? Conoce cómo va a estar el tiempo este fin de semana",
+          "url": "https://www.elnuevodia.com/noticias/el-tiempo/notas/planes-para-halloween-conoce-como-va-a-estar-el-tiempo-este-fin-de-semana/",
+          "source": "El Nuevo Día",
+          "picture": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRTHIzPAZpZzlqs2O4D8zQlfP7eMEIpsuLHAtKkMWrUIvx_e7fXHBuSDh82kdc"
+        },
+        {
+          "title": "Anticipan aguaceros y tronadas para este Halloween",
+          "url": "https://www.elvocero.com/el-tiempo/anticipan-aguaceros-y-tronadas-para-este-halloween/article_81c4f71b-56a0-42f9-b2d8-f7b2cf90a570.html",
+          "source": "El Vocero de Puerto Rico",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRS1i8HEzitUS8qXW8MKIzlUHOktULmKDLKieFSM0lfnShinayYDv4JQWJlBcQ"
+        },
+        {
+          "title": "Tiempo esta noche de Halloween: nieblas, algunas lluvias y más frío en estas zonas",
+          "url": "https://www.eltiempo.es/noticias/tiempo-esta-noche-de-halloween-nieblas-algunas-lluvias-y-mas-frio-en-estas-zonas",
+          "source": "Eltiempo.es",
+          "picture": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQvKsKfIj0ByW7b3Mss6eHw7HH_NU48CdKFDzGkfNMYo_HRuFOOvl087oZKv6I"
+        }
+      ],
+      "is_pod": false
+    }
+  ]
+}
