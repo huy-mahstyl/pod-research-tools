@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 POD Trend Alert v2.0</title>
+    <meta name="description" content="Multi-source social media trend scanner for Print-on-Demand research">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e17; --bg2: #0f1420; --card: #141b2d;
+            --card-hover: #1a2338; --border: #1e2a42; --border-light: #2a3a5c;
+            --text: #e2e8f0; --muted: #64748b; --dim: #475569;
+            --red: #ef4444; --green: #22c55e; --orange: #f59e0b;
+            --blue: #3b82f6; --purple: #a855f7; --cyan: #06b6d4;
+            --fire-bg: rgba(239,68,68,0.12); --hot-bg: rgba(245,158,11,0.12);
+            --warm-bg: rgba(59,130,246,0.1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        header { text-align: center; padding: 2rem 1rem 1.5rem; background: linear-gradient(180deg, #12182a 0%, var(--bg) 100%); border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+        header::before { content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); width: 700px; height: 700px; background: radial-gradient(circle, rgba(239,68,68,0.06) 0%, transparent 70%); pointer-events: none; }
+        h1 { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.03em; background: linear-gradient(135deg, #ef4444 0%, #f59e0b 50%, #22c55e 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .subtitle { color: var(--muted); font-size: 0.85rem; margin-top: 0.4rem; font-weight: 500; }
+        .stats-bar { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .stat { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 600; padding: 0.35rem 0.8rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border); }
+
+        .filters { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .filter-btn { padding: 0.3rem 0.8rem; font-size: 0.7rem; font-weight: 600; border-radius: 16px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.2s; font-family: inherit; }
+        .filter-btn:hover, .filter-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+        .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; padding: 1.2rem; max-width: 1500px; margin: 0 auto; }
+        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+        .section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .section-head { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.2rem; border-bottom: 1px solid var(--border); }
+        .section-title { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+        .section-badge { font-size: 0.65rem; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+        .section-body { max-height: 78vh; overflow-y: auto; }
+        .section-body::-webkit-scrollbar { width: 5px; }
+        .section-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        /* Post card */
+        .post { display: flex; gap: 0.7rem; padding: 0.8rem 1.2rem; border-bottom: 1px solid rgba(30,42,66,0.5); transition: background 0.15s; animation: fadeIn 0.3s ease-out both; }
+        .post:hover { background: var(--card-hover); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        .post-thumb { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: var(--bg2); border: 1px solid var(--border); }
+        .post-body { flex: 1; min-width: 0; }
+        .post-top { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.25rem; }
+        .post-title { font-size: 0.8rem; font-weight: 600; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .post-title a { color: inherit; text-decoration: none; } .post-title a:hover { color: var(--blue); }
+
+        .metrics { display: flex; gap: 0.6rem; margin-top: 0.3rem; flex-wrap: wrap; align-items: center; }
+        .metric { font-size: 0.65rem; color: var(--muted); font-weight: 500; }
+        .metric-val { font-weight: 700; color: var(--text); }
+
+        .badge { font-size: 0.55rem; font-weight: 700; padding: 2px 7px; border-radius: 6px; white-space: nowrap; }
+        .badge-fire { background: var(--red); color: #fff; box-shadow: 0 0 10px rgba(239,68,68,0.3); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+        .badge-hot { background: var(--orange); color: #fff; }
+        .badge-warm { background: rgba(59,130,246,0.2); color: var(--blue); }
+        .badge-cold { background: rgba(100,116,139,0.15); color: var(--dim); }
+        .badge-source { background: rgba(100,116,139,0.15); color: var(--muted); }
+        .badge-sport { background: rgba(34,197,94,0.12); color: var(--green); }
+        .badge-score { background: rgba(168,85,247,0.15); color: var(--purple); font-weight: 800; }
+
+        .post-actions { display: flex; gap: 0.4rem; margin-top: 0.3rem; }
+        .act { font-size: 0.58rem; font-weight: 600; color: var(--dim); text-decoration: none; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); transition: all 0.15s; }
+        .act:hover { color: var(--blue); border-color: rgba(59,130,246,0.4); background: rgba(59,130,246,0.08); }
+
+        /* ESPN card */
+        .espn { display: flex; gap: 0.7rem; padding: 0.8rem 1.2rem; border-bottom: 1px solid rgba(30,42,66,0.5); }
+        .espn:hover { background: var(--card-hover); }
+        .espn-img { width: 80px; height: 55px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
+        .espn-body { flex: 1; }
+        .espn-title { font-size: 0.8rem; font-weight: 600; color: var(--text); margin-bottom: 0.2rem; }
+        .espn-title a { color: inherit; text-decoration: none; } .espn-title a:hover { color: var(--cyan); }
+        .espn-desc { font-size: 0.68rem; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        /* Google Trends mini */
+        .trend-chip { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.3rem 0.7rem; margin: 0.2rem; border-radius: 16px; background: var(--card); border: 1px solid var(--border); font-size: 0.7rem; font-weight: 600; color: var(--text); text-decoration: none; transition: all 0.15s; }
+        .trend-chip:hover { border-color: var(--cyan); color: var(--cyan); }
+        .trend-traffic { font-size: 0.6rem; color: var(--orange); font-weight: 700; }
+
+        .empty { padding: 2rem; text-align: center; color: var(--muted); font-size: 0.85rem; }
+        footer { text-align: center; padding: 1.5rem; color: var(--dim); font-size: 0.7rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--blue); text-decoration: none; }
+    </style>
+    <script>
+    function openSearch(url, evt) {
+        if (evt) evt.preventDefault();
+        var w = window.open('about:blank', '_blank');
+        if (w) { w.location.href = url; } else { window.location.href = url; }
+        return false;
+    }
+    function filterSport(sport) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        document.querySelectorAll('.post[data-sport]').forEach(p => {
+            p.style.display = (!sport || p.dataset.sport === sport) ? '' : 'none';
+        });
+    }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>🔥 POD Trend Alert v2.0</h1>
+        <p class="subtitle">Multi-source viral sports scanner — Reddit + ESPN + Google Trends</p>
+        <div class="stats-bar">
+            <div class="stat" style="color:var(--red)">📊 32 items scanned</div>
+            <div class="stat" style="color:var(--orange)">🔥 0 FIRE + 0 HOT</div>
+            <div class="stat" style="color:var(--blue)">🕐 15:41 — 07/11/2026</div>
+        </div>
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterSport('')">All</button>
+
+        </div>
+    </header>
+
+    <div class="layout">
+
+        <div class="section">
+            <div class="section-head">
+                <div class="section-title" style="color:var(--red)">🏆 Top POD Opportunities</div>
+                <span class="section-badge" style="background:var(--fire-bg);color:var(--red)">0 found</span>
+            </div>
+            <div class="section-body">
+<div class="empty">Không tìm thấy cơ hội POD nổi bật.</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-head">
+                <div class="section-title" style="color:var(--cyan)">📺 ESPN + 📈 Google Trends</div>
+                <span class="section-badge" style="background:var(--warm-bg);color:var(--blue)">32 articles</span>
+            </div>
+            <div class="section-body">
+<div style="padding:0.8rem 1.2rem;border-bottom:1px solid var(--border)"><div style="font-size:0.75rem;font-weight:700;color:var(--cyan);margin-bottom:0.5rem">📈 Google Trends — POD Keywords</div><a class="trend-chip" href="https://www.google.com/search?q=ole+miss+vs+georgia+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">ole miss vs georgia <span class="trend-traffic">200+</span></a><a class="trend-chip" href="https://www.google.com/search?q=cj+carr+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">cj carr <span class="trend-traffic">2000+</span></a><a class="trend-chip" href="https://www.google.com/search?q=galatasaray+vs+amed+sk+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">galatasaray vs amed sk <span class="trend-traffic">500+</span></a><a class="trend-chip" href="https://www.google.com/search?q=kalani+sitake+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">kalani sitake <span class="trend-traffic">200+</span></a></div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2020/0915/JWest1x1_600x600.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN MLB</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 1.5</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/mlb/story/_/id/50392405/joe-west-4-other-ex-umpires-sue-mlb-retirement-plan" target="_blank" rel="noopener">Joe West, 4 other former umpires sue over MLB retirement plan</a></div>
+                        <div class="espn-desc">A lawyer for the retired umpires said Thursday the amount owed is in excess of $2 million.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Joe+West%2C+4+other+former+umpires+sue+over+MLB+retirement+plan+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://s.espncdn.com/stitcher/sports/hockey/nhl/events/401892660.png?templateId=espn.applewatch.awayhome.1" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NHL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 1.5</span>
+                        </div>
+                        <div class="espn-title"><a href="http://www.espn.com/nhl/recap?gameId=401892660" target="_blank" rel="noopener">Kaprizov has NHL-leading 16th goal, adds 3 assists to lead Wild past Sharks, 4-1</a></div>
+                        <div class="espn-desc">— Kirill Kaprizov scored his NHL-leading 16th goal and added three assists in the Minnesota Wild's 4-1 victory over the </div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Kaprizov+has+NHL-leading+16th+goal%2C+adds+3+assists+to+lead+Wild+past+Sharks%2C+4-1+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/1105/r1741720_1296x729_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NBA</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/fantasy/basketball/story/_/id/50391882/fantasy-basketball-nba-trends-players-new-skills" target="_blank" rel="noopener">Fantasy basketball: Four players whose upgraded skill sets look real</a></div>
+                        <div class="espn-desc">Which players have added new dimensions to their game? Here are four who can sustain their newly-demonstrated skills.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Fantasy+basketball%3A+Four+players+whose+upgraded+skill+sets+look+real+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://s.espncdn.com/stitcher/sports/basketball/nba/events/401909944.png?templateId=espn.applewatch.awayhome.1" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NBA</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="http://www.espn.com/nba/preview?gameId=401909944" target="_blank" rel="noopener">San Antonio faces Portland following Wembanyama's 52-point game</a></div>
+                        <div class="espn-desc">San Antonio Spurs (6-2, fourth in the Western Conference) vs. Portland Trail Blazers (6-2, fifth in the Western Conferen</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=San+Antonio+faces+Portland+following+Wembanyama%27s+52-point+game+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/1107/r1742320_600x400_3-2.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NBA</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/nba/story/_/id/50406079/luka-doncic-stays-hot-scores-53-lead-lakers-blazers" target="_blank" rel="noopener">Luka Doncic's 53-point explosion pushes scoring average past 40 as Lakers roll</a></div>
+                        <div class="espn-desc">Luka Doncic poured in a season-high 53 points in a 124-118 win over the Trail Blazers, raising his scoring average to 40</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Luka+Doncic%27s+53-point+explosion+pushes+scoring+average+past+40+as+Lakers+roll+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://s.espncdn.com/stitcher/sports/basketball/nba/events/401909939.png?templateId=espn.applewatch.awayhome.1" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NBA</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="http://www.espn.com/nba/preview?gameId=401909939" target="_blank" rel="noopener">Atlanta faces Brooklyn, looks for 4th straight victory</a></div>
+                        <div class="espn-desc">Brooklyn Nets (2-6, 13th in the Eastern Conference) vs. Atlanta Hawks (6-4, fourth in the Eastern Conference)</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Atlanta+faces+Brooklyn%2C+looks+for+4th+straight+victory+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://s.espncdn.com/stitcher/sports/basketball/nba/events/401909945.png?templateId=espn.applewatch.awayhome.1" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NBA</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="http://www.espn.com/nba/preview?gameId=401909945" target="_blank" rel="noopener">Chicago takes on Philadelphia, aims to halt 6-game slide</a></div>
+                        <div class="espn-desc">Philadelphia 76ers (8-2, first in the Eastern Conference) vs. Chicago Bulls (1-7, 14th in the Eastern Conference)</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Chicago+takes+on+Philadelphia%2C+aims+to+halt+6-game+slide+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://s.espncdn.com/stitcher/sports/basketball/nba/events/401909946.png?templateId=espn.applewatch.awayhome.1" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NBA</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="http://www.espn.com/nba/preview?gameId=401909946" target="_blank" rel="noopener">Doncic leads Los Angeles against Detroit after 40-point showing</a></div>
+                        <div class="espn-desc">Los Angeles Lakers (7-2, first in the Western Conference) vs. Detroit Pistons (6-2, third in the Eastern Conference)</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Doncic+leads+Los+Angeles+against+Detroit+after+40-point+showing+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://s.espncdn.com/stitcher/sports/basketball/nba/events/401909947.png?templateId=espn.applewatch.awayhome.1" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NBA</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="http://www.espn.com/nba/preview?gameId=401909947" target="_blank" rel="noopener">Minnesota faces Utah, looks for 4th straight victory</a></div>
+                        <div class="espn-desc">Utah Jazz (1-8, 15th in the Western Conference) vs. Minnesota Timberwolves (7-3, sixth in the Western Conference)</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Minnesota+faces+Utah%2C+looks+for+4th+straight+victory+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://s.espncdn.com/stitcher/sports/basketball/nba/events/401909951.png?templateId=espn.applewatch.awayhome.1" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NBA</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="http://www.espn.com/nba/preview?gameId=401909951" target="_blank" rel="noopener">Sacramento plays Miami on 3-game home slide</a></div>
+                        <div class="espn-desc">Miami Heat (3-6, ninth in the Eastern Conference) vs. Sacramento Kings (1-7, 14th in the Western Conference)</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Sacramento+plays+Miami+on+3-game+home+slide+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/1105/r1741710_1296x729_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NFL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/fantasy/football/story/_/id/50392079/fantasy-football-streamers-last-minute-pickups-week-9" target="_blank" rel="noopener">Fantasy football last-minute pickups: Kaelon Black and Malik Willis lead the way</a></div>
+                        <div class="espn-desc">If injuries, bye weeks or tough matchups have you seeking lineup help, Matt Bowen lists potential options.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Fantasy+football+last-minute+pickups%3A+Kaelon+Black+and+Malik+Willis+lead+the+way+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0902/r1710593_1296x729_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NFL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/fantasy/football/story/_/id/49803708/fantasy-football-superflex-rankings-2026-qb-rb-wr-te" target="_blank" rel="noopener">Fantasy football flex and superflex rankings for Week 9</a></div>
+                        <div class="espn-desc">Trying to decide between a couple of closely ranked players this week? Eric Karabell's ranks are here to help.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Fantasy+football+flex+and+superflex+rankings+for+Week+9+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/1006/r1727003_1296x729_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NFL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/fantasy/football/story/_/page/FFWeeklyPlayerRank26main-49797082/fantasy-football-rankings-2026-qb-rb-wr-te-dst" target="_blank" rel="noopener">Fantasy football rankings Week 9: PPR and superflex</a></div>
+                        <div class="espn-desc">Weekly composite ranks for each position in PPR and IDP formats, as well as Eric Karabell's superflex ranks.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Fantasy+football+rankings+Week+9%3A+PPR+and+superflex+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0929/r1723237_1296x729_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NFL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/fantasy/football/story/_/page/FFWeeklyPlayerRank26-49804164/nfl-fantasy-football-rankings-2026-te-tight-end" target="_blank" rel="noopener">Fantasy football rankings for Week 9: Tight end</a></div>
+                        <div class="espn-desc">Fantasy football rankings from Matt Bowen, Mike Clay, Tristan H. Cockcroft, Daniel Dopp, Eric Karabell, Liz Loza, Eric M</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Fantasy+football+rankings+for+Week+9%3A+Tight+end+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0903/r1711058_1296x729_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NFL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/fantasy/football/story/_/page/FFWeeklyPlayerRank26-49804149/nfl-fantasy-football-rankings-2026-wr-wide-receiver" target="_blank" rel="noopener">Fantasy football rankings for Week 9: Wide receiver</a></div>
+                        <div class="espn-desc">Fantasy football rankings from Matt Bowen, Mike Clay, Tristan H. Cockcroft, Daniel Dopp, Eric Karabell, Liz Loza, Eric M</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Fantasy+football+rankings+for+Week+9%3A+Wide+receiver+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0922/r1720547_1296x729_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NFL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/fantasy/football/story/_/page/FFWeeklyPlayerRank26-49804068/nfl-fantasy-football-rankings-2026-rb-running-back" target="_blank" rel="noopener">Fantasy football rankings for Week 9: Running back</a></div>
+                        <div class="espn-desc">Fantasy football rankings from Matt Bowen, Mike Clay, Tristan H. Cockcroft, Daniel Dopp, Eric Karabell, Liz Loza, Eric M</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Fantasy+football+rankings+for+Week+9%3A+Running+back+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0903/r1711066_1296x729_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NFL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/fantasy/football/story/_/page/FFWeeklyPlayerRank26-49804233/nfl-fantasy-football-rankings-2026-k-kicker" target="_blank" rel="noopener">Fantasy football rankings for Week 9: Kicker</a></div>
+                        <div class="espn-desc">Fantasy football rankings from Matt Bowen, Mike Clay, Tristan H. Cockcroft, Daniel Dopp, Eric Karabell, Liz Loza, Eric M</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Fantasy+football+rankings+for+Week+9%3A+Kicker+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0903/r1711049_1296x729_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NFL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/fantasy/football/story/_/page/FFWeeklyPlayerRank26-49804022/nfl-fantasy-football-rankings-2026-qb-quarterback" target="_blank" rel="noopener">Fantasy football rankings for Week 9: Quarterback</a></div>
+                        <div class="espn-desc">Fantasy football rankings from Matt Bowen, Mike Clay, Tristan H. Cockcroft, Daniel Dopp, Eric Karabell, Liz Loza, Eric M</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Fantasy+football+rankings+for+Week+9%3A+Quarterback+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/1107/r1742283_600x600_1-1.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN MLB</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/mlb/story/_/id/50403894/new-york-mets-re-sign-pitcher-robert-stock-one-year-deal" target="_blank" rel="noopener">New York Mets re-sign pitcher Robert Stock, 36, to one-year contract</a></div>
+                        <div class="espn-desc">The New York Mets re-signed pitcher Robert Stock, a 36-year-old veteran right-hander who earned his first major league w</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=New+York+Mets+re-sign+pitcher+Robert+Stock%2C+36%2C+to+one-year+contract+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0713/r1688709_600x400_3-2.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN MLB</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/mlb/story/_/id/50403554/diamondbacks-corbin-carroll-surgery-right-elbow" target="_blank" rel="noopener">D-backs' Corbin Carroll has elbow surgery, should be ready for spring training</a></div>
+                        <div class="espn-desc">Corbin Carroll had surgery on his right elbow this week and is expected to be ready for the start of spring training in </div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=D-backs%27+Corbin+Carroll+has+elbow+surgery%2C+should+be+ready+for+spring+training+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/1106/r1742194_2_1296x729_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN MLB</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/mlb/story/_/id/50402459/emmanuel-clase-luis-ortiz-information-trial-testimony-bettor" target="_blank" rel="noopener">Witness: Clase 'inside' pitch info dried up amid Mizuhara case fallout</a></div>
+                        <div class="espn-desc">A witness said that the inside info he used to bet on Clase pitches dried up due to increased scrutiny from the scandal </div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Witness%3A+Clase+%27inside%27+pitch+info+dried+up+amid+Mizuhara+case+fallout+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2016/1024/r144515_600x400_3-2.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN MLB</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/mlb/story/_/id/50402128/sources-mariners-hire-yankees-swanson-bench-coach" target="_blank" rel="noopener">Sources: Mariners to hire Yankees' Tanner Swanson as bench coach</a></div>
+                        <div class="espn-desc">Yankees catching coach and field coordinator Tanner Swanson is joining the Mariners' staff as bench coach, a source conf</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Sources%3A+Mariners+to+hire+Yankees%27+Tanner+Swanson+as+bench+coach+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/0210/r1613419_600x400_3-2.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN MLB</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/mlb/story/_/id/50399679/anthony-santander-anti-muslim-posts-represent-team" target="_blank" rel="noopener">Blue Jays: Anthony Santander's anti-Muslim posts don't represent team</a></div>
+                        <div class="espn-desc">The Toronto Blue Jays say a series of anti-Muslim videos posted by Anthony Santander on the right-fielder's social media</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Blue+Jays%3A+Anthony+Santander%27s+anti-Muslim+posts+don%27t+represent+team+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/1105/r1741659_2_608x342_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN MLB</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/mlb/story/_/id/50391071/yankees-mets-offseason-free-agency-trades-2027" target="_blank" rel="noopener">What Yankees, Mets can do this winter to meet their 2027 goals</a></div>
+                        <div class="espn-desc">The 2026 MLB season didn't go as either New York team planned. Here's how they can flip the script next year.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=What+Yankees%2C+Mets+can+do+this+winter+to+meet+their+2027+goals+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/1106/r1741836_600x400_3-2.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN MLB</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/mlb/story/_/id/50394314/ex-guardian-bo-naylor-testifies-clase-ortiz-trial" target="_blank" rel="noopener">Ex-Guardians catcher Bo Naylor: Nothing unusual about Clase, Ortiz pitches</a></div>
+                        <div class="espn-desc">Bo Naylor testified Thursday that he didn't think there was anything unusual about the pitches Emmanuel Clase or Luis Or</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Ex-Guardians+catcher+Bo+Naylor%3A+Nothing+unusual+about+Clase%2C+Ortiz+pitches+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://a.espncdn.com/photo/2026/1106/r1742033_1296x729_16-9.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NHL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/nhl/story/_/id/50400113/nhl-2026-27-tonight-games-schedule-matchups-stats-top-players-betting" target="_blank" rel="noopener">NHL Tonight: Your guide to all 12 games on Saturday's schedule</a></div>
+                        <div class="espn-desc">Find game previews, betting intel, broadcast information, stats and highlights here.</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=NHL+Tonight%3A+Your+guide+to+all+12+games+on+Saturday%27s+schedule+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://s.espncdn.com/stitcher/sports/hockey/nhl/events/401892669.png?templateId=espn.applewatch.awayhome.1" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NHL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="http://www.espn.com/nhl/preview?gameId=401892669" target="_blank" rel="noopener">Sharks take losing streak into matchup with the Stars</a></div>
+                        <div class="espn-desc">San Jose Sharks (7-10-1, in the Pacific Division) vs. Dallas Stars (9-5-2, in the Central Division)</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Sharks+take+losing+streak+into+matchup+with+the+Stars+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://s.espncdn.com/stitcher/sports/hockey/nhl/events/401892675.png?templateId=espn.applewatch.awayhome.1" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NHL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="http://www.espn.com/nhl/preview?gameId=401892675" target="_blank" rel="noopener">Sabres host the Golden Knights after Norris' 2-goal game</a></div>
+                        <div class="espn-desc">Vegas Golden Knights (11-5-2, in the Pacific Division) vs. Buffalo Sabres (8-5-3, in the Atlantic Division)</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Sabres+host+the+Golden+Knights+after+Norris%27+2-goal+game+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://s.espncdn.com/stitcher/sports/hockey/nhl/events/401892670.png?templateId=espn.applewatch.awayhome.1" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NHL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="http://www.espn.com/nhl/preview?gameId=401892670" target="_blank" rel="noopener">Tampa Bay visits Minnesota after Mikheyev's 2-goal game</a></div>
+                        <div class="espn-desc">Tampa Bay Lightning (10-3-2, in the Atlantic Division) vs. Minnesota Wild (12-3-3, in the Central Division)</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Tampa+Bay+visits+Minnesota+after+Mikheyev%27s+2-goal+game+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://s.espncdn.com/stitcher/sports/hockey/nhl/events/401892678.png?templateId=espn.applewatch.awayhome.1" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NHL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="http://www.espn.com/nhl/preview?gameId=401892678" target="_blank" rel="noopener">Calgary and Philadelphia meet in non-conference matchup</a></div>
+                        <div class="espn-desc">Philadelphia Flyers (4-10-4, in the Metropolitan Division) vs. Calgary Flames (7-9-1, in the Pacific Division)</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Calgary+and+Philadelphia+meet+in+non-conference+matchup+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://s.espncdn.com/stitcher/sports/hockey/nhl/events/401892661.png?templateId=espn.applewatch.awayhome.1" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NHL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="http://www.espn.com/nhl/recap?gameId=401892661" target="_blank" rel="noopener">Gauthier breaks late tie to extend goals streak to 5 games, and help Ducks beat Flames 5-3</a></div>
+                        <div class="espn-desc">— Cutter Gauthier broke a tie with 1:34 left to extend his goals streak to five games and help the Anaheim Ducks beat th</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Gauthier+breaks+late+tie+to+extend+goals+streak+to+5+games%2C+and+help+Ducks+beat+Flames+5-3+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="espn">
+                    <img class="espn-img" src="https://espnmedia-cdn.akamaized.net/espn/media/common/wsc/2026/1107/6474b8b5-a47b-403b-a241-57ff3d464a81/6474b8b5-a47b-403b-a241-57ff3d464a81.jpg" loading="lazy" onerror="this.style.display='none'">
+                    <div class="espn-body">
+                        <div class="post-top">
+                            <span class="badge badge-source">ESPN NHL</span>
+                            <span class="badge badge-cold">❄️</span>
+                            <span class="badge badge-score">POD 0.0</span>
+                        </div>
+                        <div class="espn-title"><a href="https://www.espn.com/video/clip/_/id/50404849/game-highlights" target="_blank" rel="noopener">Anaheim Ducks vs. Calgary Flames: Game Highlights</a></div>
+                        <div class="espn-desc">Anaheim Ducks vs. Calgary Flames: Game Highlights</div>
+                        <div class="post-actions" style="margin-top:0.3rem">
+                            <a class="act" href="https://www.google.com/search?q=Anaheim+Ducks+vs.+Calgary+Flames%3A+Game+Highlights+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Data: <a href="https://reddit.com" target="_blank">Reddit</a> via Pullpush API +
+        <a href="https://espn.com" target="_blank">ESPN</a> +
+        <a href="https://trends.google.com" target="_blank">Google Trends</a>
+        — Scan lúc 15:41 — 07/11/2026
+    </footer>
+</body>
+</html>
