@@ -1,0 +1,298 @@
+{
+  "generated_at": "2026-11-14T06:30:25.981399",
+  "reddit_posts": 0,
+  "espn_news": 32,
+  "google_trends": 7,
+  "top_pod": [],
+  "all_reddit": [],
+  "all_espn": [
+    {
+      "title": "Giannis Antetokounmpo, Bam Adebayo help showcase Heat's potential in win vs. Cavs",
+      "description": "Giannis Antetokounmpo and Bam Adebayo each scored 37 points to help the Heat top the Cavs for their sixth win in eight games.",
+      "link": "https://www.espn.com/nba/story/_/id/50477867/giannis-antetokounmpo-bam-adebayo-shine-heat-take-cavs",
+      "image": "https://a.espncdn.com/photo/2026/1114/r1745581_600x400_3-2.jpg",
+      "source": "ESPN NBA",
+      "sport": "NBA",
+      "type": "espn"
+    },
+    {
+      "title": "Oklahoma City Thunder vs. LA Clippers: Game Highlights",
+      "description": "Oklahoma City Thunder vs. LA Clippers: Game Highlights",
+      "link": "https://www.espn.com/video/clip/_/id/50477831/game-highlights",
+      "image": "https://espnmedia-cdn.akamaized.net/espn/media/common/wsc/2026/1114/cea3cb10-f73a-400e-9411-f342a2ff6597/cea3cb10-f73a-400e-9411-f342a2ff6597.jpg",
+      "source": "ESPN NBA",
+      "sport": "NBA",
+      "type": "espn"
+    },
+    {
+      "title": "G League's Keyshawn Bryant leapfrogs opponent for dunk-of-the-year contender",
+      "description": "G League's Keyshawn Bryant leapfrogs opponent for dunk-of-the-year contender",
+      "link": "https://www.espn.com/video/clip/_/id/50477761/g-league-keyshawn-bryant-leapfrogs-opponent-dunk-year-contender",
+      "image": "https://espnmedia-cdn.akamaized.net/espn/media/common/2026/1114/dm_261114_Watchfolder_Aqua_for_Copp_dunk_16x9/dm_261114_Watchfolder_Aqua_for_Copp_dunk_16x9.jpg",
+      "source": "ESPN NBA",
+      "sport": "NBA",
+      "type": "espn"
+    },
+    {
+      "title": "Portland Trail Blazers vs. Sacramento Kings: Game Highlights",
+      "description": "Portland Trail Blazers vs. Sacramento Kings: Game Highlights",
+      "link": "https://www.espn.com/video/clip/_/id/50477713/game-highlights",
+      "image": "https://espnmedia-cdn.akamaized.net/espn/media/common/wsc/2026/1114/b686094b-5c53-4035-b4c4-7ebcb440b43e/b686094b-5c53-4035-b4c4-7ebcb440b43e.jpg",
+      "source": "ESPN NBA",
+      "sport": "NBA",
+      "type": "espn"
+    },
+    {
+      "title": "Trail Blazers beat Kings 120-107 in NBA Cup play for third straight win",
+      "description": "— Deni Avdija scored 34 points and the Portland Trail Blazers beat the Sacramento Kings 120-107 on Friday night in NBA Cup play to open a six-game trip with their third straight victory.",
+      "link": "http://www.espn.com/nba/recap?gameId=401909303",
+      "image": "https://s.espncdn.com/stitcher/sports/basketball/nba/events/401909303.png?templateId=espn.applewatch.awayhome.1",
+      "source": "ESPN NBA",
+      "sport": "NBA",
+      "type": "espn"
+    },
+    {
+      "title": "2026 NBA Cup: Schedule, format, groups, updates and more",
+      "description": "Here's everything you need to know about the fourth annual in-season tournament, including the recent wins from the Pacers and the Spurs.",
+      "link": "https://www.espn.com/nba/story/_/id/49577473/2026-nba-season-tournament-cup-format-highlights-updates",
+      "image": "https://a.espncdn.com/photo/2026/1114/r1745554_608x342_16-9.jpg",
+      "source": "ESPN NBA",
+      "sport": "NBA",
+      "type": "espn"
+    },
+    {
+      "title": "Castle scores season-high 32 points as Spurs stop the Warriors 123-85 for 11th straight win",
+      "description": "— Stephon Castle scored a season-high 32 points, Victor Wembanyama had 12 points and 12 rebounds and the San Antonio Spurs won their 11th straight game, rolling past the Golden State Warriors 123-85 Friday night to remain unbeaten in NBA Cup play.",
+      "link": "http://www.espn.com/nba/recap?gameId=401909302",
+      "image": "https://s.espncdn.com/stitcher/sports/basketball/nba/events/401909302.png?templateId=espn.applewatch.awayhome.1",
+      "source": "ESPN NBA",
+      "sport": "NBA",
+      "type": "espn"
+    },
+    {
+      "title": "Alperen Sengun's 43-point double-double lifts Rockets over Jazz",
+      "description": "Alperen Sengun's 43-point double-double lifts Rockets over Jazz",
+      "link": "https://www.espn.com/video/clip/_/id/50477468/alperen-sengun-43-point-double-double-lifts-rockets-jazz",
+      "image": "https://espnmedia-cdn.akamaized.net/espn/media/common/wsc/2026/1114/f1ed5e02-24f4-42d4-8fc4-6672c85917f0/f1ed5e02-24f4-42d4-8fc4-6672c85917f0.jpg",
+      "source": "ESPN NBA",
+      "sport": "NBA",
+      "type": "espn"
+    },
+    {
+      "title": "Seahawks are hurting with injuries, but two players will return vs. Raiders",
+      "description": "QB Drew Lock will start again for Darnold. And LB Uchenna Nwosu and WR Rashid Shaheed will return to the field in Las Vegas.",
+      "link": "https://www.espn.com/nfl/story/_/id/50475505/seahawks-raiders-week-10-darnold-lock-shaheed-returns",
+      "image": "https://a.espncdn.com/photo/2026/1113/r1745471_608x342_16-9.jpg",
+      "source": "ESPN NFL",
+      "sport": "NFL",
+      "type": "espn"
+    },
+    {
+      "title": "Fantasy football Week 10 inactives: Who's in and who's out?",
+      "description": "Updated inactives and analysis based on the latest reports and official announcements leading up to kickoff.",
+      "link": "https://www.espn.com/fantasy/football/story/_/page/FFSundayInactives-50462045/fantasy-football-injuries-nfl-week-10-inactive-active",
+      "image": "https://a.espncdn.com/photo/2026/1113/r1745316_576x324_16-9.jpg",
+      "source": "ESPN NFL",
+      "sport": "NFL",
+      "type": "espn"
+    },
+    {
+      "title": "49ers OT Williams, LB Greenlaw questionable, WR Evans out vs. Cowboys",
+      "description": "The 49ers are listing left tackle Trent Williams and linebacker Dre Greenlaw as questionable for Sunday's game against the Cowboys, while receiver Mike Evans has been ruled out.",
+      "link": "https://www.espn.com/nfl/story/_/id/50475033/49ers-williams-greenlaw-questionable-evans-vs-cowboys",
+      "image": "https://a.espncdn.com/photo/2025/1229/r1594560_600x400_3-2.jpg",
+      "source": "ESPN NFL",
+      "sport": "NFL",
+      "type": "espn"
+    },
+    {
+      "title": "When will Lamar Jackson return to the field?",
+      "description": "Jamison Hensley provides an update on Jackson's thumb injury post surgery, projecting a potential return as early as Week 16.",
+      "link": "https://www.espn.com/video/clip/_/id/50474994/when-lamar-jackson-return-field",
+      "image": "https://espnmedia-cdn.akamaized.net/espn/media/common/2026/1113/dm_261113_11-13_Ravens_IA/dm_261113_11-13_Ravens_IA.jpg",
+      "source": "ESPN NFL",
+      "sport": "NFL",
+      "type": "espn"
+    },
+    {
+      "title": "Vikings to start reacquired QB Kirk Cousins vs. Packers",
+      "description": "Coach Kevin O'Connell called Kirk Cousins' ability to get reacquainted with the Vikings' offense \"impressive.\"",
+      "link": "https://www.espn.com/nfl/story/_/id/50474753/vikings-start-reacquired-qb-kirk-cousins-vs-packers",
+      "image": "https://a.espncdn.com/photo/2023/1030/r1245867_1296x729_16-9.jpg",
+      "source": "ESPN NFL",
+      "sport": "NFL",
+      "type": "espn"
+    },
+    {
+      "title": "Colts look to take advantage of Dolphins without QB Malik Willis",
+      "description": "Stephen Holder previews the Colts matchup against he Dolphins with new faces on offense post the NFL trade deadline.",
+      "link": "https://www.espn.com/video/clip/_/id/50474656/colts-look-take-advantage-dolphins-qb-malik-willis",
+      "image": "https://espnmedia-cdn.akamaized.net/espn/media/common/2026/1113/dm_261113_11-13_Colts_IA/dm_261113_11-13_Colts_IA.jpg",
+      "source": "ESPN NFL",
+      "sport": "NFL",
+      "type": "espn"
+    },
+    {
+      "title": "NFL outlines steps in Jalen Hurts investigation in letter to senator",
+      "description": "The NFL provided some additional details about the investigation into how Jalen Hurts' blood clots were handled in response to an inquiry from a U.S. senator.",
+      "link": "https://www.espn.com/nfl/story/_/id/50474564/nfl-outlines-aspects-jalen-hurts-investigation-senator",
+      "image": "https://a.espncdn.com/photo/2026/1019/r1732959_1296x729_16-9.jpg",
+      "source": "ESPN NFL",
+      "sport": "NFL",
+      "type": "espn"
+    },
+    {
+      "title": "Andy Reid delivers injury update on Kenneth Walker III",
+      "description": "Andy Reid delivers injury update on Kenneth Walker III",
+      "link": "https://www.espn.com/video/clip/_/id/50474246/andy-reid-delivers-injury-update-kenneth-walker-iii",
+      "image": "https://espnmedia-cdn.akamaized.net/espn/media/common/2026/1113/ss_20261113_155720389_3739591/ss_20261113_155720389_3739591.jpg",
+      "source": "ESPN NFL",
+      "sport": "NFL",
+      "type": "espn"
+    },
+    {
+      "title": "Angels, catcher Tyler Heineman avoid arbitration with 1-year contract",
+      "description": "Veteran catcher Tyler Heineman and the Los Angeles Angels have agreed to a one-year contract for $1,237,500, the same salary he made this year.",
+      "link": "https://www.espn.com/mlb/story/_/id/50477559/angels-tyler-heineman-avoid-arbitration-1-year-deal",
+      "image": "https://a.espncdn.com/photo/2016/0301/r59271_600x400_3-2.jpg",
+      "source": "ESPN MLB",
+      "sport": "MLB",
+      "type": "espn"
+    },
+    {
+      "title": "Blue Jays' Anthony Santander apologizes for sharing anti-Muslim posts",
+      "description": "Blue Jays outfielder Anthony Santander apologized for sharing anti-Muslim social media posts, saying it caused hurt and fell short of his own convictions.",
+      "link": "https://www.espn.com/mlb/story/_/id/50474604/blue-jays-anthony-santander-apologizes-anti-muslim-posts",
+      "image": "https://a.espncdn.com/photo/2025/0923/r1550160_1296x729_16-9.jpg",
+      "source": "ESPN MLB",
+      "sport": "MLB",
+      "type": "espn"
+    },
+    {
+      "title": "Astros manager Brad Ausmus sets goal of winning World Series",
+      "description": "New Astros manager Brad Ausmus said he's \"not here to talk about glory days\" after playing for the franchise and is instead focused on winning the World Series.",
+      "link": "https://www.espn.com/mlb/story/_/id/50473941/astros-manager-brad-ausmus-sets-goal-winning-world-series",
+      "image": "https://a.espncdn.com/photo/2026/1113/r1745416_1296x729_16-9.jpg",
+      "source": "ESPN MLB",
+      "sport": "MLB",
+      "type": "espn"
+    },
+    {
+      "title": "2026-27 MLB free agency, trade grades: Offseason analysis",
+      "description": "We've got you covered with grades and analysis on every winter signing and big offseason trade.",
+      "link": "https://www.espn.com/mlb/story/_/id/50473334/2026-27-offseason-free-agency-trade-grades",
+      "image": "https://a.espncdn.com/photo/2026/1113/r1745372_608x342_16-9.jpg",
+      "source": "ESPN MLB",
+      "sport": "MLB",
+      "type": "espn"
+    },
+    {
+      "title": "'The Rich Eisen Show' reacts to Jake Bauers heading to the Red Sox",
+      "description": "'The Rich Eisen Show' reacts to Jake Bauers heading to the Red Sox",
+      "link": "https://www.espn.com/video/clip/_/id/50473242/the-rich-eisen-show-reacts-jake-bauers-heading-red-sox",
+      "image": "https://espnmedia-cdn.akamaized.net/espn/media/common/2026/1113/ss_20261113_132956025_3739472/ss_20261113_132956025_3739472.jpg",
+      "source": "ESPN MLB",
+      "sport": "MLB",
+      "type": "espn"
+    },
+    {
+      "title": "Fantasy baseball reactions to MLB offseason trades, signings",
+      "description": "Track all the latest MLB free agency and trade news with fantasy baseball analysis from Tristan H. Cockcroft and Eric Karabell.",
+      "link": "https://www.espn.com/fantasy/baseball/story/_/id/50318517/fantasy-baseball-hot-stove-trades-free-agent-signings-2027",
+      "image": "https://a.espncdn.com/photo/2026/1113/r1745332_576x324_16-9.jpg",
+      "source": "ESPN MLB",
+      "sport": "MLB",
+      "type": "espn"
+    },
+    {
+      "title": "MLB free agency tracker: 2026-27 offseason trades, moves",
+      "description": "We've got you covered on all the major MLB hot stove signings and trades.",
+      "link": "https://www.espn.com/mlb/story/_/id/50328768/free-agency-tracker-offseason-trades-moves-2026-2027",
+      "image": "https://a.espncdn.com/photo/2026/0802/r1696679_608x342_16-9.jpg",
+      "source": "ESPN MLB",
+      "sport": "MLB",
+      "type": "espn"
+    },
+    {
+      "title": "Sources: Jake Bauers, Red Sox agree to 4-year, $58M contract",
+      "description": "First baseman Jake Bauers, who is coming off a career season with the Brewers, has agreed to a four-year, $58M contract with the Red Sox, sources told ESPN.",
+      "link": "https://www.espn.com/mlb/story/_/id/50473029/sources-jake-bauers-red-sox-agree-4-year-58m-deal",
+      "image": "https://a.espncdn.com/photo/2026/0729/r1694923_1296x729_16-9.jpg",
+      "source": "ESPN MLB",
+      "sport": "MLB",
+      "type": "espn"
+    },
+    {
+      "title": "Nashville Predators vs. Vegas Golden Knights: Game Highlights",
+      "description": "Nashville Predators vs. Vegas Golden Knights: Game Highlights",
+      "link": "https://www.espn.com/video/clip/_/id/50477942/game-highlights",
+      "image": "https://espnmedia-cdn.akamaized.net/espn/media/common/wsc/2026/1114/1d3f2348-67de-4670-be08-0562a8f07db7/1d3f2348-67de-4670-be08-0562a8f07db7.jpg",
+      "source": "ESPN NHL",
+      "sport": "NHL",
+      "type": "espn"
+    },
+    {
+      "title": "Roman Josi lifts Predators past Golden Knights 3-2 in shootout for seventh straight win",
+      "description": "— Roman Josi scored the deciding goal in the fourth round of a shootout as the Nashville Predators beat the Vegas Golden Knights 3-2 Friday night for their seventh straight win.",
+      "link": "http://www.espn.com/nhl/recap?gameId=401892707",
+      "image": "https://s.espncdn.com/stitcher/sports/hockey/nhl/events/401892707.png?templateId=espn.applewatch.awayhome.1",
+      "source": "ESPN NHL",
+      "sport": "NHL",
+      "type": "espn"
+    },
+    {
+      "title": "Glenn Gawdin scores his first 2 NHL goals in the Rangers' 5-1 victory over the Canucks",
+      "description": "— Glenn Gawdin scored his first two NHL goals in New York's four-goal second period and the Rangers won for the first time this season when allowing the first goal, beating the Vancouver Canucks 5-1 on Friday night.",
+      "link": "http://www.espn.com/nhl/recap?gameId=401892706",
+      "image": "https://s.espncdn.com/stitcher/sports/hockey/nhl/events/401892706.png?templateId=espn.applewatch.awayhome.1",
+      "source": "ESPN NHL",
+      "sport": "NHL",
+      "type": "espn"
+    },
+    {
+      "title": "New York Rangers vs. Vancouver Canucks: Game Highlights",
+      "description": "New York Rangers vs. Vancouver Canucks: Game Highlights",
+      "link": "https://www.espn.com/video/clip/_/id/50477395/game-highlights",
+      "image": "https://espnmedia-cdn.akamaized.net/espn/media/common/wsc/2026/1114/69818bcb-78a3-472a-a31b-f1416e826ab5/69818bcb-78a3-472a-a31b-f1416e826ab5.jpg",
+      "source": "ESPN NHL",
+      "sport": "NHL",
+      "type": "espn"
+    },
+    {
+      "title": "Rangers take commanding lead with four-goal second period",
+      "description": "Rangers take commanding lead with four-goal second period",
+      "link": "https://www.espn.com/video/clip/_/id/50477173/rangers-take-commanding-lead-four-goal-second-period",
+      "image": "https://espnmedia-cdn.akamaized.net/espn/media/common/2026/1113/ss_20261113_230326633_3740331/ss_20261113_230326633_3740331.jpg",
+      "source": "ESPN NHL",
+      "sport": "NHL",
+      "type": "espn"
+    },
+    {
+      "title": "FAA ground stop throws sports world into travel chaos ahead of weekend games",
+      "description": "Travel plans for multiple sports have been disrupted by the FAA's nationwide ground stop of all flights because of communications problems.",
+      "link": "https://www.espn.com/college-football/story/_/id/50475169/faa-ground-stop-disrupting-travel-college-football-teams",
+      "image": "https://a.espncdn.com/photo/2026/1113/r1745477_1296x729_16-9.jpg",
+      "source": "ESPN NHL",
+      "sport": "NHL",
+      "type": "espn"
+    },
+    {
+      "title": "Fantasy hockey rankings: Kochetkov rises to fifth, three Oilers lead overall",
+      "description": "Pyotr Kochetkov rises, Connor McDavid is still the fantasy hockey rankings leader after his red-hot start.",
+      "link": "https://www.espn.com/fantasy/hockey/story/_/id/49299647/espn-nhl-fantasy-hockey-rankings-forwards-defensemen-goalies-points-leagues",
+      "image": "https://a.espncdn.com/photo/2026/1113/r1745335_1296x729_16-9.jpg",
+      "source": "ESPN NHL",
+      "sport": "NHL",
+      "type": "espn"
+    },
+    {
+      "title": "Finland's block on Russian athletes could affect NHL's return",
+      "description": "The NHL will consider Finland's plans to prevent Russian athletes from entering the country when deciding whether to stage more regular-season games there in the future, the league told The Associated Press.",
+      "link": "https://www.espn.com/nhl/story/_/id/50472487/finland-block-russian-athletes-affect-nhl-return",
+      "image": "https://a.espncdn.com/photo/2026/1113/r1745296_1296x729_16-9.jpg",
+      "source": "ESPN NHL",
+      "sport": "NHL",
+      "type": "espn"
+    }
+  ]
+}
