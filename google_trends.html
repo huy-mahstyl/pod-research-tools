@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="1800">
+    <title>📊 Google Trends — POD Monitor</title>
+    <meta name="description" content="Real-time Google Trends monitoring for Print-on-Demand keyword research">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --bg-subtle: #0f1420;
+            --card: #141b2d;
+            --card-hover: #1a2338;
+            --border: #1e2a42;
+            --border-light: #2a3a5c;
+            --text: #e2e8f0;
+            --text-muted: #64748b;
+            --text-dim: #475569;
+            --red: #ef4444;
+            --red-glow: rgba(239,68,68,0.15);
+            --green: #22c55e;
+            --green-glow: rgba(34,197,94,0.15);
+            --orange: #f59e0b;
+            --orange-glow: rgba(245,158,11,0.15);
+            --blue: #3b82f6;
+            --blue-glow: rgba(59,130,246,0.15);
+            --purple: #a855f7;
+            --cyan: #06b6d4;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        header {
+            text-align: center;
+            padding: 2rem 1rem 1.5rem;
+            background: linear-gradient(180deg, #0f1628 0%, var(--bg) 100%);
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #22c55e 0%, #3b82f6 50%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 0.4rem;
+            font-weight: 500;
+        }
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.35rem 0.8rem;
+            border-radius: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+        }
+        .stat-fire { color: var(--red); }
+        .stat-pod { color: var(--green); }
+        .stat-time { color: var(--blue); }
+
+        /* ── Refresh Button ── */
+        .refresh-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 1rem;
+            padding: 0.45rem 1.2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--blue);
+            background: rgba(59,130,246,0.1);
+            border: 1px solid rgba(59,130,246,0.3);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .refresh-btn:hover {
+            background: rgba(59,130,246,0.2);
+            border-color: var(--blue);
+            transform: translateY(-1px);
+        }
+
+        /* ── Layout ── */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+            padding: 1.2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; }
+        }
+
+        /* ── Section ── */
+        .section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .section-count {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .count-red { background: var(--red-glow); color: var(--red); }
+        .count-green { background: var(--green-glow); color: var(--green); }
+        .section-body {
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+
+        /* ── Trend Card ── */
+        .trend-card {
+            display: flex;
+            gap: 0.8rem;
+            padding: 0.8rem 1.2rem;
+            border-bottom: 1px solid rgba(30,42,66,0.5);
+            transition: background 0.15s;
+            animation: fadeIn 0.3s ease-out both;
+        }
+        .trend-card:hover {
+            background: var(--card-hover);
+        }
+        .trend-card:last-child {
+            border-bottom: none;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .trend-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+        }
+        .trend-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .trend-top {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.3rem;
+        }
+        .trend-rank {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            min-width: 22px;
+        }
+        .trend-query {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        .trend-query:hover {
+            color: var(--blue);
+        }
+
+        /* ── Badges ── */
+        .badge {
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+        .badge-hot {
+            background: var(--red);
+            color: #fff;
+            box-shadow: 0 0 8px var(--red-glow);
+        }
+        .badge-high {
+            background: var(--orange);
+            color: #fff;
+        }
+        .badge-normal {
+            background: rgba(100,116,139,0.2);
+            color: var(--text-muted);
+        }
+        .badge-pod {
+            background: rgba(34,197,94,0.15);
+            color: var(--green);
+            border: 1px solid rgba(34,197,94,0.3);
+        }
+
+        /* ── News items ── */
+        .news-list {
+            margin-top: 0.3rem;
+        }
+        .news-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.3rem;
+            margin-bottom: 0.2rem;
+        }
+        .news-bullet {
+            color: var(--text-dim);
+            font-size: 0.55rem;
+            margin-top: 0.2rem;
+            flex-shrink: 0;
+        }
+        .news-link {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.15s;
+        }
+        .news-link:hover {
+            color: var(--cyan);
+        }
+        .news-source {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        /* ── Action Links ── */
+        .trend-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.35rem;
+        }
+        .action-link {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-decoration: none;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            transition: all 0.15s;
+        }
+        .action-link:hover {
+            color: var(--blue);
+            border-color: rgba(59,130,246,0.4);
+            background: var(--blue-glow);
+        }
+
+        /* ── Empty state ── */
+        .empty {
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ── Scrollbar ── */
+        .section-body::-webkit-scrollbar { width: 6px; }
+        .section-body::-webkit-scrollbar-track { background: transparent; }
+        .section-body::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+        .section-body::-webkit-scrollbar-thumb:hover {
+            background: var(--border-light);
+        }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            border-top: 1px solid var(--border);
+        }
+        footer a { color: var(--blue); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+    </style>
+    <script>
+    // Mở link Google Search an toàn — tránh bị block khi mở từ file://
+    function openSearch(url, evt) {
+        if (evt) evt.preventDefault();
+        // Tạo cửa sổ mới qua about:blank trước, rồi redirect
+        var w = window.open('about:blank', '_blank');
+        if (w) {
+            w.location.href = url;
+        } else {
+            // Fallback nếu popup bị chặn
+            window.location.href = url;
+        }
+        return false;
+    }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>📊 Google Trends — POD Monitor</h1>
+        <p class="subtitle">Real-time trending keywords in the US — for POD research</p>
+        <div class="stats-bar">
+            <div class="stat stat-fire">🔥 10 xu hướng</div>
+            <div class="stat stat-pod">🎯 3 liên quan Sports/POD</div>
+            <div class="stat stat-time">🕐 13:04:40 — 28/11/2026</div>
+        </div>
+        <a class="refresh-btn" href="javascript:location.reload()">🔄 Refresh</a>
+    </header>
+
+    <div class="container">
+
+        <div class="section" id="pod-section">
+            <div class="section-header">
+                <div class="section-title" style="color: var(--green);">
+                    🏆 Sports & POD Relevant
+                </div>
+                <span class="section-count count-green">3 found</span>
+            </div>
+            <div class="section-body">
+
+            <div class="trend-card" style="animation-delay: 0.00s">
+                <img class="trend-thumb" src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRoLTnkLSxQlvqf_-H7ZnJQf9xAcIu_3_Nl04nx7yiOma_DJDRg8rPzFHZdJSw" alt="betis vs rayo" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#1</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=betis+vs+rayo&amp;tbm=isch" onclick="return openSearch(this.href, event)">betis vs rayo</a>
+                        <span class="badge badge-high">1000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.bbc.com/sport/football/live/c6reg91ewxqqt" target="_blank" rel="noopener noreferrer">Real Betis vs Rayo Vallecano: Spanish La Liga stats & head-to-head <span class="news-source">— BBC</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.tufutbolero.com/en/news/betis-rayo-preview-betis-arrive-with-four-injury-absences-fcf0d0" target="_blank" rel="noopener noreferrer">Betis-Rayo preview: Betis arrive with four injury absences <span class="news-source">— Tu Futbolero</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=betis+vs+rayo&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=betis+vs+rayo&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=betis+vs+rayo+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.03s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSW80IK6n2E3dAkPT8s9EJE72G3m8K-p10JOXgNV4SRS-ZCmonph-XcrkaOPbU" alt="college football playoff" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#2</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=college+football+playoff&amp;tbm=isch" onclick="return openSearch(this.href, event)">college football playoff</a>
+                        <span class="badge badge-normal">500+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://247sports.com/college/tennessee/article/tennessee-football-announces-uniform-combination-for-road-game-at-vanderbilt-football-josh-heupel-clark-lea-george-macintyre-faizon-brandon-293390100/" target="_blank" rel="noopener noreferrer">Tennessee announces uniform combination for road game at Vanderbilt <span class="news-source">— 247Sports</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://sports.yahoo.com/college-football/articles/tennessee-football-vs-vanderbilt-picks-110526690.html" target="_blank" rel="noopener noreferrer">Tennessee football vs Vanderbilt picks: Defense can send Vols to College Football Playoff <span class="news-source">— Yahoo Sports</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=college+football+playoff&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=college+football+playoff&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=college+football+playoff+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.06s">
+                <img class="trend-thumb" src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQxP2DRj-nxvEn0zvz11GQXJqEQID0ueltf746pXBulm-gDv-eHyvl5TrVZmzg" alt="jerry jones brian schottenheimer cowboys" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#3</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=jerry+jones+brian+schottenheimer+cowboys&amp;tbm=isch" onclick="return openSearch(this.href, event)">jerry jones brian schottenheimer cowboys</a>
+                        <span class="badge badge-normal">100+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.espn.com/nfl/story/_/id/50608969/cowboys-jerry-jones-backs-coach-damning-setbacks" target="_blank" rel="noopener noreferrer">Jerry Jones backs Schottenheimer despite 'damning setbacks' in loss <span class="news-source">— ESPN</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://sports.yahoo.com/nfl/articles/cowboys-news-jerry-jones-everything-120000593.html" target="_blank" rel="noopener noreferrer">Cowboys news: Jerry Jones will ‘question everything’ after Eagles loss <span class="news-source">— Yahoo Sports</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=jerry+jones+brian+schottenheimer+cowboys&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=jerry+jones+brian+schottenheimer+cowboys&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=jerry+jones+brian+schottenheimer+cowboys+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="section" id="all-section">
+            <div class="section-header">
+                <div class="section-title" style="color: var(--red);">
+                    🔥 All Trending Today
+                </div>
+                <span class="section-count count-red">10 total</span>
+            </div>
+            <div class="section-body">
+
+            <div class="trend-card" style="animation-delay: 0.00s">
+                <img class="trend-thumb" src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSPs0KI_vOZ-nxlZhMt8rvJnZkYbC7ZTIqGvqHfFLvfbYm0gZC_SZxjfFemLiY" alt="nbc" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#1</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=nbc&amp;tbm=isch" onclick="return openSearch(this.href, event)">nbc</a>
+                        <span class="badge badge-normal">500+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.nytimes.com/2026/11/27/business/media/nbc-ad-snl.html" target="_blank" rel="noopener noreferrer">NBC Pulls an Ad That Some Described as Antisemitic <span class="news-source">— The New York Times</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.businessinsider.com/jewish-groups-slam-pro-palestine-ad-snl-fcc-2026-11" target="_blank" rel="noopener noreferrer">NBC is reviewing its ad process after a commercial calling for an end to US aid to Israel drew backlash <span class="news-source">— Business Insider</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=nbc&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=nbc&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=nbc+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.03s">
+                <img class="trend-thumb" src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSBeK2SJkyyhE0LLW--dDNBTNrblKFefO5E7MmXWD-xaNHie913GFQODG4HH14" alt="mark harmon" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#2</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=mark+harmon&amp;tbm=isch" onclick="return openSearch(this.href, event)">mark harmon</a>
+                        <span class="badge badge-normal">200+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://people.com/little-house-star-patrick-labyorteaux-recalls-the-time-mark-harmon-literally-gave-him-the-shirt-off-his-back-12283093" target="_blank" rel="noopener noreferrer">‘Little House’ Star Patrick Labyorteaux Recalls the Time Mark Harmon Literally Gave Him the Shirt Off His Back <span class="news-source">— People.com</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://screenrant.com/ncis-mark-harmon-signature-head-slap-block/" target="_blank" rel="noopener noreferrer">NCIS Blocks Mark Harmon's Signature Gibbs Move From Ever Coming Back <span class="news-source">— ScreenRant</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=mark+harmon&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=mark+harmon&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=mark+harmon+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.06s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvyRiniNCmWSgIcwuKj2fJK3YA1dvKIbmUFkvvNhO9eV3KHVBSZ9YRP6dI8vk" alt="the challenge" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#3</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=the+challenge&amp;tbm=isch" onclick="return openSearch(this.href, event)">the challenge</a>
+                        <span class="badge badge-normal">500+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://people.com/the-challenge-winner-tyler-duckworth-cause-of-death-revealed-12059712" target="_blank" rel="noopener noreferrer">‘The Challenge’ Winner Tyler Duckworth’s Cause of Death Revealed <span class="news-source">— People.com</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.yahoo.com/entertainment/celebrity/deaths-obituaries/articles/challenge-champion-tyler-duckworth-cause-123751079.html" target="_blank" rel="noopener noreferrer">‘The Challenge’ Champion Tyler Duckworth’s Cause of Death at 44 Revealed <span class="news-source">— Yahoo</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=the+challenge&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=the+challenge&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=the+challenge+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.09s">
+                <img class="trend-thumb" src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcT3udnzNo4fkEkdojlvs73LtHynhAvbUyvDyBjCvhVXyppycNioRHOUU9iExLI" alt="prince harry" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#4</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=prince+harry&amp;tbm=isch" onclick="return openSearch(this.href, event)">prince harry</a>
+                        <span class="badge badge-normal">100+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://abcnews.com/GMA/News/prince-william-speaks-princess-diana-charity-enters-administration/story?id=138473646" target="_blank" rel="noopener noreferrer">Prince William speaks out as Princess Diana charity enters administration <span class="news-source">— ABC News - Breaking News, Latest News and Videos</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://thehill.com/blogs/in-the-know/6245656-prince-william-diana-award-administration/" target="_blank" rel="noopener noreferrer">Prince William responds after the Diana Award says it can’t meet financial obligations <span class="news-source">— The Hill</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=prince+harry&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=prince+harry&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=prince+harry+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.12s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQX_hOjGS5pxDY5BhRFY8hhPCg5RoVbJCzN1DOU8_8UnglCkpmnFeRIPrRayWU" alt="real betis - rayo vallecano" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#5</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=real+betis+-+rayo+vallecano&amp;tbm=isch" onclick="return openSearch(this.href, event)">real betis - rayo vallecano</a>
+                        <span class="badge badge-high">2000+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.abc.es/deportes/alfinaldelapalmera/noticias-betis/betis-rayo-alegria-champions-carrera-volver-disputarla-20261128073248-nts.html" target="_blank" rel="noopener noreferrer">Betis - Rayo: De la alegría por la Champions a la carrera por volver a disputarla <span class="news-source">— ABC</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.tufutbolero.com/novedades/betis-rayo-el-betis-llega-con-cuatro-bajas-por-lesion-fcf0d0" target="_blank" rel="noopener noreferrer">Betis-Rayo: el Betis llega con cuatro bajas por lesión <span class="news-source">— Tu Futbolero</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=real+betis+-+rayo+vallecano&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=real+betis+-+rayo+vallecano&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=real+betis+-+rayo+vallecano+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.15s">
+                <img class="trend-thumb" src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRoLTnkLSxQlvqf_-H7ZnJQf9xAcIu_3_Nl04nx7yiOma_DJDRg8rPzFHZdJSw" alt="betis vs rayo" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#6</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=betis+vs+rayo&amp;tbm=isch" onclick="return openSearch(this.href, event)">betis vs rayo</a>
+                        <span class="badge badge-high">1000+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.bbc.com/sport/football/live/c6reg91ewxqqt" target="_blank" rel="noopener noreferrer">Real Betis vs Rayo Vallecano: Spanish La Liga stats & head-to-head <span class="news-source">— BBC</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.tufutbolero.com/en/news/betis-rayo-preview-betis-arrive-with-four-injury-absences-fcf0d0" target="_blank" rel="noopener noreferrer">Betis-Rayo preview: Betis arrive with four injury absences <span class="news-source">— Tu Futbolero</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=betis+vs+rayo&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=betis+vs+rayo&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=betis+vs+rayo+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.18s">
+                <img class="trend-thumb" src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTltr61kfrsMWdvhbSiEWW6QHg-mYZEEc9Wk6fpOwSFJy-QJ9Ee1Df80Pq-lFo" alt="ai encryption" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#7</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=ai+encryption&amp;tbm=isch" onclick="return openSearch(this.href, event)">ai encryption</a>
+                        <span class="badge badge-normal">500+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.theguardian.com/technology/2026/nov/28/ai-artificial-intelligence-encryption-global-chaos" target="_blank" rel="noopener noreferrer">AI labs sitting on ‘bombshell’ revelations that could cause global chaos, experts warn <span class="news-source">— The Guardian</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.ft.com/content/1a29e62d-b18d-4bad-937d-34f3eae0587a?syn-25a6b1a6=1" target="_blank" rel="noopener noreferrer">Can AI crack encryption? <span class="news-source">— Financial Times</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=ai+encryption&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=ai+encryption&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=ai+encryption+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.21s">
+                <img class="trend-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSW80IK6n2E3dAkPT8s9EJE72G3m8K-p10JOXgNV4SRS-ZCmonph-XcrkaOPbU" alt="college football playoff" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#8</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=college+football+playoff&amp;tbm=isch" onclick="return openSearch(this.href, event)">college football playoff</a>
+                        <span class="badge badge-normal">500+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://247sports.com/college/tennessee/article/tennessee-football-announces-uniform-combination-for-road-game-at-vanderbilt-football-josh-heupel-clark-lea-george-macintyre-faizon-brandon-293390100/" target="_blank" rel="noopener noreferrer">Tennessee announces uniform combination for road game at Vanderbilt <span class="news-source">— 247Sports</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://sports.yahoo.com/college-football/articles/tennessee-football-vs-vanderbilt-picks-110526690.html" target="_blank" rel="noopener noreferrer">Tennessee football vs Vanderbilt picks: Defense can send Vols to College Football Playoff <span class="news-source">— Yahoo Sports</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=college+football+playoff&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=college+football+playoff&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=college+football+playoff+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.24s">
+                <img class="trend-thumb" src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQqGmQxI3juphrBpPyrCc5mcWSoR_ZH25fe7dRu4wrFnQNV2Ubzxd60Cvq2xco" alt="delcy rodríguez" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#9</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=delcy+rodr%C3%ADguez&amp;tbm=isch" onclick="return openSearch(this.href, event)">delcy rodríguez</a>
+                        <span class="badge badge-normal">100+</span>
+                        
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.instagram.com/p/DgQ-2pci6af/" target="_blank" rel="noopener noreferrer">Jefa de Estado lidera actos por el Día de la Aviación Militar Bolivariana La presidenta de la República Bolivariana de Venezuela, Delcy Rodríguez, lideró este viernes, desde el Palacio de Miraflores, actos con motivo de los 106 años del Día de la Aviación Mili <span class="news-source">— Instagram</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.eltiempo.com/mundo/venezuela/delcy-rodriguez-ordena-a-las-fuerzas-armadas-de-venezuela-a-crear-un-comando-de-drones-y-sistemas-no-tripulado-3605038" target="_blank" rel="noopener noreferrer">Delcy Rodríguez ordena a las Fuerzas Armadas de Venezuela crear un comando de drones y sistemas no tripulados <span class="news-source">— El Tiempo</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=delcy+rodr%C3%ADguez&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=delcy+rodr%C3%ADguez&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=delcy+rodr%C3%ADguez+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="trend-card" style="animation-delay: 0.27s">
+                <img class="trend-thumb" src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQxP2DRj-nxvEn0zvz11GQXJqEQID0ueltf746pXBulm-gDv-eHyvl5TrVZmzg" alt="jerry jones brian schottenheimer cowboys" loading="lazy" onerror="this.style.display='none'">
+                <div class="trend-content">
+                    <div class="trend-top">
+                        <span class="trend-rank">#10</span>
+                        <a class="trend-query" href="https://www.google.com/search?q=jerry+jones+brian+schottenheimer+cowboys&amp;tbm=isch" onclick="return openSearch(this.href, event)">jerry jones brian schottenheimer cowboys</a>
+                        <span class="badge badge-normal">100+</span>
+                        <span class="badge badge-pod">POD</span>
+                    </div>
+                    <div class="news-list">
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://www.espn.com/nfl/story/_/id/50608969/cowboys-jerry-jones-backs-coach-damning-setbacks" target="_blank" rel="noopener noreferrer">Jerry Jones backs Schottenheimer despite 'damning setbacks' in loss <span class="news-source">— ESPN</span></a>
+                </div>
+                <div class="news-item">
+                    <span class="news-bullet">▸</span>
+                    <a class="news-link" href="https://sports.yahoo.com/nfl/articles/cowboys-news-jerry-jones-everything-120000593.html" target="_blank" rel="noopener noreferrer">Cowboys news: Jerry Jones will ‘question everything’ after Eagles loss <span class="news-source">— Yahoo Sports</span></a>
+                </div></div>
+                    <div class="trend-actions">
+                        <a class="action-link" href="https://www.google.com/search?q=jerry+jones+brian+schottenheimer+cowboys&amp;tbm=isch" onclick="return openSearch(this.href, event)">🖼 Images</a>
+                        <a class="action-link" href="https://trends.google.com/trends/explore?q=jerry+jones+brian+schottenheimer+cowboys&amp;geo=US" onclick="return openSearch(this.href, event)">📈 Trends</a>
+                        <a class="action-link" href="https://www.google.com/search?q=jerry+jones+brian+schottenheimer+cowboys+t+shirt&amp;tbm=isch" onclick="return openSearch(this.href, event)">👕 POD Search</a>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        Dữ liệu từ <a href="https://trends.google.com/trending?geo=US" target="_blank">Google Trends RSS</a>
+        — Không cần API key, không bị CAPTCHA
+        — Auto-refresh mỗi 30 phút
+        — Scan lúc 13:04:40 — 28/11/2026
+    </footer>
+</body>
+</html>
